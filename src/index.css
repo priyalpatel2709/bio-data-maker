@@ -7,6 +7,11 @@
     @apply bg-slate-50 text-slate-900 font-sans;
     -webkit-font-smoothing: antialiased;
   }
+
+  /* html2canvas mis-measures text baselines when img is display:block (Tailwind preflight) */
+  img {
+    @apply inline-block;
+  }
 }
 
 /* Custom Scrollbars */
