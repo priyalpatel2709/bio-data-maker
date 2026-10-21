@@ -3,6 +3,7 @@ import { BiodataDocument } from '../../../types/biodata';
 import { DocumentPhoto } from '../DocumentPhoto';
 import { HeaderEmblem } from '../HeaderEmblem';
 import { calculateAge, formatDate } from '../../../utils/calculateAge';
+import { getLocalizedDocText } from '../../../i18n/translations';
 import toranBg from '../../../assets/templates/marigold-toran-bg.png';
 
 interface TemplateProps {
@@ -15,6 +16,10 @@ export const MarigoldToran: React.FC<TemplateProps> = ({ document }) => {
 
   const primary = styling.primaryColor || '#963806';
   const accent = styling.accentColor || '#D97706';
+  const docLang = styling.language || document.language || 'en';
+  const titleText = getLocalizedDocText('documentTitle', docLang);
+  const yearsText = getLocalizedDocText('years', docLang);
+  const blessingsText = getLocalizedDocText('blessings', docLang);
 
   const personalSection = sections.find(
     (s) => s.key === 'personal' || s.title.toLowerCase().includes('personal')
@@ -34,23 +39,31 @@ export const MarigoldToran: React.FC<TemplateProps> = ({ document }) => {
       />
 
       <div className="relative z-10">
-        {/* Dynamic Header Plaque nested below the marigold garland */}
-        <div className="max-w-md mx-auto text-center pt-2 pb-3 px-6 rounded-2xl bg-[#FEFAF0]/95 backdrop-blur-xs shadow-xs border border-amber-600/15 mb-5">
+        {/* Clean, unboxed header directly below the authentic marigold toran artwork */}
+        <div className="max-w-md mx-auto text-center pt-1 pb-2 px-4 mb-4">
           <HeaderEmblem
             symbol={styling.headerSymbol || 'ganesha'}
+            customSymbol={styling.customHeaderSymbol}
+            customText={styling.customHeaderText}
+            showEmblem={styling.showEmblem !== false}
+            language={docLang}
             primaryColor={primary}
             accentColor={accent}
           />
 
-          <h1
-            className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest mt-1"
-            style={{
-              color: primary,
-              fontFamily: styling.fontFamilyHeading,
-            }}
-          >
-            BIODATA
-          </h1>
+          {styling.showDocumentTitle !== false && (styling.customDocumentTitle || titleText) && (
+            <h1
+              className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest mt-1"
+              style={{
+                color: primary,
+                fontFamily: styling.fontFamilyHeading,
+              }}
+            >
+              {styling.customDocumentTitle !== undefined && styling.customDocumentTitle !== ''
+                ? styling.customDocumentTitle
+                : titleText}
+            </h1>
+          )}
 
           {candidateName && (
             <div
@@ -61,17 +74,19 @@ export const MarigoldToran: React.FC<TemplateProps> = ({ document }) => {
             </div>
           )}
 
-          <div className="flex items-center justify-center gap-2 mt-1.5">
-            <div
-              className="h-[1.5px] w-20 bg-gradient-to-r from-transparent to-amber-500"
-              style={{ backgroundColor: accent }}
-            />
-            <span className="text-xs">🌼</span>
-            <div
-              className="h-[1.5px] w-20 bg-gradient-to-l from-transparent to-amber-500"
-              style={{ backgroundColor: accent }}
-            />
-          </div>
+          {(styling.showDocumentTitle !== false || styling.showEmblem !== false || candidateName) && (
+            <div className="flex items-center justify-center gap-2 mt-1.5">
+              <div
+                className="h-[1.5px] w-20 bg-gradient-to-r from-transparent to-amber-500"
+                style={{ backgroundColor: accent }}
+              />
+              <span className="text-xs">🌼</span>
+              <div
+                className="h-[1.5px] w-20 bg-gradient-to-l from-transparent to-amber-500"
+                style={{ backgroundColor: accent }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Sections Card with Haldi Warm Ivory Backing */}
@@ -113,7 +128,7 @@ export const MarigoldToran: React.FC<TemplateProps> = ({ document }) => {
                     {displayValue || '—'}
                     {calculatedAge !== null && (
                       <span className="ml-1.5 text-xs font-bold text-amber-700">
-                        ({calculatedAge} Years)
+                        ({calculatedAge} {yearsText})
                       </span>
                     )}
                   </span>
@@ -181,7 +196,7 @@ export const MarigoldToran: React.FC<TemplateProps> = ({ document }) => {
         <div className="flex items-center justify-center gap-2 mb-1">
           <div className="h-[1px] w-12 bg-amber-600/30" />
           <span className="text-[10px] tracking-widest text-amber-900/60 uppercase">
-            Blessings & Good Wishes
+            {blessingsText}
           </span>
           <div className="h-[1px] w-12 bg-amber-600/30" />
         </div>

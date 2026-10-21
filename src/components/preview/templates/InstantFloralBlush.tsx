@@ -3,6 +3,7 @@ import { BiodataDocument } from '../../../types/biodata';
 import { DocumentPhoto } from '../DocumentPhoto';
 import { HeaderEmblem } from '../HeaderEmblem';
 import { calculateAge, formatDate } from '../../../utils/calculateAge';
+import { getLocalizedDocText } from '../../../i18n/translations';
 
 interface TemplateProps {
   document: BiodataDocument;
@@ -14,6 +15,8 @@ export const InstantFloralBlush: React.FC<TemplateProps> = ({ document }) => {
 
   const primary = styling.primaryColor || '#9B4A5A';
   const accent = styling.accentColor || '#D48B96';
+  const docLang = styling.language || document.language || 'en';
+  const titleText = getLocalizedDocText('documentTitle', docLang);
 
   return (
     <div className="w-full h-full p-8 sm:p-11 relative flex flex-col justify-between">
@@ -35,26 +38,36 @@ export const InstantFloralBlush: React.FC<TemplateProps> = ({ document }) => {
         {/* Header Emblem */}
         <HeaderEmblem
           symbol={styling.headerSymbol || 'ganesha'}
+          customSymbol={styling.customHeaderSymbol}
+          customText={styling.customHeaderText}
+          showEmblem={styling.showEmblem !== false}
+          language={docLang}
           primaryColor={primary}
           accentColor={accent}
         />
 
         {/* Title */}
         <div className="text-center mb-6">
-          <h1
-            className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest"
-            style={{
-              color: primary,
-              fontFamily: styling.fontFamilyHeading,
-            }}
-          >
-            MARRIAGE BIODATA
-          </h1>
-          <div className="flex items-center justify-center gap-2 mt-1 mb-2">
-            <span className="h-[1px] w-16" style={{ backgroundColor: accent }} />
-            <span className="text-xs">🌸</span>
-            <span className="h-[1px] w-16" style={{ backgroundColor: accent }} />
-          </div>
+          {styling.showDocumentTitle !== false && (styling.customDocumentTitle || titleText) && (
+            <h1
+              className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest"
+              style={{
+                color: primary,
+                fontFamily: styling.fontFamilyHeading,
+              }}
+            >
+              {styling.customDocumentTitle !== undefined && styling.customDocumentTitle !== ''
+                ? styling.customDocumentTitle
+                : titleText}
+            </h1>
+          )}
+          {(styling.showDocumentTitle !== false || styling.showEmblem !== false) && (
+            <div className="flex items-center justify-center gap-2 mt-1 mb-2">
+              <span className="h-[1px] w-16" style={{ backgroundColor: accent }} />
+              <span className="text-xs">🌸</span>
+              <span className="h-[1px] w-16" style={{ backgroundColor: accent }} />
+            </div>
+          )}
         </div>
 
         {/* Sections */}

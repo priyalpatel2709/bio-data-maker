@@ -1,7 +1,9 @@
 import React from 'react';
 import { BiodataDocument } from '../../../types/biodata';
 import { DocumentPhoto } from '../DocumentPhoto';
+import { HeaderEmblem } from '../HeaderEmblem';
 import { calculateAge, formatDate } from '../../../utils/calculateAge';
+import { getLocalizedDocText } from '../../../i18n/translations';
 
 interface TemplateProps {
   document: BiodataDocument;
@@ -9,8 +11,11 @@ interface TemplateProps {
 
 export const ClassicTraditional: React.FC<TemplateProps> = ({ document }) => {
   const { styling, sections, photoUrl } = document;
-
   const visibleSections = sections.filter((s) => s.visible);
+  const docLang = styling.language || document.language || 'en';
+  const titleText = getLocalizedDocText('documentTitle', docLang);
+  const mantraText = getLocalizedDocText('mantra', docLang);
+  const yearsText = getLocalizedDocText('years', docLang);
 
   return (
     <div className="w-full h-full p-8 sm:p-10 relative flex flex-col justify-between">
@@ -46,35 +51,44 @@ export const ClassicTraditional: React.FC<TemplateProps> = ({ document }) => {
       <div>
         {/* Traditional Auspicious Header */}
         <div className="text-center mb-6">
-          <div
-            className="text-xs sm:text-sm font-semibold tracking-widest uppercase mb-1"
-            style={{ color: styling.accentColor }}
-          >
-            ॥ श्री गणेशाय नमः ॥
-          </div>
-          <h1
-            className="text-2xl sm:text-3xl font-bold uppercase tracking-wider"
-            style={{
-              color: styling.primaryColor,
-              fontFamily: styling.fontFamilyHeading,
-            }}
-          >
-            BIODATA
-          </h1>
-          <div className="flex items-center justify-center gap-3 my-2">
-            <span
-              className="h-[1.5px] w-12 sm:w-20"
-              style={{ backgroundColor: styling.accentColor }}
-            />
-            <span
-              className="w-2 h-2 rotate-45"
-              style={{ backgroundColor: styling.primaryColor }}
-            />
-            <span
-              className="h-[1.5px] w-12 sm:w-20"
-              style={{ backgroundColor: styling.accentColor }}
-            />
-          </div>
+          <HeaderEmblem
+            symbol={styling.headerSymbol || 'om'}
+            customSymbol={styling.customHeaderSymbol}
+            customText={styling.customHeaderText}
+            showEmblem={styling.showEmblem !== false}
+            language={docLang}
+            primaryColor={styling.primaryColor}
+            accentColor={styling.accentColor}
+          />
+          {styling.showDocumentTitle !== false && (styling.customDocumentTitle || titleText) && (
+            <h1
+              className="text-2xl sm:text-3xl font-bold uppercase tracking-wider"
+              style={{
+                color: styling.primaryColor,
+                fontFamily: styling.fontFamilyHeading,
+              }}
+            >
+              {styling.customDocumentTitle !== undefined && styling.customDocumentTitle !== ''
+                ? styling.customDocumentTitle
+                : titleText}
+            </h1>
+          )}
+          {(styling.showDocumentTitle !== false || styling.showEmblem !== false) && (
+            <div className="flex items-center justify-center gap-3 my-2">
+              <span
+                className="h-[1.5px] w-12 sm:w-20"
+                style={{ backgroundColor: styling.accentColor }}
+              />
+              <span
+                className="w-2 h-2 rotate-45"
+                style={{ backgroundColor: styling.primaryColor }}
+              />
+              <span
+                className="h-[1.5px] w-12 sm:w-20"
+                style={{ backgroundColor: styling.accentColor }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Sections Content */}
@@ -117,7 +131,7 @@ export const ClassicTraditional: React.FC<TemplateProps> = ({ document }) => {
                     {displayValue || '—'}
                     {calculatedAge !== null && (
                       <span className="ml-1.5 text-xs text-slate-500 font-medium">
-                        ({calculatedAge} Years)
+                        ({calculatedAge} {yearsText})
                       </span>
                     )}
                   </span>

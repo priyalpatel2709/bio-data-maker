@@ -3,6 +3,7 @@ import { BiodataDocument } from '../../../types/biodata';
 import { DocumentPhoto } from '../DocumentPhoto';
 import { HeaderEmblem } from '../HeaderEmblem';
 import { calculateAge, formatDate } from '../../../utils/calculateAge';
+import { getLocalizedDocText } from '../../../i18n/translations';
 
 interface TemplateProps {
   document: BiodataDocument;
@@ -14,6 +15,9 @@ export const InstantRoyalMaroon: React.FC<TemplateProps> = ({ document }) => {
 
   const primary = styling.primaryColor || '#7A121D';
   const accent = styling.accentColor || '#D4AF37';
+  const docLang = styling.language || document.language || 'en';
+  const titleText = getLocalizedDocText('documentTitle', docLang);
+  const yearsText = getLocalizedDocText('years', docLang);
 
   return (
     <div className="w-full h-full p-8 sm:p-11 relative flex flex-col justify-between">
@@ -85,21 +89,29 @@ export const InstantRoyalMaroon: React.FC<TemplateProps> = ({ document }) => {
         {/* Religious/Cultural Header Emblem */}
         <HeaderEmblem
           symbol={styling.headerSymbol || 'ganesha'}
+          customSymbol={styling.customHeaderSymbol}
+          customText={styling.customHeaderText}
+          showEmblem={styling.showEmblem !== false}
+          language={docLang}
           primaryColor={primary}
           accentColor={accent}
         />
 
         {/* Main Document Title */}
         <div className="text-center mb-6">
-          <h1
-            className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest"
-            style={{
-              color: primary,
-              fontFamily: styling.fontFamilyHeading,
-            }}
-          >
-            BIO-DATA
-          </h1>
+          {styling.showDocumentTitle !== false && (styling.customDocumentTitle || titleText) && (
+            <h1
+              className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest"
+              style={{
+                color: primary,
+                fontFamily: styling.fontFamilyHeading,
+              }}
+            >
+              {styling.customDocumentTitle !== undefined && styling.customDocumentTitle !== ''
+                ? styling.customDocumentTitle
+                : titleText}
+            </h1>
+          )}
           {/* Gold Gradient Line */}
           <div className="flex items-center justify-center gap-2 mt-1.5 mb-2">
             <div
@@ -137,9 +149,8 @@ export const InstantRoyalMaroon: React.FC<TemplateProps> = ({ document }) => {
               return (
                 <div
                   key={field.id}
-                  className={`flex items-baseline py-1 text-xs sm:text-sm border-b border-dashed border-amber-900/15 ${
-                    isSpanFull || field.type === 'textarea' ? 'sm:col-span-2' : ''
-                  }`}
+                  className={`flex items-baseline py-1 text-xs sm:text-sm border-b border-dashed border-amber-900/15 ${isSpanFull || field.type === 'textarea' ? 'sm:col-span-2' : ''
+                    }`}
                 >
                   <span
                     className="font-bold text-slate-800 w-2/5 shrink-0 pr-2 flex items-center justify-between"
@@ -155,7 +166,7 @@ export const InstantRoyalMaroon: React.FC<TemplateProps> = ({ document }) => {
                     {displayValue || '—'}
                     {calculatedAge !== null && (
                       <span className="ml-1.5 text-xs font-bold text-amber-800">
-                        ({calculatedAge} Years)
+                        ({calculatedAge} {yearsText})
                       </span>
                     )}
                   </span>
@@ -200,9 +211,8 @@ export const InstantRoyalMaroon: React.FC<TemplateProps> = ({ document }) => {
                 ) : (
                   /* Grid Fields with Perfect Tabular Alignment across 100% full width */
                   <div
-                    className={`grid ${
-                      styling.columns === 2 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'
-                    } gap-x-8 gap-y-1.5 px-1`}
+                    className={`grid ${styling.columns === 2 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'
+                      } gap-x-8 gap-y-1.5 px-1`}
                   >
                     {visibleFields.map((field) => renderFieldRow(field))}
                   </div>
@@ -213,10 +223,7 @@ export const InstantRoyalMaroon: React.FC<TemplateProps> = ({ document }) => {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="relative z-10 text-center pt-6 text-[11px] text-slate-400 border-t border-amber-900/20">
-        ॥ सन्तुष्टो भार्यया भर्ता भर्त्रा भार्या तथैव च ॥
-      </div>
+
     </div>
   );
 };

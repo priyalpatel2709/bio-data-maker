@@ -2,6 +2,7 @@ import React from 'react';
 import { BiodataProvider, useBiodata } from './context/BiodataContext';
 import { DashboardView } from './components/dashboard/DashboardView';
 import { StudioView } from './components/editor/StudioView';
+import { LanguageSwitcher } from './components/common/LanguageSwitcher';
 import { Sparkles, FileText, Layout, Heart } from 'lucide-react';
 
 const AppContent: React.FC = () => {
@@ -33,6 +34,7 @@ const AppContent: React.FC = () => {
             >
               Templates
             </a>
+            <LanguageSwitcher />
             <button
               onClick={() => setViewMode('studio')}
               className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all shadow-sm active:scale-95"

@@ -5,7 +5,8 @@ import {
   CustomField,
   AttachedImage,
   StylingConfig,
-  TemplateId
+  TemplateId,
+  Language,
 } from '../types/biodata';
 import { defaultBiodata } from '../data/defaultBiodata';
 import { TEMPLATES } from '../data/templateCatalog';
@@ -17,9 +18,18 @@ import {
   deleteSavedDocument,
   duplicateSavedDocument
 } from '../utils/storage';
+import {
+  UI_TRANSLATIONS,
+  TranslationDictionary,
+  translateDocumentSections,
+} from '../i18n/translations';
 
 interface BiodataContextType {
   document: BiodataDocument;
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  translateBiodata: (targetLang: Language) => void;
+  t: (key: keyof TranslationDictionary) => string;
   viewMode: 'studio' | 'dashboard';
   setViewMode: (mode: 'studio' | 'dashboard') => void;
   activeTab: 'form' | 'design' | 'templates';
@@ -70,6 +80,9 @@ const BiodataContext = createContext<BiodataContextType | undefined>(undefined);
 
 export const BiodataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [document, setDocument] = useState<BiodataDocument>(loadCurrentBiodata);
+  const [language, setLanguageState] = useState<Language>(() => {
+    return (localStorage.getItem('biodatamaker_language') as Language) || 'en';
+  });
   const [viewMode, setViewMode] = useState<'studio' | 'dashboard'>('dashboard');
   const [activeTab, setActiveTab] = useState<'form' | 'design' | 'templates'>('form');
   const [previewZoom, setPreviewZoom] = useState<number | 'fit'>('fit');
@@ -81,6 +94,37 @@ export const BiodataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   useEffect(() => {
     saveCurrentBiodata(document);
   }, [document]);
+
+  const setLanguage = useCallback((lang: Language) => {
+    setLanguageState(lang);
+    localStorage.setItem('biodatamaker_language', lang);
+    setDocument(prev => ({
+      ...prev,
+      language: lang,
+      styling: {
+        ...prev.styling,
+        language: lang,
+      }
+    }));
+  }, []);
+
+  const translateBiodata = useCallback((targetLang: Language) => {
+    setLanguageState(targetLang);
+    localStorage.setItem('biodatamaker_language', targetLang);
+    setDocument(prev => ({
+      ...prev,
+      language: targetLang,
+      styling: {
+        ...prev.styling,
+        language: targetLang,
+      },
+      sections: translateDocumentSections(prev.sections, targetLang),
+    }));
+  }, []);
+
+  const t = useCallback((key: keyof TranslationDictionary): string => {
+    return UI_TRANSLATIONS[language]?.[key] || UI_TRANSLATIONS.en[key] || String(key);
+  }, [language]);
 
   const refreshSavedDocs = useCallback(() => {
     setSavedDocs(getSavedDocuments());
@@ -326,6 +370,10 @@ export const BiodataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     <BiodataContext.Provider
       value={{
         document,
+        language,
+        setLanguage,
+        translateBiodata,
+        t,
         viewMode,
         setViewMode,
         activeTab,

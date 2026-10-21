@@ -1,18 +1,55 @@
-import React from 'react';
-import { HeaderSymbol } from '../../types/biodata';
+import { HeaderSymbol, Language } from '../../types/biodata';
 
 interface HeaderEmblemProps {
   symbol?: HeaderSymbol;
+  customSymbol?: string;
+  customText?: string;
+  showEmblem?: boolean;
+  language?: Language;
   primaryColor: string;
   accentColor: string;
 }
 
 export const HeaderEmblem: React.FC<HeaderEmblemProps> = ({
   symbol = 'ganesha',
+  customSymbol = '',
+  customText = '',
+  showEmblem = true,
+  language = 'en',
   primaryColor,
   accentColor,
 }) => {
-  if (symbol === 'none') return null;
+  if (!showEmblem || (symbol === 'none' && !customText.trim() && !customSymbol.trim())) {
+    return null;
+  }
+
+  // If user entered a custom symbol or selected 'custom'
+  if (symbol === 'custom' || customSymbol.trim()) {
+    return (
+      <div className="text-center mb-3">
+        {customSymbol.trim() && (
+          <div
+            className="text-2xl font-bold mb-0.5 select-none"
+            style={{ color: primaryColor }}
+          >
+            {customSymbol.trim()}
+          </div>
+        )}
+        {customText.trim() && (
+          <div
+            className="text-xs font-semibold tracking-widest uppercase"
+            style={{ color: accentColor }}
+          >
+            {customText.trim()}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const getMantra = (defaultMantra: string) => {
+    return customText.trim() ? customText.trim() : defaultMantra;
+  };
 
   switch (symbol) {
     case 'om':
@@ -22,13 +59,13 @@ export const HeaderEmblem: React.FC<HeaderEmblemProps> = ({
             className="text-2xl font-bold mb-0.5 select-none"
             style={{ color: primaryColor }}
           >
-            ॐ
+            {language === 'gu' ? 'ૐ' : 'ॐ'}
           </div>
           <div
             className="text-xs font-semibold tracking-widest uppercase"
             style={{ color: accentColor }}
           >
-            ॥ ॐ नमः शिवाय ॥
+            {getMantra(language === 'gu' ? '॥ ૐ નમઃ શિવાય ॥' : '॥ ॐ नमः शिवाय ॥')}
           </div>
         </div>
       );
@@ -46,7 +83,7 @@ export const HeaderEmblem: React.FC<HeaderEmblemProps> = ({
             className="text-xs font-semibold tracking-widest uppercase"
             style={{ color: accentColor }}
           >
-            ॥ शुभ विवाह ॥
+            {getMantra(language === 'gu' ? '॥ શુભ વિવાહ ॥' : '॥ शुभ विवाह ॥')}
           </div>
         </div>
       );
@@ -154,7 +191,13 @@ export const HeaderEmblem: React.FC<HeaderEmblemProps> = ({
             className="text-xs font-semibold tracking-widest uppercase"
             style={{ color: primaryColor }}
           >
-            ॥ श्री गणेशाय नमः ॥
+            {getMantra(
+              language === 'gu'
+                ? '॥ શ્રી ગણેશાય નમઃ ॥'
+                : language === 'en'
+                ? '|| Shree Ganeshay Namah ||'
+                : '॥ श्री गणेशाय नमः ॥'
+            )}
           </div>
         </div>
       );

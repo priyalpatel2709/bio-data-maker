@@ -37,16 +37,24 @@ export type TemplateId =
   | 'professional'
   | 'photo-focused';
 
+export type Language = 'en' | 'hi' | 'gu';
+
 export type FontOption = 'Inter' | 'Playfair Display' | 'Merriweather' | 'Montserrat' | 'Cinzel' | 'Cormorant Garamond';
 export type SpacingOption = 'compact' | 'normal' | 'relaxed';
 export type BorderStyle = 'none' | 'simple' | 'double' | 'ornate' | 'decorative';
 export type PhotoShape = 'circle' | 'rounded' | 'square' | 'oval';
 export type PhotoPosition = 'top-left' | 'top-center' | 'top-right' | 'sidebar';
-export type HeaderSymbol = 'ganesha' | 'om' | 'swastik' | 'ek-onkar' | 'bismillah' | 'cross' | 'lotus' | 'none';
+export type HeaderSymbol = 'ganesha' | 'om' | 'swastik' | 'ek-onkar' | 'bismillah' | 'cross' | 'lotus' | 'custom' | 'none';
 
 export interface StylingConfig {
   templateId: TemplateId;
+  language?: Language;
   headerSymbol?: HeaderSymbol;
+  customHeaderSymbol?: string;     // custom icon/emoji like 🕉️, 🌺, 🪔, etc.
+  customHeaderText?: string;       // custom mantra/slogan like "|| Jai Shri Krishna ||"
+  showEmblem?: boolean;            // toggle emblem display on/off
+  showDocumentTitle?: boolean;     // toggle "BIODATA" heading on/off
+  customDocumentTitle?: string;    // customize or rename "BIODATA" heading
   primaryColor: string;       // Hex color for headings, accents
   accentColor: string;        // Secondary color for badges, borders
   backgroundColor: string;    // Document canvas background (e.g. #FFFFFF or soft ivory)
@@ -81,6 +89,7 @@ export interface AttachedImage {
 export interface BiodataDocument {
   id: string;
   title: string;
+  language?: Language;
   createdAt: string;
   updatedAt: string;
   photoUrl?: string;

@@ -1,7 +1,9 @@
 import React from 'react';
 import { BiodataDocument } from '../../../types/biodata';
 import { DocumentPhoto } from '../DocumentPhoto';
+import { HeaderEmblem } from '../HeaderEmblem';
 import { calculateAge, formatDate } from '../../../utils/calculateAge';
+import { getLocalizedDocText } from '../../../i18n/translations';
 
 interface TemplateProps {
   document: BiodataDocument;
@@ -10,6 +12,8 @@ interface TemplateProps {
 export const SimpleBox: React.FC<TemplateProps> = ({ document }) => {
   const { styling, sections, photoUrl } = document;
   const visibleSections = sections.filter((s) => s.visible);
+  const docLang = styling.language || document.language || 'en';
+  const titleText = getLocalizedDocText('documentTitle', docLang);
 
   return (
     <div className="w-full h-full p-8 sm:p-10 relative flex flex-col justify-between">
@@ -32,37 +36,46 @@ export const SimpleBox: React.FC<TemplateProps> = ({ document }) => {
       <div className="relative z-10 px-4 py-3">
         {/* Top Header */}
         <div className="text-center mb-6">
-          <div
-            className="text-xs sm:text-sm font-semibold tracking-widest uppercase mb-1"
-            style={{ color: styling.primaryColor }}
-          >
-            ॥ श्री गणेशाय नमः ॥
-          </div>
-          <h1
-            className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest"
-            style={{
-              color: styling.primaryColor,
-              fontFamily: styling.fontFamilyHeading,
-            }}
-          >
-            MARRIAGE BIODATA
-          </h1>
-          <div className="flex items-center justify-center gap-2 mt-2 mb-1">
-            <span
-              className="h-[2px] w-16 sm:w-24 rounded-full"
-              style={{ backgroundColor: styling.primaryColor }}
-            />
-            <span
-              className="text-xs font-bold"
-              style={{ color: styling.accentColor }}
+          <HeaderEmblem
+            symbol={styling.headerSymbol || 'ganesha'}
+            customSymbol={styling.customHeaderSymbol}
+            customText={styling.customHeaderText}
+            showEmblem={styling.showEmblem !== false}
+            language={docLang}
+            primaryColor={styling.primaryColor}
+            accentColor={styling.accentColor}
+          />
+          {styling.showDocumentTitle !== false && (styling.customDocumentTitle || titleText) && (
+            <h1
+              className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest"
+              style={{
+                color: styling.primaryColor,
+                fontFamily: styling.fontFamilyHeading,
+              }}
             >
-              ✦
-            </span>
-            <span
-              className="h-[2px] w-16 sm:w-24 rounded-full"
-              style={{ backgroundColor: styling.primaryColor }}
-            />
-          </div>
+              {styling.customDocumentTitle !== undefined && styling.customDocumentTitle !== ''
+                ? styling.customDocumentTitle
+                : titleText}
+            </h1>
+          )}
+          {(styling.showDocumentTitle !== false || styling.showEmblem !== false) && (
+            <div className="flex items-center justify-center gap-2 mt-2 mb-1">
+              <span
+                className="h-[2px] w-16 sm:w-24 rounded-full"
+                style={{ backgroundColor: styling.primaryColor }}
+              />
+              <span
+                className="text-xs font-bold"
+                style={{ color: styling.accentColor }}
+              >
+                ✦
+              </span>
+              <span
+                className="h-[2px] w-16 sm:w-24 rounded-full"
+                style={{ backgroundColor: styling.primaryColor }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Profile Photo if enabled */}

@@ -25,11 +25,15 @@ import {
   Plus,
   RotateCcw,
   Sparkles,
+  Languages,
 } from 'lucide-react';
 
 export const FormEditor: React.FC = () => {
   const {
     document,
+    language,
+    translateBiodata,
+    t,
     updateDocumentTitle,
     updateSection,
     deleteSection,
@@ -169,8 +173,64 @@ export const FormEditor: React.FC = () => {
               setSectionModalOpen(true);
             }}
           >
-            Add Section
+            {t('addSection')}
           </Button>
+        </div>
+      </div>
+
+      {/* Quick Language Translation Bar */}
+      <div className="bg-gradient-to-r from-rose-50/90 via-amber-50/70 to-orange-50/90 p-3.5 rounded-2xl border border-rose-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-8 h-8 rounded-xl bg-white shadow-xs flex items-center justify-center text-rose-600 shrink-0 border border-rose-200/60">
+            <Languages className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+              <span>{t('translateButton')}</span>
+              <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-rose-200/70 text-rose-900">
+                EN • हिं • ગુજ
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 leading-tight">
+              {t('translateBiodataNotice')}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-auto bg-white/90 p-1 rounded-xl border border-slate-200/80 shadow-xs">
+          <button
+            type="button"
+            onClick={() => translateBiodata('en')}
+            className={`px-3 py-1 text-xs rounded-lg font-bold transition-all ${
+              language === 'en'
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            🇬🇧 English
+          </button>
+          <button
+            type="button"
+            onClick={() => translateBiodata('hi')}
+            className={`px-3 py-1 text-xs rounded-lg font-bold transition-all ${
+              language === 'hi'
+                ? 'bg-rose-700 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            🇮🇳 हिन्दी
+          </button>
+          <button
+            type="button"
+            onClick={() => translateBiodata('gu')}
+            className={`px-3 py-1 text-xs rounded-lg font-bold transition-all ${
+              language === 'gu'
+                ? 'bg-amber-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            🇮🇳 ગુજરાતી
+          </button>
         </div>
       </div>
 

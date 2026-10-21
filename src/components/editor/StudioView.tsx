@@ -6,6 +6,7 @@ import { TemplateSelector } from './TemplateSelector';
 import { LivePreview } from '../preview/LivePreview';
 import { ExportModal } from '../export/ExportModal';
 import { Button } from '../common/Button';
+import { LanguageSwitcher } from '../common/LanguageSwitcher';
 import {
   ArrowLeft,
   FileText,
@@ -24,14 +25,15 @@ export const StudioView: React.FC = () => {
     setActiveTab,
     setViewMode,
     setExportModalOpen,
+    t,
   } = useBiodata();
 
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
 
   const tabs = [
-    { id: 'form' as const, label: 'Form & Fields', icon: <FileText className="w-4 h-4" /> },
-    { id: 'design' as const, label: 'Visual Styler', icon: <Palette className="w-4 h-4" /> },
-    { id: 'templates' as const, label: 'Templates', icon: <Layout className="w-4 h-4" /> },
+    { id: 'form' as const, label: t('formAndFields'), icon: <FileText className="w-4 h-4" /> },
+    { id: 'design' as const, label: t('visualStyler'), icon: <Palette className="w-4 h-4" /> },
+    { id: 'templates' as const, label: t('templates'), icon: <Layout className="w-4 h-4" /> },
   ];
 
   return (
@@ -90,7 +92,7 @@ export const StudioView: React.FC = () => {
                 mobileTab === 'editor' ? 'bg-white text-slate-900 shadow' : 'text-slate-500'
               }`}
             >
-              Edit
+              {t('edit')}
             </button>
             <button
               onClick={() => setMobileTab('preview')}
@@ -98,9 +100,11 @@ export const StudioView: React.FC = () => {
                 mobileTab === 'preview' ? 'bg-white text-slate-900 shadow' : 'text-slate-500'
               }`}
             >
-              Preview
+              {t('preview')}
             </button>
           </div>
+
+          <LanguageSwitcher />
 
           <Button
             size="sm"
@@ -109,7 +113,7 @@ export const StudioView: React.FC = () => {
             onClick={() => setExportModalOpen(true)}
             className="shadow-sm shadow-rose-600/20"
           >
-            Export
+            {t('exportDownload')}
           </Button>
         </div>
       </header>
