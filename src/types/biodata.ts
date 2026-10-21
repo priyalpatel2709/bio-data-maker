@@ -73,6 +73,9 @@ export interface StylingConfig {
   photoPosition: PhotoPosition;
   photoBorder: boolean;
   photoSize: 'small' | 'medium' | 'large';
+  photoWidth?: number;              // Custom photo width in px (70 to 320)
+  photoHeight?: number;             // Custom photo height in px (80 to 420)
+  photoAspectRatioLocked?: boolean; // Lock aspect ratio during resize
   showPhoto: boolean;
   showWatermark: boolean;
   paperSize: 'a4' | 'letter';

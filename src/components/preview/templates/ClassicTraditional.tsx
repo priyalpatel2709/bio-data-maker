@@ -159,17 +159,36 @@ export const ClassicTraditional: React.FC<TemplateProps> = ({ document }) => {
 
                 {/* Section Content: Side-by-side if photo section, otherwise full width */}
                 {isPhotoSection ? (
-                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
-                    {/* Fields taking up the remaining space */}
-                    <div className="flex-1 min-w-0 space-y-1 w-full">
-                      {visibleFields.map((field) => renderFieldRow(field))}
+                  styling.photoPosition === 'top-center' ? (
+                    <div className="space-y-4">
+                      <div className="flex justify-center">
+                        <DocumentPhoto photoUrl={photoUrl} styling={styling} />
+                      </div>
+                      <div
+                        className={`grid ${
+                          styling.columns === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'
+                        } gap-x-6 gap-y-2 w-full`}
+                      >
+                        {visibleFields.map((field) => renderFieldRow(field))}
+                      </div>
                     </div>
+                  ) : (
+                    <div
+                      className={`flex flex-col ${
+                        styling.photoPosition === 'top-left' ? 'sm:flex-row-reverse' : 'sm:flex-row'
+                      } gap-4 sm:gap-6 items-start`}
+                    >
+                      {/* Fields taking up the remaining space */}
+                      <div className="flex-1 min-w-0 space-y-1 w-full">
+                        {visibleFields.map((field) => renderFieldRow(field))}
+                      </div>
 
-                    {/* Profile Photo on the side */}
-                    <div className="shrink-0 self-start mt-0.5">
-                      <DocumentPhoto photoUrl={photoUrl} styling={styling} />
+                      {/* Profile Photo on the side */}
+                      <div className="shrink-0 self-start mt-0.5">
+                        <DocumentPhoto photoUrl={photoUrl} styling={styling} />
+                      </div>
                     </div>
-                  </div>
+                  )
                 ) : (
                   /* Fields Table Grid across 100% full width */
                   <div

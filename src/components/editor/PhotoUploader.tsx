@@ -9,7 +9,10 @@ import {
   User,
   Circle,
   Square,
-  Sparkles,
+  Sliders,
+  Lock,
+  Unlock,
+  RotateCcw,
 } from 'lucide-react';
 
 export const PhotoUploader: React.FC = () => {
@@ -17,6 +20,19 @@ export const PhotoUploader: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { styling, photoUrl } = document;
+
+  const defaultSizeMap: Record<'small' | 'medium' | 'large', { width: number; height: number }> = {
+    small: { width: 100, height: 130 },
+    medium: { width: 130, height: 170 },
+    large: { width: 160, height: 210 },
+  };
+
+  const base = defaultSizeMap[styling.photoSize || 'medium'] || defaultSizeMap.medium;
+  const currentWidth = styling.photoWidth && styling.photoWidth > 0 ? styling.photoWidth : base.width;
+  const currentHeight = styling.photoShape === 'circle'
+    ? currentWidth
+    : (styling.photoHeight && styling.photoHeight > 0 ? styling.photoHeight : base.height);
+  const isAspectLocked = styling.photoAspectRatioLocked !== false; // default to locked
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -41,6 +57,50 @@ export const PhotoUploader: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
+  const handleWidthChange = (newWidth: number) => {
+    const clampedWidth = Math.max(70, Math.min(300, newWidth));
+    if (styling.photoShape === 'circle') {
+      updateStyling({
+        photoWidth: clampedWidth,
+        photoHeight: clampedWidth,
+      });
+      return;
+    }
+
+    if (isAspectLocked) {
+      const ratio = currentHeight / (currentWidth || 1);
+      const newHeight = Math.round(clampedWidth * (ratio || 1.3));
+      updateStyling({
+        photoWidth: clampedWidth,
+        photoHeight: Math.max(80, Math.min(400, newHeight)),
+      });
+    } else {
+      updateStyling({ photoWidth: clampedWidth });
+    }
+  };
+
+  const handleHeightChange = (newHeight: number) => {
+    const clampedHeight = Math.max(80, Math.min(400, newHeight));
+    if (styling.photoShape === 'circle') {
+      updateStyling({
+        photoWidth: clampedHeight,
+        photoHeight: clampedHeight,
+      });
+      return;
+    }
+
+    if (isAspectLocked) {
+      const ratio = currentWidth / (currentHeight || 1);
+      const newWidth = Math.round(clampedHeight * (ratio || 0.77));
+      updateStyling({
+        photoWidth: Math.max(70, Math.min(300, newWidth)),
+        photoHeight: clampedHeight,
+      });
+    } else {
+      updateStyling({ photoHeight: clampedHeight });
+    }
+  };
+
   const shapes: { id: PhotoShape; label: string; icon: React.ReactNode }[] = [
     { id: 'circle', label: 'Circle', icon: <Circle className="w-4 h-4" /> },
     { id: 'rounded', label: 'Rounded', icon: <Square className="w-4 h-4 rounded-md" /> },
@@ -52,7 +112,13 @@ export const PhotoUploader: React.FC = () => {
     { id: 'top-right', label: 'Top Right' },
     { id: 'top-left', label: 'Top Left' },
     { id: 'top-center', label: 'Top Center' },
-    { id: 'sidebar', label: 'Sidebar' },
+  ];
+
+  const sizePresets = [
+    { id: 'small' as const, label: 'Small', w: 100, h: 130 },
+    { id: 'medium' as const, label: 'Medium', w: 130, h: 170 },
+    { id: 'large' as const, label: 'Large', w: 160, h: 210 },
+    { id: 'xl' as const, label: 'Extra Large', w: 195, h: 255 },
   ];
 
   return (
@@ -60,7 +126,7 @@ export const PhotoUploader: React.FC = () => {
       <div className="flex items-center justify-between border-b border-slate-100 pb-3">
         <div>
           <h4 className="text-sm font-bold text-slate-900">Profile Photograph</h4>
-          <p className="text-xs text-slate-500">Add a formal portrait or casual photo</p>
+          <p className="text-xs text-slate-500">Dimensions, framing & candidate details alignment</p>
         </div>
         <Switch
           checked={styling.showPhoto}
@@ -119,6 +185,172 @@ export const PhotoUploader: React.FC = () => {
             </div>
           </div>
 
+          {/* Photo Size & Dimension Controls */}
+          <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-200/80 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200/60 pb-2">
+              <div className="flex items-center gap-2">
+                <Sliders className="w-4 h-4 text-rose-600" />
+                <span className="text-xs font-bold text-slate-800 uppercase tracking-wide">
+                  Image Width & Height Controls
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => updateStyling({ photoAspectRatioLocked: !isAspectLocked })}
+                  className={`px-2 py-1 rounded-md text-[11px] font-medium flex items-center gap-1 transition-all ${
+                    isAspectLocked
+                      ? 'bg-rose-100 text-rose-700 border border-rose-300'
+                      : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
+                  }`}
+                  title={isAspectLocked ? 'Aspect Ratio Locked (Proportional scaling)' : 'Aspect Ratio Unlocked (Free height/width)'}
+                >
+                  {isAspectLocked ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
+                  <span>{isAspectLocked ? 'Ratio Locked' : 'Free Resize'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateStyling({
+                      photoSize: 'medium',
+                      photoWidth: 130,
+                      photoHeight: 170,
+                      photoAspectRatioLocked: true,
+                    });
+                  }}
+                  className="text-[11px] text-slate-400 hover:text-rose-600 flex items-center gap-1"
+                  title="Reset to default dimensions"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Reset</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Size Presets */}
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-600 mb-1.5">
+                Quick Size Presets
+              </label>
+              <div className="grid grid-cols-4 gap-1.5">
+                {sizePresets.map((preset) => {
+                  const isSelected =
+                    Math.abs(currentWidth - preset.w) <= 6 &&
+                    Math.abs(currentHeight - preset.h) <= 6;
+                  return (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => {
+                        updateStyling({
+                          photoSize: preset.id === 'xl' ? 'large' : preset.id,
+                          photoWidth: preset.w,
+                          photoHeight: styling.photoShape === 'circle' ? preset.w : preset.h,
+                        });
+                      }}
+                      className={`py-1.5 px-1 rounded-lg border text-center transition-all ${
+                        isSelected
+                          ? 'border-rose-500 bg-rose-50 text-rose-800 font-bold shadow-xs'
+                          : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-100'
+                      }`}
+                    >
+                      <div className="text-xs font-semibold">{preset.label}</div>
+                      <div className="text-[10px] text-slate-400 font-mono mt-0.5">
+                        {preset.w}×{styling.photoShape === 'circle' ? preset.w : preset.h}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Width Slider */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+                <span className="flex items-center gap-1">
+                  <span>Photo Width</span>
+                  <span className="text-[10px] text-slate-400 font-normal">(Details automatically adjust)</span>
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => handleWidthChange(currentWidth - 4)}
+                    className="w-5 h-5 rounded-md bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-bold"
+                  >
+                    -
+                  </button>
+                  <span className="font-mono text-xs px-2 py-0.5 rounded-md bg-white border border-slate-200 text-rose-700 font-bold">
+                    {currentWidth} px
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleWidthChange(currentWidth + 4)}
+                    className="w-5 h-5 rounded-md bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-bold"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <input
+                type="range"
+                min={70}
+                max={300}
+                step={2}
+                value={currentWidth}
+                onChange={(e) => handleWidthChange(Number(e.target.value))}
+                className="w-full accent-rose-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg appearance-none"
+              />
+            </div>
+
+            {/* Height Slider */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+                <span className="flex items-center gap-1">
+                  <span>Photo Height</span>
+                  {styling.photoShape === 'circle' && (
+                    <span className="text-[10px] text-slate-400 font-normal">(Locked to width for circle)</span>
+                  )}
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    disabled={styling.photoShape === 'circle'}
+                    onClick={() => handleHeightChange(currentHeight - 4)}
+                    className="w-5 h-5 rounded-md bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-bold disabled:opacity-30"
+                  >
+                    -
+                  </button>
+                  <span className="font-mono text-xs px-2 py-0.5 rounded-md bg-white border border-slate-200 text-rose-700 font-bold">
+                    {currentHeight} px
+                  </span>
+                  <button
+                    type="button"
+                    disabled={styling.photoShape === 'circle'}
+                    onClick={() => handleHeightChange(currentHeight + 4)}
+                    className="w-5 h-5 rounded-md bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-bold disabled:opacity-30"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <input
+                type="range"
+                min={80}
+                max={380}
+                step={2}
+                disabled={styling.photoShape === 'circle'}
+                value={currentHeight}
+                onChange={(e) => handleHeightChange(Number(e.target.value))}
+                className={`w-full accent-rose-600 cursor-pointer h-1.5 bg-slate-200 rounded-lg appearance-none ${
+                  styling.photoShape === 'circle' ? 'opacity-30 cursor-not-allowed' : ''
+                }`}
+              />
+            </div>
+            <p className="text-[11px] text-slate-500 italic">
+              Tip: As you increase photo width and height, the candidate details will automatically expand and adjust to fill the remaining space.
+            </p>
+          </div>
+
           {/* Photo Shape Selection */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
@@ -148,7 +380,7 @@ export const PhotoUploader: React.FC = () => {
             <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
               Photo Placement
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {positions.map((p) => (
                 <button
                   key={p.id}
