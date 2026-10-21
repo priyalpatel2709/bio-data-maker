@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useBiodata } from '../../context/BiodataContext';
 import { TEMPLATES } from '../../data/templateCatalog';
-import { TemplateId } from '../../types/biodata';
+import { TemplateId, TemplateDefinition } from '../../types/biodata';
 import { Button } from '../common/Button';
+import { TemplateThumbnail } from '../preview/TemplateThumbnail';
+import { TemplatePreviewModal } from '../preview/TemplatePreviewModal';
 import {
   Plus,
   FileText,
@@ -16,7 +18,8 @@ import {
   Heart,
   Briefcase,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Eye,
 } from 'lucide-react';
 
 export const DashboardView: React.FC = () => {
@@ -31,6 +34,7 @@ export const DashboardView: React.FC = () => {
   } = useBiodata();
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [previewTemplate, setPreviewTemplate] = useState<TemplateDefinition | null>(null);
 
   const categories = [
     { id: 'all', label: 'All Templates', icon: <Layers className="w-3.5 h-3.5" /> },
@@ -228,54 +232,42 @@ export const DashboardView: React.FC = () => {
                   key={template.id}
                   className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 flex flex-col group"
                 >
-                  {/* Card Visual Preview Header */}
+                  {/* Card Visual Preview Header: Real Actual Template */}
                   <div 
-                    className="h-44 p-4 relative flex flex-col justify-between overflow-hidden"
-                    style={{
-                      backgroundColor: template.defaultStyling.backgroundColor || '#FFFDF9',
-                      borderBottom: `3px solid ${template.previewColor}`,
-                    }}
+                    className="relative h-64 overflow-hidden border-b border-slate-200 bg-slate-100 cursor-pointer group/thumb"
+                    onClick={() => setPreviewTemplate(template)}
                   >
-                    {/* Simulated miniature document header */}
-                    <div className="opacity-90 flex items-center justify-between">
-                      <div className="space-y-1">
-                        <div 
-                          className="h-2.5 w-24 rounded-full"
-                          style={{ backgroundColor: template.previewColor }}
-                        />
-                        <div className="h-1.5 w-16 bg-slate-300 rounded-full" />
-                      </div>
-                      <div 
-                        className="w-10 h-10 rounded-full border-2 border-white shadow-sm flex items-center justify-center font-bold text-xs text-white"
-                        style={{ backgroundColor: template.previewColor }}
-                      >
-                        {template.name.charAt(0)}
-                      </div>
-                    </div>
+                    <TemplateThumbnail
+                      templateId={template.id}
+                      scale={0.34}
+                      height={260}
+                      className="group-hover/thumb:scale-105 transition-transform duration-300"
+                    />
 
-                    <div className="space-y-1.5 opacity-75">
-                      <div className="h-1.5 w-full bg-slate-200 rounded-full" />
-                      <div className="h-1.5 w-4/5 bg-slate-200 rounded-full" />
-                      <div className="h-1.5 w-2/3 bg-slate-200 rounded-full" />
-                    </div>
-
-                    <div className="flex items-center justify-between text-[11px] font-medium text-slate-500">
-                      <span className="capitalize">{template.category} Style</span>
-                      <span 
-                        className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-white"
-                        style={{ backgroundColor: template.previewColor }}
-                      >
-                        {template.id.replace('-', ' ')}
+                    {/* Hover Overlay with Preview Button */}
+                    <div className="absolute inset-0 bg-slate-900/30 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[1px]">
+                      <span className="px-3.5 py-1.5 rounded-full bg-white text-slate-900 font-bold text-xs shadow-lg flex items-center gap-1.5">
+                        <Eye className="w-4 h-4 text-rose-600" />
+                        Inspect Template
                       </span>
                     </div>
+
+                    <span 
+                      className="absolute top-3 right-3 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-white shadow-sm z-10"
+                      style={{ backgroundColor: template.previewColor }}
+                    >
+                      {template.category}
+                    </span>
                   </div>
 
                   {/* Body Content */}
                   <div className="p-5 flex-1 flex flex-col justify-between">
                     <div>
-                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-rose-600 transition-colors">
-                        {template.name}
-                      </h3>
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-lg font-bold text-slate-900 group-hover:text-rose-600 transition-colors">
+                          {template.name}
+                        </h3>
+                      </div>
                       <p className="mt-2 text-xs text-slate-600 leading-relaxed">
                         {template.description}
                       </p>
@@ -288,12 +280,20 @@ export const DashboardView: React.FC = () => {
                     <div className="mt-5 pt-4 border-t border-slate-100 flex items-center gap-2">
                       <Button
                         size="sm"
+                        variant="outline"
+                        onClick={() => setPreviewTemplate(template)}
+                        icon={<Eye className="w-3.5 h-3.5" />}
+                      >
+                        Preview
+                      </Button>
+                      <Button
+                        size="sm"
                         variant="primary"
                         onClick={() => handleStartWithTemplate(template.id)}
-                        className="w-full"
+                        className="flex-1"
                         icon={<Sparkles className="w-3.5 h-3.5" />}
                       >
-                        Use This Template
+                        Use Template
                       </Button>
                     </div>
                   </div>
@@ -303,6 +303,14 @@ export const DashboardView: React.FC = () => {
           </div>
         </section>
       </main>
+
+      {/* High-Resolution Template Preview Modal */}
+      <TemplatePreviewModal
+        template={previewTemplate}
+        isOpen={!!previewTemplate}
+        onClose={() => setPreviewTemplate(null)}
+        onSelect={handleStartWithTemplate}
+      />
     </div>
   );
 };

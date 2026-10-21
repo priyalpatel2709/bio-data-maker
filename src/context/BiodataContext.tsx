@@ -3,6 +3,7 @@ import {
   BiodataDocument,
   BiodataSection,
   CustomField,
+  AttachedImage,
   StylingConfig,
   TemplateId
 } from '../types/biodata';
@@ -35,6 +36,12 @@ interface BiodataContextType {
   setPhotoUrl: (url: string | undefined) => void;
   updateStyling: (styling: Partial<StylingConfig>) => void;
   setTemplate: (templateId: TemplateId) => void;
+
+  // Attached Images actions (for appending high-res photos to document end)
+  addAttachedImage: (image: { url: string; caption?: string; filename?: string; sizeBytes?: number }) => void;
+  updateAttachedImage: (id: string, updates: Partial<AttachedImage>) => void;
+  deleteAttachedImage: (id: string) => void;
+  reorderAttachedImages: (images: AttachedImage[]) => void;
 
   // Section actions
   addSection: (title: string, description?: string) => void;
@@ -108,6 +115,42 @@ export const BiodataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         ...templateDef.defaultStyling,
         templateId
       }
+    }));
+  }, []);
+
+  // Attached Images Handlers (High-Resolution Photos appended to end)
+  const addAttachedImage = useCallback((image: { url: string; caption?: string; filename?: string; sizeBytes?: number }) => {
+    const newImg: AttachedImage = {
+      id: 'img-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
+      url: image.url,
+      caption: image.caption || '',
+      filename: image.filename,
+      sizeBytes: image.sizeBytes,
+    };
+    setDocument(prev => ({
+      ...prev,
+      attachedImages: [...(prev.attachedImages || []), newImg]
+    }));
+  }, []);
+
+  const updateAttachedImage = useCallback((id: string, updates: Partial<AttachedImage>) => {
+    setDocument(prev => ({
+      ...prev,
+      attachedImages: (prev.attachedImages || []).map(img => img.id === id ? { ...img, ...updates } : img)
+    }));
+  }, []);
+
+  const deleteAttachedImage = useCallback((id: string) => {
+    setDocument(prev => ({
+      ...prev,
+      attachedImages: (prev.attachedImages || []).filter(img => img.id !== id)
+    }));
+  }, []);
+
+  const reorderAttachedImages = useCallback((newImages: AttachedImage[]) => {
+    setDocument(prev => ({
+      ...prev,
+      attachedImages: newImages
     }));
   }, []);
 
@@ -297,6 +340,10 @@ export const BiodataProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setPhotoUrl,
         updateStyling,
         setTemplate,
+        addAttachedImage,
+        updateAttachedImage,
+        deleteAttachedImage,
+        reorderAttachedImages,
         addSection,
         updateSection,
         deleteSection,

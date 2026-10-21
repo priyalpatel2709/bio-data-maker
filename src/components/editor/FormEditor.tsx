@@ -19,6 +19,7 @@ import { CustomField, BiodataSection } from '../../types/biodata';
 import { SortableSectionItem } from './SortableSectionItem';
 import { CustomFieldModal } from './CustomFieldModal';
 import { CustomSectionModal } from './CustomSectionModal';
+import { AttachedImagesManager } from './AttachedImagesManager';
 import { Button } from '../common/Button';
 import {
   Plus,
@@ -227,6 +228,9 @@ export const FormEditor: React.FC = () => {
           Create New Section
         </Button>
       </div>
+
+      {/* High-Resolution Photo Attachments & Additional Pages */}
+      <AttachedImagesManager />
 
       {/* Field Modal */}
       <CustomFieldModal

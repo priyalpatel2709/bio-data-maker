@@ -77,18 +77,53 @@ export const ClassicTraditional: React.FC<TemplateProps> = ({ document }) => {
           </div>
         </div>
 
-        {/* Top Profile / Hero Bar if photo exists */}
-        {styling.showPhoto && (
-          <div className="flex justify-end mb-6 mr-2">
-            <DocumentPhoto photoUrl={photoUrl} styling={styling} />
-          </div>
-        )}
-
         {/* Sections Content */}
         <div className="space-y-6">
-          {visibleSections.map((section) => {
+          {visibleSections.map((section, sectionIdx) => {
             const visibleFields = section.fields.filter((f) => f.visible);
             if (visibleFields.length === 0) return null;
+
+            // Determine if this section houses the photo
+            const personalIdx = visibleSections.findIndex(
+              (s) => s.key === 'personal' || s.title.toLowerCase().includes('personal')
+            );
+            const isPhotoSection = styling.showPhoto && sectionIdx === (personalIdx !== -1 ? personalIdx : 0);
+
+            const renderFieldRow = (field: typeof visibleFields[0], isSpanFull = false) => {
+              const isDob = field.id.includes('dob') || field.label.toLowerCase().includes('date of birth');
+              const calculatedAge = isDob ? calculateAge(field.value) : null;
+              const displayValue = field.type === 'date' ? formatDate(field.value) : field.value;
+
+              return (
+                <div
+                  key={field.id}
+                  className={`flex items-baseline py-1 text-xs sm:text-sm border-b border-dashed border-slate-200/80 ${
+                    isSpanFull || field.type === 'textarea' ? 'md:col-span-2' : ''
+                  }`}
+                >
+                  <span
+                    className="font-semibold w-2/5 shrink-0 pr-2"
+                    style={{
+                      color: styling.primaryColor,
+                      fontFamily: styling.fontFamilyBody,
+                    }}
+                  >
+                    {field.label}:
+                  </span>
+                  <span
+                    className="text-slate-800 flex-1 leading-relaxed"
+                    style={{ fontFamily: styling.fontFamilyBody }}
+                  >
+                    {displayValue || '—'}
+                    {calculatedAge !== null && (
+                      <span className="ml-1.5 text-xs text-slate-500 font-medium">
+                        ({calculatedAge} Years)
+                      </span>
+                    )}
+                  </span>
+                </div>
+              );
+            };
 
             return (
               <div key={section.id} className="space-y-3">
@@ -108,48 +143,29 @@ export const ClassicTraditional: React.FC<TemplateProps> = ({ document }) => {
                   </h2>
                 </div>
 
-                {/* Fields Table Grid */}
-                <div
-                  className={`grid ${
-                    styling.columns === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'
-                  } gap-x-6 gap-y-2`}
-                >
-                  {visibleFields.map((field) => {
-                    const isDob = field.id.includes('dob') || field.label.toLowerCase().includes('date of birth');
-                    const calculatedAge = isDob ? calculateAge(field.value) : null;
-                    const displayValue = field.type === 'date' ? formatDate(field.value) : field.value;
+                {/* Section Content: Side-by-side if photo section, otherwise full width */}
+                {isPhotoSection ? (
+                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+                    {/* Fields taking up the remaining space */}
+                    <div className="flex-1 min-w-0 space-y-1 w-full">
+                      {visibleFields.map((field) => renderFieldRow(field))}
+                    </div>
 
-                    return (
-                      <div
-                        key={field.id}
-                        className={`flex items-baseline py-1 text-xs sm:text-sm border-b border-dashed border-slate-200/80 ${
-                          field.type === 'textarea' ? 'md:col-span-2' : ''
-                        }`}
-                      >
-                        <span
-                          className="font-semibold w-2/5 shrink-0 pr-2"
-                          style={{
-                            color: styling.primaryColor,
-                            fontFamily: styling.fontFamilyBody,
-                          }}
-                        >
-                          {field.label}:
-                        </span>
-                        <span
-                          className="text-slate-800 flex-1 leading-relaxed"
-                          style={{ fontFamily: styling.fontFamilyBody }}
-                        >
-                          {displayValue || '—'}
-                          {calculatedAge !== null && (
-                            <span className="ml-1.5 text-xs text-slate-500 font-medium">
-                              ({calculatedAge} Years)
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
+                    {/* Profile Photo on the side */}
+                    <div className="shrink-0 self-start mt-0.5">
+                      <DocumentPhoto photoUrl={photoUrl} styling={styling} />
+                    </div>
+                  </div>
+                ) : (
+                  /* Fields Table Grid across 100% full width */
+                  <div
+                    className={`grid ${
+                      styling.columns === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'
+                    } gap-x-6 gap-y-2 w-full`}
+                  >
+                    {visibleFields.map((field) => renderFieldRow(field))}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -157,9 +173,9 @@ export const ClassicTraditional: React.FC<TemplateProps> = ({ document }) => {
       </div>
 
       {/* Footer subtle blessing / note */}
-      <div className="text-center pt-8 text-[11px] text-slate-500 italic border-t border-slate-200/60 mt-8">
+      {/* <div className="text-center pt-8 text-[11px] text-slate-500 italic border-t border-slate-200/60 mt-8">
         Crafted with dignity and respect.
-      </div>
+      </div> */}
     </div>
   );
 };

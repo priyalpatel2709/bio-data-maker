@@ -1,7 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useBiodata } from '../../context/BiodataContext';
 import { PATTERNS } from '../../assets/patterns';
+import { MandalaRadiance } from './templates/MandalaRadiance';
+import { MarigoldToran } from './templates/MarigoldToran';
+import { VintageParchment } from './templates/VintageParchment';
 import { ClassicTraditional } from './templates/ClassicTraditional';
+import { SimpleBox } from './templates/SimpleBox';
+import { FloralBorder } from './templates/FloralBorder';
+import { InstantRoyalMaroon } from './templates/InstantRoyalMaroon';
+import { InstantPeacockNavy } from './templates/InstantPeacockNavy';
+import { InstantFloralBlush } from './templates/InstantFloralBlush';
 import { ModernMinimal } from './templates/ModernMinimal';
 import { ElegantPremium } from './templates/ElegantPremium';
 import { FamilyFocused } from './templates/FamilyFocused';
@@ -52,6 +60,22 @@ export const LivePreview: React.FC = () => {
   // Render correct template component
   const renderTemplate = () => {
     switch (styling.templateId) {
+      case 'mandala-radiance':
+        return <MandalaRadiance document={document} />;
+      case 'marigold-toran':
+        return <MarigoldToran document={document} />;
+      case 'vintage-parchment':
+        return <VintageParchment document={document} />;
+      case 'instant-royal-maroon':
+        return <InstantRoyalMaroon document={document} />;
+      case 'instant-peacock-navy':
+        return <InstantPeacockNavy document={document} />;
+      case 'instant-floral-blush':
+        return <InstantFloralBlush document={document} />;
+      case 'simple-box':
+        return <SimpleBox document={document} />;
+      case 'floral-border':
+        return <FloralBorder document={document} />;
       case 'modern-minimal':
         return <ModernMinimal document={document} />;
       case 'elegant-premium':
@@ -181,6 +205,75 @@ export const LivePreview: React.FC = () => {
             <div className="relative z-10 w-full min-h-[297mm]">
               {renderTemplate()}
             </div>
+
+            {/* Attached Photos & Additional Pages */}
+            {document.attachedImages && document.attachedImages.length > 0 && (
+              <div className="relative z-10 w-full">
+                {document.attachedImages.map((img, idx) => (
+                  <div
+                    key={img.id}
+                    className="relative w-full min-h-[297mm] p-8 sm:p-11 flex flex-col justify-between border-t-2 border-slate-300 print:break-before-page"
+                    style={{
+                      backgroundColor: styling.backgroundColor || '#FFFFFF',
+                      pageBreakBefore: 'always',
+                    }}
+                  >
+                    {/* Subtle outer decorative frame matching styling */}
+                    <div
+                      className="absolute inset-5 pointer-events-none rounded-xl"
+                      style={{
+                        border: `1.5px solid ${styling.primaryColor}40`,
+                      }}
+                    />
+
+                    {/* Top Attachment Header */}
+                    <div className="relative z-10 flex items-center justify-between pb-3 border-b border-slate-200">
+                      <div>
+                        <span
+                          className="text-xs font-bold uppercase tracking-wider block"
+                          style={{ color: styling.primaryColor }}
+                        >
+                          {document.title}
+                        </span>
+                        <span className="text-[11px] text-slate-400">
+                          Document Attachment • Page {idx + 2}
+                        </span>
+                      </div>
+                      <span
+                        className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white shadow-xs"
+                        style={{ backgroundColor: styling.primaryColor }}
+                      >
+                        {img.caption || `Photo ${idx + 1}`}
+                      </span>
+                    </div>
+
+                    {/* High-Resolution Center Image Display */}
+                    <div className="relative z-10 flex-1 flex items-center justify-center p-4 my-4">
+                      <div className="max-w-[170mm] max-h-[220mm] rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-slate-50 flex items-center justify-center">
+                        <img
+                          src={img.url}
+                          alt={img.caption || 'Attached Document Photo'}
+                          className="max-h-[210mm] max-w-full object-contain"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Bottom Caption */}
+                    <div className="relative z-10 text-center pt-3 border-t border-slate-200">
+                      <h4
+                        className="text-sm font-bold text-slate-800"
+                        style={{ fontFamily: styling.fontFamilyHeading }}
+                      >
+                        {img.caption || `Attachment #${idx + 1}`}
+                      </h4>
+                      {img.filename && (
+                        <p className="text-[10px] text-slate-400 mt-0.5">{img.filename}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

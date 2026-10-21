@@ -138,6 +138,20 @@ export const ExportModal: React.FC = () => {
           </div>
         </div>
 
+        {/* Document Details & Page Count Summary */}
+        <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 flex items-center justify-between text-xs">
+          <div className="text-slate-600">
+            <span className="font-semibold text-slate-800">Total Document Content:</span>{' '}
+            1 Main Biodata Page
+            {biodata.attachedImages && biodata.attachedImages.length > 0 && (
+              <> + {biodata.attachedImages.length} High-Res Photo Attachment{biodata.attachedImages.length > 1 ? 's' : ''}</>
+            )}
+          </div>
+          <span className="font-bold text-rose-600 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-200/60">
+            {(biodata.attachedImages?.length || 0) + 1} Page{((biodata.attachedImages?.length || 0) + 1) > 1 ? 's' : ''}
+          </span>
+        </div>
+
         {/* Filename Input */}
         <Input
           label="File Name"

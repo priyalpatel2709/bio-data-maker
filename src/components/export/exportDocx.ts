@@ -235,7 +235,78 @@ export async function exportBiodataToDocx(
     })
   );
 
-  onProgress?.(80, 'Packaging DOCX file...');
+  // Attached High-Resolution Images (Appended to end of Word Document)
+  if (biodata.attachedImages && biodata.attachedImages.length > 0) {
+    for (let i = 0; i < biodata.attachedImages.length; i++) {
+      const img = biodata.attachedImages[i];
+      onProgress?.(
+        60 + Math.round(((i + 1) / biodata.attachedImages.length) * 20),
+        `Embedding photo attachment ${i + 1} of ${biodata.attachedImages.length}...`
+      );
+
+      const buffer = await fetchImageBuffer(img.url);
+      if (!buffer) continue;
+
+      // New Page for each attachment
+      docChildren.push(
+        new Paragraph({
+          pageBreakBefore: true,
+          alignment: AlignmentType.CENTER,
+          spacing: { before: 300, after: 150 },
+          children: [
+            new TextRun({
+              text: (img.caption || `PHOTO ATTACHMENT ${i + 1}`).toUpperCase(),
+              bold: true,
+              size: 26,
+              color: primaryHex,
+              font: 'Calibri',
+            }),
+          ],
+        })
+      );
+
+      try {
+        docChildren.push(
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
+            children: [
+              new ImageRun({
+                data: buffer,
+                transformation: {
+                  width: 480,
+                  height: 600,
+                },
+                type: 'jpg',
+              }),
+            ],
+          })
+        );
+      } catch (err) {
+        console.warn('Failed to embed attached image in docx:', err);
+      }
+
+      if (img.caption) {
+        docChildren.push(
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 300 },
+            children: [
+              new TextRun({
+                text: img.caption,
+                italics: true,
+                size: 20,
+                color: '475569',
+                font: 'Calibri',
+              }),
+            ],
+          })
+        );
+      }
+    }
+  }
+
+  onProgress?.(85, 'Packaging DOCX file...');
 
   const doc = new Document({
     sections: [

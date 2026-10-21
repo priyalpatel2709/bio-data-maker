@@ -1,0 +1,195 @@
+import React from 'react';
+import { BiodataDocument } from '../../../types/biodata';
+import { DocumentPhoto } from '../DocumentPhoto';
+import { HeaderEmblem } from '../HeaderEmblem';
+import { calculateAge, formatDate } from '../../../utils/calculateAge';
+import parchmentBg from '../../../assets/templates/vintage-parchment-bg.png';
+
+interface TemplateProps {
+  document: BiodataDocument;
+}
+
+export const VintageParchment: React.FC<TemplateProps> = ({ document }) => {
+  const { styling, sections, photoUrl } = document;
+  const visibleSections = sections.filter((s) => s.visible);
+
+  const primary = styling.primaryColor || '#6B1923';
+  const accent = styling.accentColor || '#A67C38';
+
+  const personalSection = sections.find(
+    (s) => s.key === 'personal' || s.title.toLowerCase().includes('personal')
+  );
+  const fullNameField = personalSection?.fields.find(
+    (f) => f.id === 'fullName' || f.label.toLowerCase().includes('name')
+  );
+  const candidateName = fullNameField?.value;
+
+  return (
+    <div className="w-full h-full p-6 sm:p-9 relative flex flex-col justify-between overflow-hidden bg-[#F5EFE6]">
+      {/* High-fidelity Vintage Handmade Parchment Artwork with Filigree Corners */}
+      <img
+        src={parchmentBg}
+        alt="Vintage Parchment Background"
+        className="absolute inset-0 w-full h-full object-cover pointer-events-none select-none z-0"
+      />
+
+      <div className="relative z-10 px-2 sm:px-4">
+        {/* Dynamic Header Plaque seamlessly masking static placeholder text */}
+        <div className="max-w-md mx-auto text-center pt-2 pb-3 px-6 rounded-2xl bg-[#F7F2E8]/95 backdrop-blur-xs shadow-xs border border-rose-950/15 mb-5">
+          <HeaderEmblem
+            symbol={styling.headerSymbol || 'ganesha'}
+            primaryColor={primary}
+            accentColor={accent}
+          />
+
+          <h1
+            className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest mt-1"
+            style={{
+              color: primary,
+              fontFamily: styling.fontFamilyHeading,
+            }}
+          >
+            BIO-DATA
+          </h1>
+
+          {candidateName && (
+            <div
+              className="text-base sm:text-lg font-bold tracking-wide mt-0.5"
+              style={{ color: primary, fontFamily: styling.fontFamilyHeading }}
+            >
+              {candidateName}
+            </div>
+          )}
+
+          <div className="flex items-center justify-center gap-2 mt-1.5">
+            <div
+              className="h-[1.5px] w-20 bg-gradient-to-r from-transparent to-rose-900"
+              style={{ backgroundColor: accent }}
+            />
+            <span className="text-xs" style={{ color: primary }}>
+              ❧
+            </span>
+            <div
+              className="h-[1.5px] w-20 bg-gradient-to-l from-transparent to-rose-900"
+              style={{ backgroundColor: accent }}
+            />
+          </div>
+        </div>
+
+        {/* Sections Card with Vintage Parchment Backing */}
+        <div className="bg-[#FAF6EE]/90 backdrop-blur-xs p-4 sm:p-6 rounded-xl shadow-xs border border-rose-950/15 space-y-5">
+          {visibleSections.map((section, sectionIdx) => {
+            const visibleFields = section.fields.filter((f) => f.visible);
+            if (visibleFields.length === 0) return null;
+
+            // Determine if this section houses the photo
+            const personalIdx = visibleSections.findIndex(
+              (s) => s.key === 'personal' || s.title.toLowerCase().includes('personal')
+            );
+            const isPhotoSection = styling.showPhoto && sectionIdx === (personalIdx !== -1 ? personalIdx : 0);
+
+            const renderFieldRow = (field: typeof visibleFields[0], isSpanFull = false) => {
+              const isDob =
+                field.id.includes('dob') || field.label.toLowerCase().includes('date of birth');
+              const calculatedAge = isDob ? calculateAge(field.value) : null;
+              const displayValue = field.type === 'date' ? formatDate(field.value) : field.value;
+
+              return (
+                <div
+                  key={field.id}
+                  className={`flex items-baseline py-1 text-xs sm:text-sm border-b border-dashed border-rose-950/15 ${
+                    isSpanFull || field.type === 'textarea' ? 'sm:col-span-2' : ''
+                  }`}
+                >
+                  <span
+                    className="font-bold text-neutral-800 w-2/5 shrink-0 pr-2 flex items-center justify-between"
+                    style={{ fontFamily: styling.fontFamilyBody }}
+                  >
+                    <span>{field.label}</span>
+                    <span className="text-rose-900 font-semibold">:</span>
+                  </span>
+                  <span
+                    className="text-neutral-900 font-medium pl-2 flex-1 leading-relaxed"
+                    style={{ fontFamily: styling.fontFamilyBody }}
+                  >
+                    {displayValue || '—'}
+                    {calculatedAge !== null && (
+                      <span className="ml-1.5 text-xs font-bold text-rose-900">
+                        ({calculatedAge} Years)
+                      </span>
+                    )}
+                  </span>
+                </div>
+              );
+            };
+
+            return (
+              <div key={section.id} className="space-y-2">
+                {/* Vintage Calligraphy Section Header spanning full width */}
+                <div className="flex items-center gap-2.5 pb-1 border-b border-rose-950/20">
+                  <span className="text-xs" style={{ color: accent }}>
+                    ❖
+                  </span>
+                  <h2
+                    className="text-xs sm:text-sm font-bold uppercase tracking-wider text-rose-950"
+                    style={{
+                      fontFamily: styling.fontFamilyHeading,
+                    }}
+                  >
+                    {section.title}
+                  </h2>
+                  <div
+                    className="flex-1 h-[1.5px]"
+                    style={{
+                      background: `linear-gradient(to right, ${accent}, transparent)`,
+                    }}
+                  />
+                </div>
+
+                {/* Section Content: Side-by-side if photo section, otherwise full width */}
+                {isPhotoSection ? (
+                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+                    {/* Fields taking up the remaining space */}
+                    <div className="flex-1 min-w-0 space-y-1 w-full">
+                      {visibleFields.map((field) => renderFieldRow(field))}
+                    </div>
+
+                    {/* Profile Photo on the side */}
+                    <div className="shrink-0 self-start mt-0.5">
+                      <div
+                        className="p-1 rounded-xl shadow-md bg-[#FAF6EE]"
+                        style={{ border: `2px solid ${accent}` }}
+                      >
+                        <DocumentPhoto photoUrl={photoUrl} styling={styling} className="shadow-xs" />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* Subsequent sections expand to 100% full width */
+                  <div
+                    className={`grid ${
+                      styling.columns === 2 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'
+                    } gap-x-8 gap-y-1 px-1 w-full`}
+                  >
+                    {visibleFields.map((field) => renderFieldRow(field))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Decorative Vintage Footer */}
+      <div className="relative z-10 text-center pt-4">
+        <div className="flex items-center justify-center gap-2 mb-1">
+          <div className="h-[1px] w-12 bg-rose-900/30" />
+          <span className="text-[10px] tracking-widest text-rose-950/60 uppercase">
+            Classic Traditional Format
+          </span>
+          <div className="h-[1px] w-12 bg-rose-900/30" />
+        </div>
+      </div>
+    </div>
+  );
+};

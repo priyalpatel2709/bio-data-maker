@@ -1,6 +1,7 @@
 import React from 'react';
 import { useBiodata } from '../../context/BiodataContext';
 import { TEMPLATES } from '../../data/templateCatalog';
+import { TemplateThumbnail } from '../preview/TemplateThumbnail';
 import { Check, Sparkles } from 'lucide-react';
 
 export const TemplateSelector: React.FC = () => {
@@ -29,23 +30,20 @@ export const TemplateSelector: React.FC = () => {
                   : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'
               }`}
             >
-              {/* Miniature visual thumbnail */}
-              <div
-                className="w-20 h-28 rounded-xl border border-slate-200 shrink-0 p-2 flex flex-col justify-between shadow-inner"
-                style={{ backgroundColor: tpl.defaultStyling.backgroundColor || '#FFFDF9' }}
-              >
-                <div
-                  className="h-2 w-full rounded"
-                  style={{ backgroundColor: tpl.previewColor }}
-                />
-                <div className="space-y-1">
-                  <div className="h-1 w-3/4 bg-slate-300 rounded" />
-                  <div className="h-1 w-full bg-slate-200 rounded" />
-                  <div className="h-1 w-2/3 bg-slate-200 rounded" />
-                </div>
-                <div
-                  className="h-1.5 w-1/2 rounded self-end"
-                  style={{ backgroundColor: tpl.previewColor }}
+              {/* Actual Live Template Thumbnail */}
+              <div className="w-24 h-32 rounded-xl border border-slate-200 shrink-0 overflow-hidden shadow-sm relative bg-slate-100 flex items-center justify-center">
+                <TemplateThumbnail
+                  templateId={tpl.id}
+                  scale={0.155}
+                  height={128}
+                  docOverride={{
+                    ...document,
+                    styling: {
+                      ...document.styling,
+                      ...(tpl.defaultStyling || {}),
+                      templateId: tpl.id,
+                    },
+                  }}
                 />
               </div>
 

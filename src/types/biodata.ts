@@ -22,7 +22,15 @@ export interface BiodataSection {
 }
 
 export type TemplateId = 
+  | 'mandala-radiance'
+  | 'marigold-toran'
+  | 'vintage-parchment'
+  | 'instant-royal-maroon'
+  | 'instant-peacock-navy'
+  | 'instant-floral-blush'
   | 'classic-traditional'
+  | 'simple-box'
+  | 'floral-border'
   | 'modern-minimal'
   | 'elegant-premium'
   | 'family-focused'
@@ -34,9 +42,11 @@ export type SpacingOption = 'compact' | 'normal' | 'relaxed';
 export type BorderStyle = 'none' | 'simple' | 'double' | 'ornate' | 'decorative';
 export type PhotoShape = 'circle' | 'rounded' | 'square' | 'oval';
 export type PhotoPosition = 'top-left' | 'top-center' | 'top-right' | 'sidebar';
+export type HeaderSymbol = 'ganesha' | 'om' | 'swastik' | 'ek-onkar' | 'bismillah' | 'cross' | 'lotus' | 'none';
 
 export interface StylingConfig {
   templateId: TemplateId;
+  headerSymbol?: HeaderSymbol;
   primaryColor: string;       // Hex color for headings, accents
   accentColor: string;        // Secondary color for badges, borders
   backgroundColor: string;    // Document canvas background (e.g. #FFFFFF or soft ivory)
@@ -60,12 +70,21 @@ export interface StylingConfig {
   paperSize: 'a4' | 'letter';
 }
 
+export interface AttachedImage {
+  id: string;
+  url: string;
+  caption: string;
+  filename?: string;
+  sizeBytes?: number;
+}
+
 export interface BiodataDocument {
   id: string;
   title: string;
   createdAt: string;
   updatedAt: string;
   photoUrl?: string;
+  attachedImages?: AttachedImage[];
   sections: BiodataSection[];
   styling: StylingConfig;
 }

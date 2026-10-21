@@ -60,6 +60,43 @@ export const StylingPanel: React.FC = () => {
         />
       </div>
 
+      {/* Auspicious Header Emblem */}
+      <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div>
+            <h4 className="text-sm font-bold text-slate-900">Auspicious Header Emblem</h4>
+            <p className="text-xs text-slate-500">Religious or traditional opening icon (InstantBiodata style)</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { id: 'ganesha' as const, label: 'Ganesha', icon: '🐘' },
+            { id: 'om' as const, label: 'Om ॐ', icon: 'ॐ' },
+            { id: 'swastik' as const, label: 'Swastik', icon: '卐' },
+            { id: 'ek-onkar' as const, label: 'Ek Onkar', icon: 'ੴ' },
+            { id: 'bismillah' as const, label: 'Bismillah', icon: '☪' },
+            { id: 'cross' as const, label: 'Cross', icon: '✝' },
+            { id: 'lotus' as const, label: 'Lotus', icon: '🪷' },
+            { id: 'none' as const, label: 'None', icon: '✕' },
+          ].map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => updateStyling({ headerSymbol: item.id })}
+              className={`p-2 rounded-xl border text-center transition-all flex flex-col items-center justify-center ${
+                (styling.headerSymbol || 'ganesha') === item.id
+                  ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold shadow-sm'
+                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              <span className="text-base mb-0.5">{item.icon}</span>
+              <span className="text-[10px] truncate block w-full">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* 2. Typography */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-5">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
