@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useBiodata } from '../../context/BiodataContext';
+import { useAppMode } from '../../context/AppModeContext';
 import { TEMPLATES } from '../../data/templateCatalog';
 import { TemplateId, TemplateDefinition } from '../../types/biodata';
 import { Button } from '../common/Button';
@@ -32,6 +33,7 @@ export const DashboardView: React.FC = () => {
     setTemplate,
     setViewMode,
   } = useBiodata();
+  const { setAppMode } = useAppMode();
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [previewTemplate, setPreviewTemplate] = useState<TemplateDefinition | null>(null);
@@ -98,6 +100,35 @@ export const DashboardView: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Resume Builder Spotlight Banner */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <div className="bg-gradient-to-r from-teal-900 via-slate-900 to-indigo-950 text-white rounded-2xl p-5 sm:p-6 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-teal-500/20 border border-teal-400/30 text-teal-300 flex items-center justify-center shrink-0">
+              <Briefcase className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-teal-400 bg-teal-950/60 border border-teal-500/30 px-2 py-0.5 rounded-full">
+                  New Feature
+                </span>
+                <h3 className="text-base font-bold text-white">Need an ATS-Ready Career Resume?</h3>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-300 mt-1">
+                Build professional tech, executive & corporate resumes with instant PDF, Word (.docx) & plain-text exports.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setAppMode('resume')}
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-teal-400 hover:bg-teal-300 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition shrink-0 shadow-lg shadow-teal-400/20 active:scale-95"
+          >
+            <span>Open Resume Builder</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
 
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 space-y-14">

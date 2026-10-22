@@ -60,11 +60,12 @@
     visibility: hidden;
   }
 
-  #printable-biodata, #printable-biodata * {
+  #printable-biodata, #printable-biodata *,
+  #resume-preview-document, #resume-preview-document * {
     visibility: visible;
   }
 
-  #printable-biodata {
+  #printable-biodata, #resume-preview-document {
     position: absolute;
     left: 0;
     top: 0;
