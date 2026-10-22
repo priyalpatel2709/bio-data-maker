@@ -20,6 +20,7 @@ import {
 import { AISettingsModal } from './ai/AISettingsModal';
 import { AIJobMatcherModal } from './ai/AIJobMatcherModal';
 import { isAIConfigured } from '../../services/aiService';
+import { UserMenu } from '../auth/UserMenu';
 
 export const ResumeStudioView: React.FC = () => {
   const {
@@ -182,6 +183,8 @@ export const ResumeStudioView: React.FC = () => {
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Load Sample</span>
           </button>
+
+          <UserMenu compact />
 
           <button
             type="button"

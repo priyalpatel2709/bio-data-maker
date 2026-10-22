@@ -23,6 +23,8 @@ import {
   TranslationDictionary,
   translateDocumentSections,
 } from '../i18n/translations';
+import { useAuth } from './AuthContext';
+import { queueCloudSave, deleteCloudDocument } from '../services/syncService';
 
 interface BiodataContextType {
   document: BiodataDocument;
@@ -79,6 +81,7 @@ interface BiodataContextType {
 const BiodataContext = createContext<BiodataContextType | undefined>(undefined);
 
 export const BiodataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, syncStatus } = useAuth();
   const [document, setDocument] = useState<BiodataDocument>(loadCurrentBiodata);
   const [language, setLanguageState] = useState<Language>(() => {
     return (localStorage.getItem('biodatamaker_language') as Language) || 'en';
@@ -90,10 +93,21 @@ export const BiodataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [exportModalOpen, setExportModalOpen] = useState(false);
   const [savedDocs, setSavedDocs] = useState<BiodataDocument[]>(getSavedDocuments);
 
-  // Auto-save on document change
+  // Auto-save locally and sync to cloud if authenticated
   useEffect(() => {
     saveCurrentBiodata(document);
-  }, [document]);
+    if (user?.id) {
+      queueCloudSave('biodata', document, user.id);
+    }
+  }, [document, user?.id]);
+
+  // Refresh saved documents when cloud sync completes
+  useEffect(() => {
+    if (syncStatus === 'synced') {
+      setSavedDocs(getSavedDocuments());
+      setDocument(loadCurrentBiodata());
+    }
+  }, [syncStatus]);
 
   const setLanguage = useCallback((lang: Language) => {
     setLanguageState(lang);
@@ -345,21 +359,30 @@ export const BiodataProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
     setDocument(blankDoc);
     saveNewDocument(blankDoc);
+    if (user?.id) {
+      queueCloudSave('biodata', blankDoc, user.id, true);
+    }
     refreshSavedDocs();
     setViewMode('studio');
-  }, [refreshSavedDocs]);
+  }, [refreshSavedDocs, user?.id]);
 
   const duplicateDocument = useCallback((doc: BiodataDocument) => {
     const dup = duplicateSavedDocument(doc);
+    if (user?.id) {
+      queueCloudSave('biodata', dup, user.id, true);
+    }
     refreshSavedDocs();
     setDocument(dup);
     setViewMode('studio');
-  }, [refreshSavedDocs]);
+  }, [refreshSavedDocs, user?.id]);
 
   const removeDocument = useCallback((id: string) => {
     deleteSavedDocument(id);
+    if (user?.id) {
+      void deleteCloudDocument(id, user.id);
+    }
     refreshSavedDocs();
-  }, [refreshSavedDocs]);
+  }, [refreshSavedDocs, user?.id]);
 
   const resetToDefault = useCallback(() => {
     setDocument(defaultBiodata);

@@ -2,11 +2,13 @@ import React from 'react';
 import { BiodataProvider, useBiodata } from './context/BiodataContext';
 import { ResumeProvider, useResume } from './context/ResumeContext';
 import { AppModeProvider, useAppMode } from './context/AppModeContext';
+import { AuthProvider } from './context/AuthContext';
 import { DashboardView } from './components/dashboard/DashboardView';
 import { StudioView } from './components/editor/StudioView';
 import { ResumeDashboardView } from './components/resume/ResumeDashboardView';
 import { ResumeStudioView } from './components/resume/ResumeStudioView';
 import { LanguageSwitcher } from './components/common/LanguageSwitcher';
+import { UserMenu } from './components/auth/UserMenu';
 import { Sparkles, FileText, Heart, Briefcase, Layers } from 'lucide-react';
 
 const AppContent: React.FC = () => {
@@ -95,6 +97,8 @@ const AppContent: React.FC = () => {
 
             {appMode === 'biodata' && <LanguageSwitcher />}
 
+            <UserMenu />
+
             <button
               onClick={() => {
                 if (appMode === 'biodata') {
@@ -157,13 +161,15 @@ const AppContent: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <AppModeProvider>
-      <BiodataProvider>
-        <ResumeProvider>
-          <AppContent />
-        </ResumeProvider>
-      </BiodataProvider>
-    </AppModeProvider>
+    <AuthProvider>
+      <AppModeProvider>
+        <BiodataProvider>
+          <ResumeProvider>
+            <AppContent />
+          </ResumeProvider>
+        </BiodataProvider>
+      </AppModeProvider>
+    </AuthProvider>
   );
 };
 

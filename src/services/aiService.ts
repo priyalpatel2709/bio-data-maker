@@ -5,6 +5,7 @@ import {
   SUMMARY_GENERATOR_PROMPT,
   ATS_JOB_MATCHER_PROMPT,
 } from './aiPrompts';
+import { getSupabaseClient } from './supabaseClient';
 
 export type AIProvider = 'nara' | 'openrouter' | 'agentrouter';
 
@@ -134,6 +135,31 @@ export function saveAISettings(settings: Partial<AISettings>): AISettings {
     model: settings.model || current.model || providerMeta.models[0].id,
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+
+  // If Supabase user is logged in, sync AI settings to cloud
+  try {
+    const client = getSupabaseClient();
+    if (client) {
+      client.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user?.id) {
+          client
+            .from('user_settings')
+            .upsert(
+              {
+                user_id: session.user.id,
+                ai_settings: updated,
+                updated_at: new Date().toISOString(),
+              },
+              { onConflict: 'user_id' }
+            )
+            .then(() => {});
+        }
+      }).catch(() => {});
+    }
+  } catch {
+    // silent fallback for offline / guest mode
+  }
+
   return updated;
 }
 

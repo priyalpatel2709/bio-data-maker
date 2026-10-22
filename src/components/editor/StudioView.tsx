@@ -7,6 +7,7 @@ import { LivePreview } from '../preview/LivePreview';
 import { ExportModal } from '../export/ExportModal';
 import { Button } from '../common/Button';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
+import { UserMenu } from '../auth/UserMenu';
 import {
   ArrowLeft,
   FileText,
@@ -105,6 +106,8 @@ export const StudioView: React.FC = () => {
           </div>
 
           <LanguageSwitcher />
+
+          <UserMenu compact />
 
           <Button
             size="sm"

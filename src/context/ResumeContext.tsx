@@ -21,6 +21,8 @@ import {
   deleteSavedResume,
   duplicateSavedResume,
 } from '../utils/resumeStorage';
+import { useAuth } from './AuthContext';
+import { queueCloudSave, deleteCloudDocument } from '../services/syncService';
 
 interface ResumeContextType {
   document: ResumeDocument;
@@ -96,6 +98,7 @@ interface ResumeContextType {
 const ResumeContext = createContext<ResumeContextType | undefined>(undefined);
 
 export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, syncStatus } = useAuth();
   const [document, setDocument] = useState<ResumeDocument>(loadCurrentResume);
   const [viewMode, setViewMode] = useState<'studio' | 'dashboard'>('dashboard');
   const [activeTab, setActiveTab] = useState<'content' | 'design' | 'templates'>('content');
@@ -103,10 +106,21 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [exportModalOpen, setExportModalOpen] = useState(false);
   const [savedResumes, setSavedResumes] = useState<ResumeDocument[]>(getSavedResumes);
 
-  // Auto-save on document change
+  // Auto-save locally and sync to cloud if authenticated
   useEffect(() => {
     saveCurrentResume(document);
-  }, [document]);
+    if (user?.id) {
+      queueCloudSave('resume', document, user.id);
+    }
+  }, [document, user?.id]);
+
+  // Refresh saved resumes when cloud sync completes
+  useEffect(() => {
+    if (syncStatus === 'synced') {
+      setSavedResumes(getSavedResumes());
+      setDocument(loadCurrentResume());
+    }
+  }, [syncStatus]);
 
   const refreshSavedResumes = useCallback(() => {
     setSavedResumes(getSavedResumes());
@@ -477,19 +491,28 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       };
     }
     saveNewResume(newDoc);
+    if (user?.id) {
+      queueCloudSave('resume', newDoc, user.id, true);
+    }
     setDocument(newDoc);
     refreshSavedResumes();
     setViewMode('studio');
-  }, [refreshSavedResumes]);
+  }, [refreshSavedResumes, user?.id]);
 
   const duplicateResume = useCallback((doc: ResumeDocument) => {
     const dup = duplicateSavedResume(doc);
+    if (user?.id) {
+      queueCloudSave('resume', dup, user.id, true);
+    }
     refreshSavedResumes();
     setDocument(dup);
-  }, [refreshSavedResumes]);
+  }, [refreshSavedResumes, user?.id]);
 
   const removeResume = useCallback((id: string) => {
     deleteSavedResume(id);
+    if (user?.id) {
+      void deleteCloudDocument(id, user.id);
+    }
     refreshSavedResumes();
     const remaining = getSavedResumes();
     if (remaining.length > 0) {
@@ -497,7 +520,7 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     } else {
       createNewResume('software');
     }
-  }, [createNewResume, refreshSavedResumes]);
+  }, [createNewResume, refreshSavedResumes, user?.id]);
 
   const resetToSample = useCallback(() => {
     setDocument(defaultResume);
