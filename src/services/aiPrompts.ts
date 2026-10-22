@@ -68,3 +68,75 @@ Return ONLY a valid JSON object matching this schema, with no markdown code bloc
   "recommendations": ["Incorporate Docker containerization experience into work history", "Highlight GraphQL API design under Skills"]
 }
 `;
+
+export const JOB_TAILOR_AND_COVER_LETTER_PROMPT = (
+  resumeText: string,
+  jobDescription: string
+) => `
+You are an expert career strategist and executive resume writer.
+Your task is to analyze the candidate's existing resume alongside the target Job Description (JD), and produce:
+1. An ATS-optimized tailored resume configuration that highlights relevant skills and experiences.
+2. A compelling, personalized, high-converting Cover Letter tailored directly to this role and company.
+
+CANDIDATE'S EXISTING RESUME:
+"""
+${resumeText}
+"""
+
+TARGET JOB DESCRIPTION:
+"""
+${jobDescription}
+"""
+
+Generate a complete JSON response according to this EXACT schema:
+{
+  "targetJobTitle": "Extracted target job title (e.g. Senior Full-Stack Engineer)",
+  "targetCompany": "Extracted company name or 'Hiring Team'",
+  "atsScore": 85,
+  "matchingKeywords": ["TypeScript", "React", "Next.js", "PostgreSQL"],
+  "missingKeywords": ["Docker", "Kubernetes", "AWS"],
+  "recommendations": [
+    "Positioned React & Node.js architecture experience at the top of the summary",
+    "Tailored bullet points to emphasize cloud deployment and system scalability"
+  ],
+  "tailoredJobTitle": "Candidate target title aligned with JD",
+  "tailoredSummary": "2-4 compelling sentences summarizing candidate's direct fit, key strengths, and proven accomplishments relevant to this specific role and company.",
+  "tailoredSkills": [
+    {
+      "categoryName": "Core Technologies",
+      "skills": ["Skill1", "Skill2", "Skill3"]
+    },
+    {
+      "categoryName": "Target Frameworks & Tools",
+      "skills": ["Skill4", "Skill5", "Skill6"]
+    }
+  ],
+  "experienceBulletImprovements": [
+    {
+      "company": "Company Name from resume",
+      "bullets": [
+        "Action-oriented bullet 1 incorporating relevant keywords and measurable metrics",
+        "Action-oriented bullet 2 demonstrating problem-solving relevant to JD"
+      ]
+    }
+  ],
+  "coverLetter": {
+    "recipientName": "Hiring Manager or extracted contact name",
+    "recipientTitle": "Hiring Team / Talent Acquisition",
+    "recipientCompany": "Target Company Name",
+    "recipientLocation": "Company City/State or Remote",
+    "date": "Current Date (e.g. October 2026)",
+    "salutation": "Dear Hiring Team at [Target Company],",
+    "openingParagraph": "Strong opening hook stating excitement for the [Target Job Title] role, referencing why the company's mission resonates and expressing clear enthusiasm.",
+    "bodyParagraphs": [
+      "First body paragraph detailing candidate's direct technical/functional background and how their specific experiences solve the key requirements outlined in the JD.",
+      "Second body paragraph highlighting specific measurable achievements, metrics, and leadership or problem-solving capability relevant to the position."
+    ],
+    "closingParagraph": "Confident, gracious closing reiterating enthusiasm, expressing eager anticipation for an interview discussion, and thanking them for their consideration.",
+    "signOff": "Sincerely,"
+  }
+}
+
+Return ONLY valid JSON. No markdown code blocks, no preamble, and no explanation.
+`;
+

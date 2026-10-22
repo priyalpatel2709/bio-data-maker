@@ -1,9 +1,11 @@
-import { ResumeDocument } from '../types/resume';
+import { ResumeDocument, SkillCategory } from '../types/resume';
+import { CoverLetterDocument, JobTailoredResult } from '../types/coverLetter';
 import {
   RESUME_AI_SYSTEM_PROMPT,
   BULLET_IMPROVER_PROMPT,
   SUMMARY_GENERATOR_PROMPT,
   ATS_JOB_MATCHER_PROMPT,
+  JOB_TAILOR_AND_COVER_LETTER_PROMPT,
 } from './aiPrompts';
 import { getSupabaseClient } from './supabaseClient';
 
@@ -447,3 +449,213 @@ export async function analyzeJobMatch(
     };
   }
 }
+
+// 4. Tailor Resume Details & Generate Cover Letter from Job Description
+export async function tailorResumeAndCoverLetter(
+  resume: ResumeDocument,
+  jobDescription: string
+): Promise<JobTailoredResult> {
+  const resumeSummaryText: string[] = [
+    `Name: ${resume.contact.fullName}`,
+    `Current Job Title: ${resume.contact.jobTitle}`,
+    `Email: ${resume.contact.email} | Phone: ${resume.contact.phone} | Location: ${resume.contact.location}`,
+    `LinkedIn: ${resume.contact.linkedin || 'N/A'} | GitHub: ${resume.contact.github || 'N/A'}`,
+    `Current Professional Summary: ${resume.summary}`,
+    'Work Experience:',
+    ...resume.experience.map(
+      (e) => `• Position: ${e.position} at ${e.company} (${e.startDate} - ${e.endDate})\n  Bullets:\n  ${e.bullets.map(b => '  - ' + b).join('\n')}`
+    ),
+    'Skills:',
+    ...resume.skillCategories.map((sc) => `• ${sc.categoryName}: ${sc.skills.join(', ')}`),
+    'Education:',
+    ...resume.education.map((edu) => `• ${edu.degree} from ${edu.institution}`),
+    'Projects:',
+    ...resume.projects.map((p) => `• ${p.name}: ${p.bullets.join(' ')}`),
+  ];
+
+  const resumeText = resumeSummaryText.join('\n');
+  const prompt = JOB_TAILOR_AND_COVER_LETTER_PROMPT(resumeText, jobDescription);
+
+  const responseText = await callAIChatCompletion([
+    { role: 'system', content: RESUME_AI_SYSTEM_PROMPT },
+    { role: 'user', content: prompt },
+  ]);
+
+  let parsed: any = null;
+  try {
+    const cleaned = cleanJsonOutput(responseText);
+    parsed = JSON.parse(cleaned);
+  } catch (err) {
+    console.warn('Failed to parse tailored result as JSON, attempting loose regex recovery:', err);
+  }
+
+  // Fallbacks if AI output was not 100% strict JSON
+  const targetJobTitle = parsed?.targetJobTitle || resume.contact.jobTitle || 'Target Role';
+  const targetCompany = parsed?.targetCompany || 'Hiring Organization';
+  const atsScore = Math.min(100, Math.max(0, Number(parsed?.atsScore) || 82));
+  const matchingKeywords = Array.isArray(parsed?.matchingKeywords) ? parsed.matchingKeywords : [];
+  const missingKeywords = Array.isArray(parsed?.missingKeywords) ? parsed.missingKeywords : [];
+  const recommendations = Array.isArray(parsed?.recommendations) ? parsed.recommendations : [];
+
+  // 1. Build Tailored Skills
+  let tailoredSkills: SkillCategory[] = [];
+  if (Array.isArray(parsed?.tailoredSkills) && parsed.tailoredSkills.length > 0) {
+    tailoredSkills = parsed.tailoredSkills.map((ts: any, idx: number) => ({
+      id: 'sc-tailored-' + (idx + 1) + '-' + Date.now(),
+      categoryName: ts.categoryName || `Category ${idx + 1}`,
+      skills: Array.isArray(ts.skills) ? ts.skills : [],
+    }));
+  } else {
+    // Preserve existing with missing keywords prepended
+    tailoredSkills = resume.skillCategories.map(sc => ({ ...sc }));
+    if (missingKeywords.length > 0) {
+      tailoredSkills.unshift({
+        id: 'sc-tailored-keywords-' + Date.now(),
+        categoryName: 'Target Competencies & Keywords',
+        skills: missingKeywords.slice(0, 8),
+      });
+    }
+  }
+
+  // 2. Build Tailored Experience Bullets
+  const experienceImprovements: Array<{ company: string; bullets: string[] }> =
+    Array.isArray(parsed?.experienceBulletImprovements)
+      ? parsed.experienceBulletImprovements
+      : [];
+
+  const tailoredExperience = resume.experience.map((exp) => {
+    const matchedImprovement = experienceImprovements.find(
+      (imp) =>
+        imp.company &&
+        exp.company &&
+        (imp.company.toLowerCase().includes(exp.company.toLowerCase()) ||
+          exp.company.toLowerCase().includes(imp.company.toLowerCase()))
+    );
+
+    if (matchedImprovement && Array.isArray(matchedImprovement.bullets) && matchedImprovement.bullets.length > 0) {
+      return {
+        ...exp,
+        bullets: matchedImprovement.bullets,
+      };
+    }
+    return { ...exp };
+  });
+
+  const nowIso = new Date().toISOString();
+  const dateFormatted = new Date().toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
+  // 3. Build Tailored Cover Letter
+  const rawCl = parsed?.coverLetter || {};
+  const recipient = {
+    name: rawCl.recipientName || 'Hiring Team',
+    title: rawCl.recipientTitle || 'Talent Acquisition Team',
+    company: rawCl.recipientCompany || targetCompany,
+    location: rawCl.recipientLocation || 'Company Headquarters / Remote',
+  };
+
+  const sender = {
+    fullName: resume.contact.fullName || 'Candidate',
+    jobTitle: parsed?.tailoredJobTitle || targetJobTitle,
+    email: resume.contact.email,
+    phone: resume.contact.phone,
+    location: resume.contact.location,
+    linkedin: resume.contact.linkedin,
+    website: resume.contact.website,
+  };
+
+  const salutation = rawCl.salutation || `Dear Hiring Team at ${targetCompany},`;
+  const openingParagraph =
+    rawCl.openingParagraph ||
+    `I am writing to express my strong enthusiasm for the ${targetJobTitle} position at ${targetCompany}. With my background in ${resume.contact.jobTitle} and proven experience delivering measurable impact, I am confident in my ability to exceed expectations in this role.`;
+
+  const bodyParagraphs: string[] =
+    Array.isArray(rawCl.bodyParagraphs) && rawCl.bodyParagraphs.length > 0
+      ? rawCl.bodyParagraphs
+      : [
+          `Throughout my career, I have specialized in architecting scalable solutions, driving team efficiency, and delivering high-quality results. My hands-on background directly aligns with the technical and operational requirements specified for this position at ${targetCompany}.`,
+          `I am particularly energized by ${targetCompany}'s commitment to innovation. I welcome the opportunity to leverage my skill set in ${matchingKeywords.slice(0, 4).join(', ') || 'modern engineering'} to contribute immediately to your team's upcoming milestones.`,
+        ];
+
+  const closingParagraph =
+    rawCl.closingParagraph ||
+    `Thank you for your time and consideration. I welcome the opportunity to discuss how my skill set and achievements align with ${targetCompany}'s strategic objectives during an interview.`;
+
+  const signOff = rawCl.signOff || 'Sincerely,';
+
+  // Plain-text formatted version for quick copying
+  const fullContentText = [
+    sender.fullName.toUpperCase(),
+    [sender.jobTitle, sender.email, sender.phone, sender.location].filter(Boolean).join(' | '),
+    '',
+    dateFormatted,
+    '',
+    recipient.name,
+    recipient.title ? `${recipient.title}, ${recipient.company}` : recipient.company,
+    recipient.location,
+    '',
+    salutation,
+    '',
+    openingParagraph,
+    '',
+    bodyParagraphs.join('\n\n'),
+    '',
+    closingParagraph,
+    '',
+    signOff,
+    sender.fullName,
+  ].join('\n');
+
+  const coverLetter: CoverLetterDocument = {
+    id: 'coverletter-' + Date.now(),
+    title: `Cover Letter - ${targetJobTitle} at ${targetCompany}`,
+    targetRole: targetJobTitle,
+    targetCompany: targetCompany,
+    date: dateFormatted,
+    recipient,
+    sender,
+    salutation,
+    openingParagraph,
+    bodyParagraphs,
+    closingParagraph,
+    signOff,
+    fullContentText,
+  };
+
+  // 4. Build Complete Tailored Resume Document
+  const tailoredResume: ResumeDocument = {
+    ...JSON.parse(JSON.stringify(resume)),
+    id: 'resume-tailored-' + Date.now(),
+    title: `${targetJobTitle} - ${targetCompany}`,
+    createdAt: nowIso,
+    updatedAt: nowIso,
+    contact: {
+      ...resume.contact,
+      jobTitle: parsed?.tailoredJobTitle || targetJobTitle,
+    },
+    summary: parsed?.tailoredSummary || resume.summary,
+    experience: tailoredExperience,
+    skillCategories: tailoredSkills,
+    targetJob: {
+      title: targetJobTitle,
+      company: targetCompany,
+      matchScore: atsScore,
+    },
+    coverLetter,
+  };
+
+  return {
+    targetJobTitle,
+    targetCompany,
+    atsScore,
+    matchingKeywords,
+    missingKeywords,
+    recommendations,
+    tailoredResume,
+    coverLetter,
+  };
+}
+

@@ -89,6 +89,7 @@ interface ResumeContextType {
   savedResumes: ResumeDocument[];
   refreshSavedResumes: () => void;
   loadResume: (doc: ResumeDocument) => void;
+  addSavedResume: (doc: ResumeDocument) => void;
   createNewResume: (preset?: 'software' | 'blank' | 'executive') => void;
   duplicateResume: (doc: ResumeDocument) => void;
   removeResume: (id: string) => void;
@@ -499,6 +500,14 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setViewMode('studio');
   }, [refreshSavedResumes, user?.id]);
 
+  const addSavedResume = useCallback((doc: ResumeDocument) => {
+    saveNewResume(doc);
+    if (user?.id) {
+      queueCloudSave('resume', doc, user.id, true);
+    }
+    refreshSavedResumes();
+  }, [refreshSavedResumes, user?.id]);
+
   const duplicateResume = useCallback((doc: ResumeDocument) => {
     const dup = duplicateSavedResume(doc);
     if (user?.id) {
@@ -574,6 +583,7 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         savedResumes,
         refreshSavedResumes,
         loadResume,
+        addSavedResume,
         createNewResume,
         duplicateResume,
         removeResume,

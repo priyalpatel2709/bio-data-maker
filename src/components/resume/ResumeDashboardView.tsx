@@ -5,6 +5,8 @@ import { RESUME_TEMPLATES } from '../../data/defaultResume';
 import { ResumeDocument, ResumeTemplateId, ResumeTemplateDefinition } from '../../types/resume';
 import { ResumeTemplateThumbnail } from './ResumeTemplateThumbnail';
 import { ResumeTemplatePreviewModal } from './ResumeTemplatePreviewModal';
+import { AIJobTailorModal } from './ai/AIJobTailorModal';
+import { AISettingsModal } from './ai/AISettingsModal';
 import {
   Plus,
   Edit3,
@@ -36,6 +38,8 @@ export const ResumeDashboardView: React.FC = () => {
   } = useResume();
 
   const [previewTemplate, setPreviewTemplate] = useState<ResumeTemplateDefinition | null>(null);
+  const [isTailorModalOpen, setIsTailorModalOpen] = useState(false);
+  const [isAISettingsOpen, setIsAISettingsOpen] = useState(false);
 
   const handleStartWithTemplate = (templateId: ResumeTemplateId) => {
     createNewResume('software');
@@ -72,18 +76,26 @@ export const ResumeDashboardView: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row gap-3 shrink-0">
               <button
+                onClick={() => setIsTailorModalOpen(true)}
+                className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-teal-800 via-sky-900 to-indigo-900 hover:from-teal-900 hover:to-indigo-950 text-white font-bold text-sm shadow-lg shadow-teal-900/20 transition active:scale-95"
+                title="Paste a job description to tailor your resume and generate a customized cover letter"
+              >
+                <Sparkles className="w-4 h-4 text-teal-300" />
+                <span>Tailor for JD & Cover Letter</span>
+              </button>
+              <button
                 onClick={() => createNewResume('software')}
-                className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm shadow-lg shadow-teal-600/20 transition active:scale-95"
+                className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm shadow-md shadow-teal-600/20 transition active:scale-95"
               >
                 <Plus className="w-5 h-5" />
-                Create New Resume
+                <span>Create New</span>
               </button>
               <button
                 onClick={() => setViewMode('studio')}
                 className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white border border-slate-300 hover:border-slate-400 text-slate-700 font-semibold text-sm transition"
               >
                 <Edit3 className="w-5 h-5" />
-                Open Studio
+                <span>Studio</span>
               </button>
             </div>
           </div>
@@ -325,6 +337,19 @@ export const ResumeDashboardView: React.FC = () => {
           handleStartWithTemplate(templateId);
           setPreviewTemplate(null);
         }}
+      />
+
+      {/* AI Job Tailor & Cover Letter Modal */}
+      <AIJobTailorModal
+        isOpen={isTailorModalOpen}
+        onClose={() => setIsTailorModalOpen(false)}
+        onOpenSettings={() => setIsAISettingsOpen(true)}
+      />
+
+      {/* AI Router Settings Modal */}
+      <AISettingsModal
+        isOpen={isAISettingsOpen}
+        onClose={() => setIsAISettingsOpen(false)}
       />
     </div>
   );

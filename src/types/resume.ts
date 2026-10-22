@@ -151,6 +151,12 @@ export interface ResumeDocument {
   customSections: CustomResumeSection[];
   sectionOrder: ResumeSectionMeta[];
   styling: ResumeStylingConfig;
+  coverLetter?: import('./coverLetter').CoverLetterDocument;
+  targetJob?: {
+    title: string;
+    company: string;
+    matchScore?: number;
+  };
 }
 
 export interface ResumeTemplateDefinition {
