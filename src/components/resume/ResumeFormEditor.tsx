@@ -168,7 +168,7 @@ export const ResumeFormEditor: React.FC = () => {
                 type="text"
                 value={document.contact.fullName}
                 onChange={(e) => updateContact({ fullName: e.target.value })}
-                placeholder="e.g. Alex Morgan"
+                placeholder="e.g. Priyal Patel"
                 className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-teal-600 font-medium"
               />
             </div>
@@ -179,7 +179,7 @@ export const ResumeFormEditor: React.FC = () => {
                 type="text"
                 value={document.contact.jobTitle}
                 onChange={(e) => updateContact({ jobTitle: e.target.value })}
-                placeholder="e.g. Senior Full-Stack Engineer"
+                placeholder="e.g. Flutter Developer"
                 className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-teal-600 font-medium"
               />
             </div>
@@ -190,7 +190,7 @@ export const ResumeFormEditor: React.FC = () => {
                 type="email"
                 value={document.contact.email}
                 onChange={(e) => updateContact({ email: e.target.value })}
-                placeholder="alex.morgan@email.com"
+                placeholder="priyalpatel2709@gmail.com"
                 className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-teal-600"
               />
             </div>
@@ -201,7 +201,7 @@ export const ResumeFormEditor: React.FC = () => {
                 type="text"
                 value={document.contact.phone}
                 onChange={(e) => updateContact({ phone: e.target.value })}
-                placeholder="+1 (555) 234-5678"
+                placeholder="+91-8141513344"
                 className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-teal-600"
               />
             </div>
@@ -212,7 +212,7 @@ export const ResumeFormEditor: React.FC = () => {
                 type="text"
                 value={document.contact.location}
                 onChange={(e) => updateContact({ location: e.target.value })}
-                placeholder="San Francisco, CA"
+                placeholder="Vadodara, India"
                 className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-teal-600"
               />
             </div>
@@ -223,7 +223,7 @@ export const ResumeFormEditor: React.FC = () => {
                 type="text"
                 value={document.contact.website || ''}
                 onChange={(e) => updateContact({ website: e.target.value })}
-                placeholder="https://alexmorgan.dev"
+                placeholder="https://yourportfolio.com"
                 className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-teal-600"
               />
             </div>
@@ -234,7 +234,7 @@ export const ResumeFormEditor: React.FC = () => {
                 type="text"
                 value={document.contact.linkedin || ''}
                 onChange={(e) => updateContact({ linkedin: e.target.value })}
-                placeholder="linkedin.com/in/alexmorgan"
+                placeholder="linkedin.com/in/priyalpatel2709"
                 className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-teal-600"
               />
             </div>
@@ -245,7 +245,7 @@ export const ResumeFormEditor: React.FC = () => {
                 type="text"
                 value={document.contact.github || ''}
                 onChange={(e) => updateContact({ github: e.target.value })}
-                placeholder="github.com/alexmorgan"
+                placeholder="github.com/priyalpatel2709"
                 className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-teal-600"
               />
             </div>

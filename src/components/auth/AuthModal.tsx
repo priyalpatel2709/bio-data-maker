@@ -13,11 +13,9 @@ import {
   CheckCircle2,
   Loader2,
   Cloud,
-  Database,
   ArrowRight,
   Sparkles,
 } from 'lucide-react';
-import { SupabaseConfigModal } from './SupabaseConfigModal';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -42,7 +40,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [showResendBtn, setShowResendBtn] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [showConfigModal, setShowConfigModal] = useState(false);
 
   // Sync mode when modal opens or initialMode changes
   useEffect(() => {
@@ -78,7 +75,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setSuccessMessage(null);
 
     if (!isConfigured) {
-      setShowConfigModal(true);
+      setErrorMessage('Cloud database service is not available. Please try again later.');
       return;
     }
 
@@ -246,25 +243,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         {/* Body Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {!isConfigured && (
-            <div className="p-3 bg-amber-50 border border-amber-200/80 rounded-xl text-xs text-amber-900 flex items-start gap-2.5">
-              <Database className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <p className="font-semibold">Supabase is not configured yet.</p>
-                <p className="text-[11px] text-amber-700 mt-0.5">
-                  Connect your project URL and Anon key to enable cloud accounts & sync.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setShowConfigModal(true)}
-                  className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-bold text-amber-900 underline hover:text-amber-950"
-                >
-                  Setup Supabase Credentials <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
-            </div>
-          )}
-
           {errorMessage && (
             <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 flex flex-col gap-1.5">
               <div className="flex items-start gap-2">
@@ -461,13 +439,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </div>
         </form>
       </div>
-
-      {showConfigModal && (
-        <SupabaseConfigModal
-          isOpen={showConfigModal}
-          onClose={() => setShowConfigModal(false)}
-        />
-      )}
     </div>
   );
 

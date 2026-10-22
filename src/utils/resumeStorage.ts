@@ -4,12 +4,24 @@ import { defaultResume } from '../data/defaultResume';
 const STORAGE_KEY_CURRENT_RESUME = 'resume_current_doc';
 const STORAGE_KEY_SAVED_RESUMES = 'resume_saved_list';
 
+function isDummyResume(doc: any): boolean {
+  if (!doc) return true;
+  if (doc.id === 'resume-sample-1') return true;
+  if (doc.contact?.fullName === 'Alex Morgan') return true;
+  if (doc.contact?.email === 'alex.morgan@email.com') return true;
+  return false;
+}
+
 export function loadCurrentResume(): ResumeDocument {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_CURRENT_RESUME);
     if (!raw) return defaultResume;
     const parsed = JSON.parse(raw);
     if (parsed && parsed.id && parsed.contact && Array.isArray(parsed.experience)) {
+      if (isDummyResume(parsed)) {
+        saveCurrentResume(defaultResume);
+        return defaultResume;
+      }
       return parsed;
     }
   } catch (err) {
@@ -39,7 +51,20 @@ export function getSavedResumes(): ResumeDocument[] {
       localStorage.setItem(STORAGE_KEY_SAVED_RESUMES, JSON.stringify(initial));
       return initial;
     }
-    return JSON.parse(raw) || [];
+    const list: ResumeDocument[] = JSON.parse(raw) || [];
+    let updated = false;
+    const migrated = list.map((doc) => {
+      if (isDummyResume(doc)) {
+        updated = true;
+        return defaultResume;
+      }
+      return doc;
+    });
+    if (updated || migrated.length === 0) {
+      if (migrated.length === 0) migrated.push(defaultResume);
+      localStorage.setItem(STORAGE_KEY_SAVED_RESUMES, JSON.stringify(migrated));
+    }
+    return migrated;
   } catch (err) {
     console.error('Failed to get saved resumes:', err);
     return [defaultResume];

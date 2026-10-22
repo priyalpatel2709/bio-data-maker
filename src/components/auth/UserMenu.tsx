@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { AuthModal } from './AuthModal';
-import { SupabaseConfigModal } from './SupabaseConfigModal';
 import {
-  User,
   LogIn,
   UserPlus,
   LogOut,
@@ -12,7 +10,6 @@ import {
   AlertCircle,
   Cloud,
   ChevronDown,
-  Database,
 } from 'lucide-react';
 
 interface UserMenuProps {
@@ -20,10 +17,9 @@ interface UserMenuProps {
 }
 
 export const UserMenu: React.FC<UserMenuProps> = ({ compact = false }) => {
-  const { user, signOut, syncStatus, triggerManualSync, isConfigured } = useAuth();
+  const { user, signOut, syncStatus, triggerManualSync } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [configModalOpen, setConfigModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const [syncingManual, setSyncingManual] = useState(false);
 
@@ -93,10 +89,6 @@ export const UserMenu: React.FC<UserMenuProps> = ({ compact = false }) => {
           isOpen={authModalOpen}
           onClose={() => setAuthModalOpen(false)}
           initialMode={authMode}
-        />
-        <SupabaseConfigModal
-          isOpen={configModalOpen}
-          onClose={() => setConfigModalOpen(false)}
         />
       </div>
     );
@@ -183,20 +175,6 @@ export const UserMenu: React.FC<UserMenuProps> = ({ compact = false }) => {
             </button>
           </div>
 
-          {/* Database Config Modal Launcher */}
-          <div className="px-2 py-1 border-b border-slate-100">
-            <button
-              onClick={() => {
-                setDropdownOpen(false);
-                setConfigModalOpen(true);
-              }}
-              className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-xl transition-colors"
-            >
-              <Database className="w-3.5 h-3.5 text-slate-500" />
-              <span>Database Settings</span>
-            </button>
-          </div>
-
           {/* Sign Out */}
           <div className="px-2 pt-1">
             <button
@@ -214,10 +192,6 @@ export const UserMenu: React.FC<UserMenuProps> = ({ compact = false }) => {
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         initialMode={authMode}
-      />
-      <SupabaseConfigModal
-        isOpen={configModalOpen}
-        onClose={() => setConfigModalOpen(false)}
       />
     </div>
   );
