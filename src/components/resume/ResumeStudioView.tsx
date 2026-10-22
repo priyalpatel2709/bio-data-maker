@@ -15,7 +15,11 @@ import {
   Sparkles,
   RotateCcw,
   Check,
+  Target,
 } from 'lucide-react';
+import { AISettingsModal } from './ai/AISettingsModal';
+import { AIJobMatcherModal } from './ai/AIJobMatcherModal';
+import { isAIConfigured } from '../../services/aiService';
 
 export const ResumeStudioView: React.FC = () => {
   const {
@@ -31,6 +35,9 @@ export const ResumeStudioView: React.FC = () => {
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [tempTitle, setTempTitle] = useState(document.title);
+  const [isAISettingsOpen, setIsAISettingsOpen] = useState(false);
+  const [isJobMatcherOpen, setIsJobMatcherOpen] = useState(false);
+  const [hasAI, setHasAI] = useState(isAIConfigured());
 
   const tabs = [
     { id: 'content' as const, label: 'Content & History', icon: <FileText className="w-4 h-4" /> },
@@ -142,6 +149,32 @@ export const ResumeStudioView: React.FC = () => {
 
           <button
             type="button"
+            onClick={() => setIsJobMatcherOpen(true)}
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl transition shadow-2xs"
+            title="ATS Job Description Matcher"
+          >
+            <Target className="w-3.5 h-3.5 text-teal-700" />
+            <span>ATS Matcher</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsAISettingsOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl transition shadow-2xs"
+            title="Nara Router AI Assistant & Settings"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+            <span className="hidden sm:inline">AI Assistant</span>
+            <span
+              className={`w-2 h-2 rounded-full ${
+                hasAI ? 'bg-emerald-500' : 'bg-slate-300'
+              }`}
+              title={hasAI ? 'Nara AI Connected' : 'Nara AI Unconfigured'}
+            />
+          </button>
+
+          <button
+            type="button"
             onClick={resetToSample}
             className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition"
             title="Load standard sample data"
@@ -205,6 +238,19 @@ export const ResumeStudioView: React.FC = () => {
 
       {/* Export Modal */}
       <ResumeExportModal />
+
+      {/* AI Modals */}
+      <AISettingsModal
+        isOpen={isAISettingsOpen}
+        onClose={() => setIsAISettingsOpen(false)}
+        onConfigured={() => setHasAI(isAIConfigured())}
+      />
+
+      <AIJobMatcherModal
+        isOpen={isJobMatcherOpen}
+        onClose={() => setIsJobMatcherOpen(false)}
+        onOpenSettings={() => setIsAISettingsOpen(true)}
+      />
     </div>
   );
 };

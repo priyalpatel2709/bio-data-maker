@@ -6,7 +6,11 @@ export type ResumeTemplateId =
   | 'compact-engineering'
   | 'elegant-academic'
   | 'monochrome-classic'
-  | 'classic';
+  | 'classic'
+  | 'stockholm'
+  | 'sydney'
+  | 'dublin'
+  | 'vienna';
 
 export interface ResumeContactInfo {
   fullName: string;

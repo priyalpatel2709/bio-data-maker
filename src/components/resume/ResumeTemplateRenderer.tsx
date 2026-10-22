@@ -8,6 +8,10 @@ import { CompactEngineeringTemplate } from './templates/CompactEngineeringTempla
 import { ElegantAcademicTemplate } from './templates/ElegantAcademicTemplate';
 import { MonochromeClassicTemplate } from './templates/MonochromeClassicTemplate';
 import { ClassicTemplate } from './templates/ClassicTemplate';
+import { StockholmTemplate } from './templates/StockholmTemplate';
+import { SydneyTemplate } from './templates/SydneyTemplate';
+import { DublinTemplate } from './templates/DublinTemplate';
+import { ViennaTemplate } from './templates/ViennaTemplate';
 
 interface ResumeTemplateRendererProps {
   resume: ResumeDocument;
@@ -33,6 +37,14 @@ export const ResumeTemplateRenderer: React.FC<ResumeTemplateRendererProps> = ({ 
       return <MonochromeClassicTemplate resume={resume} />;
     case 'classic':
       return <ClassicTemplate resume={resume} />;
+    case 'stockholm':
+      return <StockholmTemplate resume={resume} />;
+    case 'sydney':
+      return <SydneyTemplate resume={resume} />;
+    case 'dublin':
+      return <DublinTemplate resume={resume} />;
+    case 'vienna':
+      return <ViennaTemplate resume={resume} />;
     default:
       return <ModernTechTemplate resume={resume} />;
   }

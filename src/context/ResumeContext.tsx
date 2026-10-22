@@ -51,7 +51,7 @@ interface ResumeContextType {
   reorderEducation: (items: EducationItem[]) => void;
 
   // Skills
-  addSkillCategory: (catName?: string) => void;
+  addSkillCategory: (catName?: string, initialSkills?: string[]) => void;
   updateSkillCategory: (id: string, updates: Partial<SkillCategory>) => void;
   deleteSkillCategory: (id: string) => void;
   addSkillToCategory: (categoryId: string, skill: string) => void;
@@ -202,11 +202,11 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, []);
 
   // Skills
-  const addSkillCategory = useCallback((catName?: string) => {
+  const addSkillCategory = useCallback((catName?: string, initialSkills?: string[]) => {
     const newCat: SkillCategory = {
       id: 'skill-cat-' + Date.now(),
       categoryName: catName || 'New Skill Group',
-      skills: ['Sample Skill'],
+      skills: initialSkills && initialSkills.length > 0 ? initialSkills : ['Sample Skill'],
     };
     setDocument((prev) => ({
       ...prev,

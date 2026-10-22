@@ -17,6 +17,9 @@ import {
   Layers,
   HelpCircle,
 } from 'lucide-react';
+import { AIBulletAssistModal } from './ai/AIBulletAssistModal';
+import { AISummaryModal } from './ai/AISummaryModal';
+import { AISettingsModal } from './ai/AISettingsModal';
 
 export const ResumeFormEditor: React.FC = () => {
   const {
@@ -51,6 +54,21 @@ export const ResumeFormEditor: React.FC = () => {
   const [openSection, setOpenSection] = useState<string>('contact');
   const [newSkillInputs, setNewSkillInputs] = useState<Record<string, string>>({});
   const [newCustomTitle, setNewCustomTitle] = useState('');
+
+  // AI Assistant state
+  const [bulletAssist, setBulletAssist] = useState<{
+    isOpen: boolean;
+    initialBullet: string;
+    position?: string;
+    company?: string;
+    onApply: (val: string) => void;
+  }>({
+    isOpen: false,
+    initialBullet: '',
+    onApply: () => {},
+  });
+  const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   const toggleSection = (id: string) => {
     setOpenSection((prev) => (prev === id ? '' : id));
@@ -274,9 +292,17 @@ export const ResumeFormEditor: React.FC = () => {
               placeholder="Passionate and results-oriented professional with 5+ years of experience in..."
               className="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-teal-600 leading-relaxed font-sans"
             />
-            <div className="flex items-center justify-between text-[11px] text-slate-500">
+            <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
               <span>{document.summary.length} characters</span>
-              <span className="text-teal-700 font-medium">Tip: Highlight top achievements with metrics</span>
+              <button
+                type="button"
+                onClick={() => setIsSummaryModalOpen(true)}
+                className="text-teal-700 hover:text-teal-800 font-bold flex items-center gap-1.5 bg-teal-50 hover:bg-teal-100 px-2.5 py-1 rounded-lg border border-teal-200 transition"
+                title="Generate tailored professional summaries from your experiences"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+                <span>Write / Improve with AI</span>
+              </button>
             </div>
           </div>
         )}
@@ -409,6 +435,22 @@ export const ResumeFormEditor: React.FC = () => {
                           placeholder="e.g. Led a team of 5 engineers to deliver..."
                           className="flex-1 px-2.5 py-1 rounded border border-slate-300 bg-white text-xs leading-relaxed"
                         />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setBulletAssist({
+                              isOpen: true,
+                              initialBullet: bullet,
+                              position: exp.position,
+                              company: exp.company,
+                              onApply: (improved) => handleUpdateExpBullet(exp.id, idx, improved),
+                            })
+                          }
+                          title="Enhance with Nara AI (STAR Method)"
+                          className="p-1.5 rounded-lg text-teal-700 hover:bg-teal-50 border border-teal-200 transition shrink-0 bg-white"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                        </button>
                         <button
                           type="button"
                           onClick={() => handleDeleteExpBullet(exp.id, idx)}
@@ -737,6 +779,22 @@ export const ResumeFormEditor: React.FC = () => {
                         />
                         <button
                           type="button"
+                          onClick={() =>
+                            setBulletAssist({
+                              isOpen: true,
+                              initialBullet: b,
+                              position: proj.roleOrSubtitle,
+                              company: proj.name,
+                              onApply: (improved) => handleUpdateProjBullet(proj.id, idx, improved),
+                            })
+                          }
+                          title="Enhance with Nara AI"
+                          className="p-1.5 rounded-lg text-purple-700 hover:bg-purple-50 border border-purple-200 transition shrink-0 bg-white"
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => handleDeleteProjBullet(proj.id, idx)}
                           className="p-1 text-slate-400 hover:text-rose-600"
                         >
@@ -927,6 +985,30 @@ export const ResumeFormEditor: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* AI Bullet Assist Modal */}
+      <AIBulletAssistModal
+        isOpen={bulletAssist.isOpen}
+        onClose={() => setBulletAssist((prev) => ({ ...prev, isOpen: false }))}
+        initialBullet={bulletAssist.initialBullet}
+        position={bulletAssist.position}
+        company={bulletAssist.company}
+        onApply={bulletAssist.onApply}
+        onOpenSettings={() => setIsSettingsModalOpen(true)}
+      />
+
+      {/* AI Summary Modal */}
+      <AISummaryModal
+        isOpen={isSummaryModalOpen}
+        onClose={() => setIsSummaryModalOpen(false)}
+        onOpenSettings={() => setIsSettingsModalOpen(true)}
+      />
+
+      {/* AI Settings Modal */}
+      <AISettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+      />
     </div>
   );
 };
