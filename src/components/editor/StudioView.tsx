@@ -5,6 +5,7 @@ import { StylingPanel } from './StylingPanel';
 import { TemplateSelector } from './TemplateSelector';
 import { LivePreview } from '../preview/LivePreview';
 import { ExportModal } from '../export/ExportModal';
+import { ShareDocumentModal } from '../common/ShareDocumentModal';
 import { Button } from '../common/Button';
 import { LanguageSwitcher } from '../common/LanguageSwitcher';
 import { UserMenu } from '../auth/UserMenu';
@@ -17,7 +18,10 @@ import {
   Download,
   Share2,
   Sparkles,
+  Loader2,
+  Check,
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export const StudioView: React.FC = () => {
   const {
@@ -29,7 +33,10 @@ export const StudioView: React.FC = () => {
     t,
   } = useBiodata();
 
+  const { user, syncStatus } = useAuth();
+
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
+  const [isShareOpen, setIsShareOpen] = useState(false);
 
   const tabs = [
     { id: 'form' as const, label: t('formAndFields'), icon: <FileText className="w-4 h-4" /> },
@@ -60,7 +67,21 @@ export const StudioView: React.FC = () => {
                 {document.styling.templateId.replace('-', ' ')}
               </span>
               <span>•</span>
-              <span>Auto-saved</span>
+              {user && syncStatus === 'syncing' ? (
+                <span className="text-amber-600 font-semibold flex items-center gap-1 animate-pulse">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Saving...
+                </span>
+              ) : user && syncStatus === 'synced' ? (
+                <span className="text-emerald-600 font-semibold flex items-center gap-1">
+                  <Check className="w-3 h-3" />
+                  Cloud synced
+                </span>
+              ) : user && syncStatus === 'error' ? (
+                <span className="text-amber-700 font-medium">Saved locally (offline)</span>
+              ) : (
+                <span className="text-slate-500 font-medium">Auto-saved locally</span>
+              )}
             </div>
           </div>
         </div>
@@ -108,6 +129,16 @@ export const StudioView: React.FC = () => {
           <LanguageSwitcher />
 
           <UserMenu compact />
+
+          <Button
+            size="sm"
+            variant="outline"
+            icon={<Share2 className="w-4 h-4 text-rose-600" />}
+            onClick={() => setIsShareOpen(true)}
+            title="Share Read-Only Web Link & QR Code"
+          >
+            Share
+          </Button>
 
           <Button
             size="sm"
@@ -163,6 +194,14 @@ export const StudioView: React.FC = () => {
 
       {/* Export Modal */}
       <ExportModal />
+
+      {/* Share Document Modal */}
+      <ShareDocumentModal
+        isOpen={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+        type="biodata"
+        document={document}
+      />
     </div>
   );
 };

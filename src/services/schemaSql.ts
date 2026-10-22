@@ -84,6 +84,43 @@ CREATE POLICY "Users can manage own documents" ON public.documents FOR ALL USING
 DROP POLICY IF EXISTS "Users can manage own settings" ON public.user_settings;
 CREATE POLICY "Users can manage own settings" ON public.user_settings FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
+-- 4. Shared Documents Table (Public Read-Only Sharing)
+CREATE TABLE IF NOT EXISTS public.shared_documents (
+  share_id TEXT PRIMARY KEY,
+  type TEXT NOT NULL CHECK (type IN ('biodata', 'resume')),
+  title TEXT NOT NULL DEFAULT 'Untitled Document',
+  data JSONB NOT NULL,
+  views_count INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_shared_documents_created ON public.shared_documents(created_at DESC);
+
+-- View count increment RPC function
+CREATE OR REPLACE FUNCTION public.increment_share_view(target_share_id TEXT)
+RETURNS VOID AS $$
+BEGIN
+  UPDATE public.shared_documents
+  SET views_count = COALESCE(views_count, 0) + 1
+  WHERE share_id = target_share_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+GRANT ALL ON TABLE public.shared_documents TO anon, authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.increment_share_view(TEXT) TO anon, authenticated, service_role;
+
+ALTER TABLE public.shared_documents ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can view shared documents" ON public.shared_documents;
+CREATE POLICY "Public can view shared documents"
+  ON public.shared_documents FOR SELECT
+  USING (true);
+
+DROP POLICY IF EXISTS "Anyone can insert shared documents" ON public.shared_documents;
+CREATE POLICY "Anyone can insert shared documents"
+  ON public.shared_documents FOR INSERT
+  WITH CHECK (true);
+
 -- Reload PostgREST schema cache
 NOTIFY pgrst, 'reload schema';
 `;

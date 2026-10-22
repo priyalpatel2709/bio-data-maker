@@ -93,9 +93,18 @@ export const BiodataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [exportModalOpen, setExportModalOpen] = useState(false);
   const [savedDocs, setSavedDocs] = useState<BiodataDocument[]>(getSavedDocuments);
 
+  const isFirstMountRef = React.useRef(true);
+
   // Auto-save locally and sync to cloud if authenticated
   useEffect(() => {
     saveCurrentBiodata(document);
+
+    // Skip cloud API call on initial page load when no user edit has occurred
+    if (isFirstMountRef.current) {
+      isFirstMountRef.current = false;
+      return;
+    }
+
     if (user?.id) {
       queueCloudSave('biodata', document, user.id);
     }
@@ -105,7 +114,6 @@ export const BiodataProvider: React.FC<{ children: React.ReactNode }> = ({ child
   useEffect(() => {
     if (syncStatus === 'synced') {
       setSavedDocs(getSavedDocuments());
-      setDocument(loadCurrentBiodata());
     }
   }, [syncStatus]);
 

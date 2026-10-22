@@ -17,10 +17,15 @@ import {
   Check,
   Target,
   Mail,
+  Share2,
+  Loader2,
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { AISettingsModal } from './ai/AISettingsModal';
 import { AIJobMatcherModal } from './ai/AIJobMatcherModal';
 import { AIJobTailorModal } from './ai/AIJobTailorModal';
+import { CoverLetterStudioModal } from './CoverLetterStudioModal';
+import { ShareDocumentModal } from '../common/ShareDocumentModal';
 import { isAIConfigured } from '../../services/aiService';
 import { UserMenu } from '../auth/UserMenu';
 
@@ -32,8 +37,11 @@ export const ResumeStudioView: React.FC = () => {
     setViewMode,
     setExportModalOpen,
     updateTitle,
+    updateCoverLetter,
     resetToSample,
   } = useResume();
+
+  const { user, syncStatus } = useAuth();
 
   const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -41,6 +49,8 @@ export const ResumeStudioView: React.FC = () => {
   const [isAISettingsOpen, setIsAISettingsOpen] = useState(false);
   const [isJobMatcherOpen, setIsJobMatcherOpen] = useState(false);
   const [isJobTailorOpen, setIsJobTailorOpen] = useState(false);
+  const [isCoverLetterOpen, setIsCoverLetterOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const [hasAI, setHasAI] = useState(isAIConfigured());
 
   const tabs = [
@@ -106,7 +116,21 @@ export const ResumeStudioView: React.FC = () => {
                 {document.styling.templateId.replace('-', ' ')}
               </span>
               <span>•</span>
-              <span className="text-emerald-600 font-medium">Auto-saved</span>
+              {user && syncStatus === 'syncing' ? (
+                <span className="text-amber-600 font-semibold flex items-center gap-1 animate-pulse">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Saving...
+                </span>
+              ) : user && syncStatus === 'synced' ? (
+                <span className="text-emerald-600 font-semibold flex items-center gap-1">
+                  <Check className="w-3 h-3" />
+                  Cloud synced
+                </span>
+              ) : user && syncStatus === 'error' ? (
+                <span className="text-amber-700 font-medium">Saved locally (offline)</span>
+              ) : (
+                <span className="text-slate-500 font-medium">Auto-saved locally</span>
+              )}
             </div>
           </div>
         </div>
@@ -151,27 +175,37 @@ export const ResumeStudioView: React.FC = () => {
             </button>
           </div>
 
+          {/* Cover Letter Builder (No AI) */}
+          <button
+            type="button"
+            onClick={() => setIsCoverLetterOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200/80 rounded-xl transition shadow-2xs active:scale-95"
+            title="Open Fill-In-The-Blank Cover Letter Builder"
+          >
+            <Mail className="w-3.5 h-3.5 text-rose-600" />
+            <span className="hidden sm:inline">Cover Letter</span>
+          </button>
+
+          {/* Share Read-Only Link */}
+          <button
+            type="button"
+            onClick={() => setIsShareOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-xl transition shadow-2xs active:scale-95"
+            title="Generate Shareable Read-Only Web Link & QR Code"
+          >
+            <Share2 className="w-3.5 h-3.5 text-teal-700" />
+            <span className="hidden md:inline">Share</span>
+          </button>
+
           <button
             type="button"
             onClick={() => setIsJobTailorOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-teal-700 to-sky-700 hover:from-teal-800 hover:to-sky-800 rounded-xl transition shadow-2xs active:scale-95"
+            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-teal-700 to-sky-700 hover:from-teal-800 hover:to-sky-800 rounded-xl transition shadow-2xs active:scale-95"
             title="Tailor Resume & Generate Cover Letter from Job Description"
           >
             <Sparkles className="w-3.5 h-3.5 text-teal-200" />
-            <span className="hidden sm:inline">Tailor for JD & Cover Letter</span>
+            <span>Tailor for JD</span>
           </button>
-
-          {document.coverLetter && (
-            <button
-              type="button"
-              onClick={() => setIsJobTailorOpen(true)}
-              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200/80 rounded-xl transition"
-              title="View or export the tailored cover letter for this resume"
-            >
-              <Mail className="w-3.5 h-3.5 text-rose-600" />
-              <span>Cover Letter</span>
-            </button>
-          )}
 
           <button
             type="button"
@@ -284,6 +318,22 @@ export const ResumeStudioView: React.FC = () => {
         isOpen={isJobTailorOpen}
         onClose={() => setIsJobTailorOpen(false)}
         onOpenSettings={() => setIsAISettingsOpen(true)}
+      />
+
+      {/* Non-AI Cover Letter Studio Modal */}
+      <CoverLetterStudioModal
+        isOpen={isCoverLetterOpen}
+        onClose={() => setIsCoverLetterOpen(false)}
+        resume={document}
+        onSaveToResume={updateCoverLetter}
+      />
+
+      {/* Share Document Modal */}
+      <ShareDocumentModal
+        isOpen={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+        type="resume"
+        document={document}
       />
     </div>
   );

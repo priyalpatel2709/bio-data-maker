@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BiodataProvider, useBiodata } from './context/BiodataContext';
 import { ResumeProvider, useResume } from './context/ResumeContext';
 import { AppModeProvider, useAppMode } from './context/AppModeContext';
@@ -7,6 +7,7 @@ import { DashboardView } from './components/dashboard/DashboardView';
 import { StudioView } from './components/editor/StudioView';
 import { ResumeDashboardView } from './components/resume/ResumeDashboardView';
 import { ResumeStudioView } from './components/resume/ResumeStudioView';
+import { SharedDocumentView } from './components/share/SharedDocumentView';
 import { LanguageSwitcher } from './components/common/LanguageSwitcher';
 import { UserMenu } from './components/auth/UserMenu';
 import { Sparkles, FileText, Heart, Briefcase, Layers } from 'lucide-react';
@@ -15,6 +16,23 @@ const AppContent: React.FC = () => {
   const { appMode, setAppMode } = useAppMode();
   const { viewMode: biodataViewMode, setViewMode: setBiodataViewMode } = useBiodata();
   const { viewMode: resumeViewMode, setViewMode: setResumeViewMode } = useResume();
+
+  const [isShareView, setIsShareView] = useState(() => {
+    return window.location.hash.includes('/share') || window.location.search.includes('share=');
+  });
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      setIsShareView(window.location.hash.includes('/share') || window.location.search.includes('share='));
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // If viewing a public shared document, render the standalone clean view
+  if (isShareView) {
+    return <SharedDocumentView />;
+  }
 
   const isCurrentDashboard =
     (appMode === 'biodata' && biodataViewMode === 'dashboard') ||

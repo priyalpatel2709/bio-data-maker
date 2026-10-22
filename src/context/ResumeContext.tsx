@@ -13,6 +13,7 @@ import {
   ResumeSectionMeta,
 } from '../types/resume';
 import { defaultResume, RESUME_TEMPLATES } from '../data/defaultResume';
+import { CoverLetterDocument } from '../types/coverLetter';
 import {
   loadCurrentResume,
   saveCurrentResume,
@@ -39,6 +40,7 @@ interface ResumeContextType {
   updateTitle: (title: string) => void;
   updateContact: (updates: Partial<ResumeContactInfo>) => void;
   updateSummary: (summary: string) => void;
+  updateCoverLetter: (coverLetter: CoverLetterDocument | undefined) => void;
 
   // Experience
   addExperience: (item?: Partial<WorkExperienceItem>) => void;
@@ -106,10 +108,18 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [previewZoom, setPreviewZoom] = useState<number | 'fit'>('fit');
   const [exportModalOpen, setExportModalOpen] = useState(false);
   const [savedResumes, setSavedResumes] = useState<ResumeDocument[]>(getSavedResumes);
+  const isFirstMountRef = React.useRef(true);
 
   // Auto-save locally and sync to cloud if authenticated
   useEffect(() => {
     saveCurrentResume(document);
+
+    // Skip cloud API call on initial page load when no user edit has occurred
+    if (isFirstMountRef.current) {
+      isFirstMountRef.current = false;
+      return;
+    }
+
     if (user?.id) {
       queueCloudSave('resume', document, user.id);
     }
@@ -119,7 +129,6 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     if (syncStatus === 'synced') {
       setSavedResumes(getSavedResumes());
-      setDocument(loadCurrentResume());
     }
   }, [syncStatus]);
 
@@ -140,6 +149,10 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const updateSummary = useCallback((summary: string) => {
     setDocument((prev) => ({ ...prev, summary }));
+  }, []);
+
+  const updateCoverLetter = useCallback((coverLetter: CoverLetterDocument | undefined) => {
+    setDocument((prev) => ({ ...prev, coverLetter }));
   }, []);
 
   // Experience actions
@@ -551,6 +564,7 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         updateTitle,
         updateContact,
         updateSummary,
+        updateCoverLetter,
         addExperience,
         updateExperience,
         deleteExperience,

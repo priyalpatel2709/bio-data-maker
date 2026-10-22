@@ -48,12 +48,40 @@ export function subscribeSyncStatus(listener: SyncListener): () => void {
   };
 }
 
-// Debounce map for document saving
+// Debounce timers and pending actions map for document saving
 const debounceTimers: Record<string, NodeJS.Timeout> = {};
+const pendingSaveActions: Record<string, () => Promise<void>> = {};
+
+// Stores JSON payload of last saved version to avoid redundant network calls on identical content
+const lastSavedPayloadMap: Record<string, string> = {};
+
+/**
+ * Flushes all pending debounced saves immediately (e.g. before browser tab close).
+ */
+export function flushPendingSaves(): void {
+  Object.keys(pendingSaveActions).forEach((key) => {
+    if (debounceTimers[key]) {
+      clearTimeout(debounceTimers[key]);
+      delete debounceTimers[key];
+    }
+    const action = pendingSaveActions[key];
+    if (action) {
+      delete pendingSaveActions[key];
+      void action();
+    }
+  });
+}
+
+// Automatically flush pending changes if the user closes or navigates away
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', () => {
+    flushPendingSaves();
+  });
+}
 
 /**
  * Saves a single document to the Supabase cloud table.
- * Debounced by default to avoid hammering the database during live typing.
+ * Debounced by default (1200ms) with content-hash diffing to eliminate unnecessary network traffic.
  */
 export function queueCloudSave(
   type: 'biodata' | 'resume',
@@ -65,12 +93,26 @@ export function queueCloudSave(
   if (!client || !userId) return;
 
   const key = `${type}_${doc.id}`;
+  let currentJson = '';
+  try {
+    currentJson = JSON.stringify(doc);
+  } catch {
+    // fallback if non-serializable
+  }
+
+  // Production check: If content is identical to last saved state, skip API call entirely
+  if (currentJson && lastSavedPayloadMap[key] === currentJson) {
+    return;
+  }
+
   if (debounceTimers[key]) {
     clearTimeout(debounceTimers[key]);
+    delete debounceTimers[key];
   }
 
   const performSave = async () => {
     try {
+      delete pendingSaveActions[key];
       setSyncStatus('syncing');
       const now = new Date().toISOString();
       const payload = {
@@ -96,6 +138,22 @@ export function queueCloudSave(
         }
         setSyncStatus('error');
       } else {
+        // Record successfully saved payload hash
+        if (currentJson) {
+          lastSavedPayloadMap[key] = currentJson;
+        }
+
+        // Also update shared_documents if this document was shared
+        try {
+          const shareSlug = (doc.id || 'doc').replace(/[^a-zA-Z0-9_-]/g, '_');
+          await client.from('shared_documents').update({
+            title: doc.title || (type === 'biodata' ? 'Untitled Biodata' : 'Untitled Resume'),
+            data: doc,
+          }).eq('share_id', shareSlug);
+        } catch {
+          // silent fallback
+        }
+
         setSyncStatus('synced');
       }
     } catch (err) {
@@ -104,12 +162,14 @@ export function queueCloudSave(
     }
   };
 
+  pendingSaveActions[key] = performSave;
+
   if (immediate) {
     void performSave();
   } else {
     debounceTimers[key] = setTimeout(() => {
       void performSave();
-    }, 1500); // 1.5s debounce
+    }, 1200); // 1.2s keystroke debounce
   }
 }
 

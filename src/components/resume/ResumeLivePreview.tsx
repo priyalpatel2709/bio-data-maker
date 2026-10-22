@@ -2,6 +2,9 @@ import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { useResume } from '../../context/ResumeContext';
 import { ResumeTemplateRenderer } from './ResumeTemplateRenderer';
 import { generateResumePlainText } from '../../utils/resumeStorage';
+import { usePageMetrics } from '../../utils/pageMetrics';
+import { auditResume } from '../../utils/atsAuditor';
+import { ATSAuditorModal } from './ATSAuditorModal';
 import {
   ZoomIn,
   ZoomOut,
@@ -15,13 +18,18 @@ import {
   AlertTriangle,
   CheckCircle2,
   FileText,
+  Layers,
+  HelpCircle,
 } from 'lucide-react';
 
 export const ResumeLivePreview: React.FC = () => {
   const { document, previewZoom, setPreviewZoom, setExportModalOpen } = useResume();
   const containerRef = useRef<HTMLDivElement>(null);
+  const documentWrapperRef = useRef<HTMLDivElement>(null);
   const [copiedText, setCopiedText] = useState(false);
   const [fitScale, setFitScale] = useState(0.85);
+  const [showPageGuides, setShowPageGuides] = useState(true);
+  const [isAuditorOpen, setIsAuditorOpen] = useState(false);
 
   const isLetter = document.styling.paperSize === 'letter';
   const pageWidthPx = isLetter ? 816 : 794;
@@ -34,6 +42,9 @@ export const ResumeLivePreview: React.FC = () => {
       document.certifications.length > 0 ||
       document.customSections.length > 0);
   const totalPages = hasPage2 ? 2 : 1;
+
+  // Real-time page boundary measurements
+  const metrics = usePageMetrics(documentWrapperRef, document.styling.paperSize);
 
   // Auto-fit calculation
   useEffect(() => {
@@ -51,43 +62,8 @@ export const ResumeLivePreview: React.FC = () => {
     return () => window.removeEventListener('resize', calculateFit);
   }, [pageWidthPx]);
 
-  // ATS score calculation
-  const atsScore = useMemo(() => {
-    let score = 0;
-    const checks: { label: string; passed: boolean }[] = [];
-
-    const hasName = !!document.contact.fullName?.trim();
-    checks.push({ label: 'Full Name', passed: hasName });
-    if (hasName) score += 15;
-
-    const hasEmail = !!document.contact.email?.trim();
-    const hasPhone = !!document.contact.phone?.trim();
-    checks.push({ label: 'Email & Phone', passed: hasEmail && hasPhone });
-    if (hasEmail) score += 10;
-    if (hasPhone) score += 10;
-
-    const hasTitle = !!document.contact.jobTitle?.trim();
-    checks.push({ label: 'Target Job Title', passed: hasTitle });
-    if (hasTitle) score += 10;
-
-    const hasSummary = document.summary?.trim().length > 40;
-    checks.push({ label: 'Summary Statement', passed: hasSummary });
-    if (hasSummary) score += 15;
-
-    const hasExp = document.experience.length > 0 && document.experience.some((e) => e.bullets.length > 0);
-    checks.push({ label: 'Experience with Bullets', passed: hasExp });
-    if (hasExp) score += 20;
-
-    const hasSkills = document.skillCategories.some((sc) => sc.skills.length > 0);
-    checks.push({ label: 'Technical / Core Skills', passed: hasSkills });
-    if (hasSkills) score += 10;
-
-    const hasEdu = document.education.length > 0;
-    checks.push({ label: 'Education Credential', passed: hasEdu });
-    if (hasEdu) score += 10;
-
-    return { score, checks };
-  }, [document]);
+  // Comprehensive rule-based ATS audit
+  const atsReport = useMemo(() => auditResume(document), [document]);
 
   const handleCopyPlainText = () => {
     const text = generateResumePlainText(document);
@@ -109,48 +85,69 @@ export const ResumeLivePreview: React.FC = () => {
       <div className="h-13 bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-4 py-2 flex items-center justify-between gap-3 shrink-0 z-20">
         {/* Left Side: ATS Score & A4 Page Badges */}
         <div className="flex items-center gap-2.5 flex-wrap">
-          {/* ATS Score */}
-          <div
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${
-              atsScore.score >= 80
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                : atsScore.score >= 50
-                ? 'bg-amber-50 text-amber-700 border-amber-200'
-                : 'bg-rose-50 text-rose-700 border-rose-200'
+          {/* Clickable ATS Score Badge -> opens detailed Auditor */}
+          <button
+            type="button"
+            onClick={() => setIsAuditorOpen(true)}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition hover:shadow-xs active:scale-95 cursor-pointer ${
+              atsReport.overallScore >= 80
+                ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
+                : atsReport.overallScore >= 60
+                ? 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
+                : 'bg-rose-50 text-rose-800 border-rose-300 hover:bg-rose-100'
             }`}
-            title={`ATS Readiness: ${atsScore.score}%`}
+            title="Click to view detailed Rule-Based ATS Audit & Action Verbs breakdown"
           >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>ATS Score: {atsScore.score}%</span>
-          </div>
-
-          {/* Page Count Badge */}
-          <div
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border transition ${
-              totalPages === 1
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-200/80'
-                : 'bg-amber-50 text-amber-800 border-amber-200/80'
-            }`}
-            title={
-              totalPages === 1
-                ? 'Optimal 1-Page Resume: Highest recruiter preference for most applicants.'
-                : '2-Page Resume: Recruiter tip — adjust spacing or bullets to fit 1 page if needed.'
-            }
-          >
-            <FileText className="w-3.5 h-3.5 text-slate-500" />
-            <span>
-              {totalPages === 1 ? '1 Page A4' : `${totalPages} Pages A4 (Multi-Page)`}
+            <ShieldCheck className="w-3.5 h-3.5 text-teal-700" />
+            <span>ATS Score: {atsReport.overallScore}%</span>
+            <span className="text-[10px] uppercase font-extrabold px-1.5 py-0.2 bg-white/80 rounded-md">
+              {atsReport.grade}
             </span>
-            {totalPages === 1 ? (
-              <span className="text-[10px] text-emerald-600 font-semibold">(Perfect Fit)</span>
-            ) : (
-              <span className="text-[10px] text-amber-600 font-semibold">(2nd Page Ready)</span>
-            )}
-          </div>
+          </button>
 
-          <span className="hidden xl:inline-block text-[11px] text-slate-500 font-medium">
-            Standard: {isLetter ? 'US Letter (215.9 × 279.4 mm)' : 'A4 (210 × 297 mm)'}
-          </span>
+          {/* Page Fit Badge */}
+          {totalPages === 1 ? (
+            metrics.isOverflowing ? (
+              <div
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300 animate-pulse"
+                title={`Page 1 is overflowing by ~${metrics.estimatedLinesOver} lines (${metrics.overflowPx}px). Upon export this will spill onto page 2.`}
+              >
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span>Spills into Page 2 (+{metrics.estimatedLinesOver} lines)</span>
+              </div>
+            ) : (
+              <div
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200"
+                title={`Perfect 1-Page fit (${metrics.fillPercentage}% filled). Highest recruiter preference.`}
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>1 Page {isLetter ? 'Letter' : 'A4'} ({metrics.fillPercentage}% full)</span>
+              </div>
+            )
+          ) : (
+            <div
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-teal-50 text-teal-800 border border-teal-200"
+              title="2-Page Resume: Split across two distinct pages with matched headers & margins."
+            >
+              <FileText className="w-3.5 h-3.5 text-teal-600 shrink-0" />
+              <span>2 Pages {isLetter ? 'Letter' : 'A4'}</span>
+            </div>
+          )}
+
+          {/* Page Guides Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setShowPageGuides((prev) => !prev)}
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border transition ${
+              showPageGuides
+                ? 'bg-teal-50 text-teal-800 border-teal-300'
+                : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+            }`}
+            title="Toggle visual page boundary lines & overflow indicators"
+          >
+            <Layers className="w-3.5 h-3.5" />
+            <span className="hidden lg:inline">Page Guide</span>
+          </button>
         </div>
 
         {/* Right Preview Controls */}
@@ -195,11 +192,11 @@ export const ResumeLivePreview: React.FC = () => {
             <span className="hidden md:inline">{copiedText ? 'Copied ATS Text' : 'Copy ATS'}</span>
           </button>
 
-          {/* Print */}
+          {/* Vector Print button */}
           <button
             onClick={handlePrint}
             className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition hidden sm:flex"
-            title="Print preview"
+            title="Crisp Native Vector Print (window.print)"
           >
             <Printer className="w-4 h-4" />
           </button>
@@ -222,33 +219,86 @@ export const ResumeLivePreview: React.FC = () => {
       >
         {/* Scale Wrapper */}
         <div
+          ref={documentWrapperRef}
           style={{
             transform: `scale(${scale})`,
             transformOrigin: 'top center',
             transition: 'transform 0.12s ease-out',
             width: `${pageWidthPx}px`,
           }}
-          className="shrink-0 mb-16 relative"
+          className="preview-scale-wrapper shrink-0 mb-16 relative"
         >
-          {/* Document Renderer (renders Page 1 and Page 2 as discrete A4 sheets) */}
+          {/* Document Renderer */}
           <ResumeTemplateRenderer resume={document} />
 
+          {/* Visual Page Break Guide Overlay (Only when enabled and in single-page mode) */}
+          {showPageGuides && totalPages === 1 && (
+            <div
+              className="page-break-guide-line no-print pointer-events-none absolute left-0 right-0 z-30"
+              style={{
+                top: `${metrics.nominalPageHeightPx}px`,
+              }}
+            >
+              {/* Boundary dashed line */}
+              <div className="relative border-b-2 border-dashed border-rose-500/80 w-full flex items-center justify-center">
+                <span className="absolute -top-3.5 bg-rose-600 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-md flex items-center gap-1.5">
+                  <FileText className="w-3 h-3" />
+                  {isLetter ? 'US Letter' : 'A4'} Page 1 End ({metrics.nominalPageHeightPx}px)
+                </span>
+              </div>
+
+              {/* Overflow warning banner if content exceeds nominal height */}
+              {metrics.isOverflowing && (
+                <div
+                  className="bg-rose-500/10 border-l-4 border-rose-500 mt-2 mx-2 p-3 rounded text-rose-900 text-xs font-medium space-y-1 backdrop-blur-2xs shadow-xs"
+                  style={{
+                    minHeight: `${Math.max(40, metrics.overflowPx)}px`,
+                  }}
+                >
+                  <div className="flex items-center gap-2 font-bold text-rose-800">
+                    <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                    <span>
+                      Content overflow detected: ~{metrics.estimatedLinesOver} lines ({metrics.overflowPx}px) past Page 1.
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-rose-700">
+                    Recruiter tip: To fit cleanly onto 1 page, switch to "Compact" margins in Styling, or trim 1-2 bullet points.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Bottom Summary Footer */}
-          <div className="preview-page-footer pt-6 text-center text-xs text-slate-500 font-medium select-none">
+          <div className="preview-page-footer pt-6 text-center text-xs text-slate-500 font-medium select-none no-print">
             {totalPages === 1 ? (
-              <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/80 shadow-2xs">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                Fits cleanly on 1 standard {isLetter ? 'US Letter' : 'A4'} page
-              </span>
+              metrics.isOverflowing ? (
+                <span className="inline-flex items-center gap-1 text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-300 shadow-2xs">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                  Overflowing Page 1 by ~{metrics.estimatedLinesOver} lines (spills onto Page 2)
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/80 shadow-2xs">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Fits cleanly on 1 standard {isLetter ? 'US Letter' : 'A4'} page ({metrics.fillPercentage}% full)
+                </span>
+              )
             ) : (
               <span className="inline-flex items-center gap-1 text-teal-800 bg-teal-50 px-3.5 py-1 rounded-full border border-teal-200/80 shadow-2xs">
                 <FileText className="w-3.5 h-3.5 text-teal-600" />
-                Paginated across {totalPages} distinct A4 pages with matched margins & headers
+                Paginated across {totalPages} distinct {isLetter ? 'US Letter' : 'A4'} pages with matched margins & headers
               </span>
             )}
           </div>
         </div>
       </div>
+
+      {/* ATS Rule-Based Auditor Modal */}
+      <ATSAuditorModal
+        isOpen={isAuditorOpen}
+        onClose={() => setIsAuditorOpen(false)}
+        resume={document}
+      />
     </div>
   );
 };
