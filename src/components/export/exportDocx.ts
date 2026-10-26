@@ -10,15 +10,15 @@ import {
   AlignmentType,
   BorderStyle,
   ImageRun,
-} from 'docx';
-import { saveAs } from 'file-saver';
-import { BiodataDocument } from '../../types/biodata';
-import { calculateAge, formatDate } from '../../utils/calculateAge';
+} from "docx";
+import { saveAs } from "file-saver";
+import { BiodataDocument } from "../../types/biodata";
+import { calculateAge, formatDate } from "../../utils/calculateAge";
 
 async function fetchImageBuffer(url: string): Promise<Uint8Array | null> {
   try {
-    if (url.startsWith('data:image/')) {
-      const base64Data = url.split(',')[1];
+    if (url.startsWith("data:image/")) {
+      const base64Data = url.split(",")[1];
       const binaryString = window.atob(base64Data);
       const len = binaryString.length;
       const bytes = new Uint8Array(len);
@@ -32,7 +32,7 @@ async function fetchImageBuffer(url: string): Promise<Uint8Array | null> {
     const arrayBuffer = await response.arrayBuffer();
     return new Uint8Array(arrayBuffer);
   } catch (err) {
-    console.warn('Could not load image for docx export:', err);
+    console.warn("Could not load image for docx export:", err);
     return null;
   }
 }
@@ -40,21 +40,21 @@ async function fetchImageBuffer(url: string): Promise<Uint8Array | null> {
 export async function exportBiodataToDocx(
   biodata: BiodataDocument,
   filename?: string,
-  onProgress?: (progress: number, stage: string) => void
+  onProgress?: (progress: number, stage: string) => void,
 ): Promise<void> {
-  onProgress?.(10, 'Compiling document structure...');
+  onProgress?.(10, "Compiling document structure...");
 
   const { title, sections, styling, photoUrl } = biodata;
-  const primaryHex = styling.primaryColor.replace('#', '') || '881337';
-  const accentHex = styling.accentColor.replace('#', '') || 'D97706';
+  const primaryHex = styling.primaryColor.replace("#", "") || "881337";
+  const accentHex = styling.accentColor.replace("#", "") || "D97706";
 
   let imageBuffer: Uint8Array | null = null;
   if (styling.showPhoto && photoUrl) {
-    onProgress?.(25, 'Processing profile photograph...');
+    onProgress?.(25, "Processing profile photograph...");
     imageBuffer = await fetchImageBuffer(photoUrl);
   }
 
-  onProgress?.(45, 'Creating Word typography and tables...');
+  onProgress?.(45, "Creating Word typography and tables...");
 
   const docChildren: any[] = [];
 
@@ -65,14 +65,14 @@ export async function exportBiodataToDocx(
       spacing: { before: 200, after: 100 },
       children: [
         new TextRun({
-          text: 'BIODATA',
+          text: "BIODATA",
           bold: true,
           size: 32, // 16pt
           color: primaryHex,
-          font: 'Calibri',
+          font: "Calibri",
         }),
       ],
-    })
+    }),
   );
 
   docChildren.push(
@@ -85,10 +85,10 @@ export async function exportBiodataToDocx(
           bold: true,
           size: 24, // 12pt
           color: accentHex,
-          font: 'Calibri',
+          font: "Calibri",
         }),
       ],
-    })
+    }),
   );
 
   // Profile Image if available
@@ -105,13 +105,13 @@ export async function exportBiodataToDocx(
                 width: 140,
                 height: 180,
               },
-              type: 'jpg',
+              type: "jpg",
             }),
           ],
-        })
+        }),
       );
     } catch (e) {
-      console.warn('Failed to embed ImageRun into docx:', e);
+      console.warn("Failed to embed ImageRun into docx:", e);
     }
   }
 
@@ -140,19 +140,22 @@ export async function exportBiodataToDocx(
             bold: true,
             size: 24,
             color: primaryHex,
-            font: 'Calibri',
+            font: "Calibri",
           }),
         ],
-      })
+      }),
     );
 
     // Build Table for section fields
     const tableRows: TableRow[] = [];
 
     for (const field of visibleFields) {
-      const isDob = field.id.includes('dob') || field.label.toLowerCase().includes('date of birth');
+      const isDob =
+        field.id.includes("dob") ||
+        field.label.toLowerCase().includes("date of birth");
       const calculatedAge = isDob ? calculateAge(field.value) : null;
-      let displayValue = field.type === 'date' ? formatDate(field.value) : field.value || '—';
+      let displayValue =
+        field.type === "date" ? formatDate(field.value) : field.value || "—";
       if (calculatedAge !== null) {
         displayValue += ` (${calculatedAge} Years)`;
       }
@@ -165,7 +168,7 @@ export async function exportBiodataToDocx(
               margins: { top: 80, bottom: 80, left: 100, right: 100 },
               borders: {
                 top: { style: BorderStyle.NONE },
-                bottom: { style: BorderStyle.DASHED, size: 4, color: 'E2E8F0' },
+                bottom: { style: BorderStyle.DASHED, size: 4, color: "E2E8F0" },
                 left: { style: BorderStyle.NONE },
                 right: { style: BorderStyle.NONE },
               },
@@ -176,8 +179,8 @@ export async function exportBiodataToDocx(
                       text: field.label,
                       bold: true,
                       size: 20,
-                      color: '334155',
-                      font: 'Calibri',
+                      color: "334155",
+                      font: "Calibri",
                     }),
                   ],
                 }),
@@ -188,7 +191,7 @@ export async function exportBiodataToDocx(
               margins: { top: 80, bottom: 80, left: 100, right: 100 },
               borders: {
                 top: { style: BorderStyle.NONE },
-                bottom: { style: BorderStyle.DASHED, size: 4, color: 'E2E8F0' },
+                bottom: { style: BorderStyle.DASHED, size: 4, color: "E2E8F0" },
                 left: { style: BorderStyle.NONE },
                 right: { style: BorderStyle.NONE },
               },
@@ -198,15 +201,15 @@ export async function exportBiodataToDocx(
                     new TextRun({
                       text: displayValue,
                       size: 20,
-                      color: '1E293B',
-                      font: 'Calibri',
+                      color: "1E293B",
+                      font: "Calibri",
                     }),
                   ],
                 }),
               ],
             }),
           ],
-        })
+        }),
       );
     }
 
@@ -214,7 +217,7 @@ export async function exportBiodataToDocx(
       new Table({
         width: { size: 100, type: WidthType.PERCENTAGE },
         rows: tableRows,
-      })
+      }),
     );
   }
 
@@ -225,14 +228,14 @@ export async function exportBiodataToDocx(
       spacing: { before: 400 },
       children: [
         new TextRun({
-          text: 'Document created with Biodata Maker',
+          text: "Document created with Biodata Maker",
           italics: true,
           size: 16,
-          color: '94A3B8',
-          font: 'Calibri',
+          color: "94A3B8",
+          font: "Calibri",
         }),
       ],
-    })
+    }),
   );
 
   // Attached High-Resolution Images (Appended to end of Word Document)
@@ -241,7 +244,7 @@ export async function exportBiodataToDocx(
       const img = biodata.attachedImages[i];
       onProgress?.(
         60 + Math.round(((i + 1) / biodata.attachedImages.length) * 20),
-        `Embedding photo attachment ${i + 1} of ${biodata.attachedImages.length}...`
+        `Embedding photo attachment ${i + 1} of ${biodata.attachedImages.length}...`,
       );
 
       const buffer = await fetchImageBuffer(img.url);
@@ -259,10 +262,10 @@ export async function exportBiodataToDocx(
               bold: true,
               size: 26,
               color: primaryHex,
-              font: 'Calibri',
+              font: "Calibri",
             }),
           ],
-        })
+        }),
       );
 
       try {
@@ -277,13 +280,13 @@ export async function exportBiodataToDocx(
                   width: 480,
                   height: 600,
                 },
-                type: 'jpg',
+                type: "jpg",
               }),
             ],
-          })
+          }),
         );
       } catch (err) {
-        console.warn('Failed to embed attached image in docx:', err);
+        console.warn("Failed to embed attached image in docx:", err);
       }
 
       if (img.caption) {
@@ -296,17 +299,17 @@ export async function exportBiodataToDocx(
                 text: img.caption,
                 italics: true,
                 size: 20,
-                color: '475569',
-                font: 'Calibri',
+                color: "475569",
+                font: "Calibri",
               }),
             ],
-          })
+          }),
         );
       }
     }
   }
 
-  onProgress?.(85, 'Packaging DOCX file...');
+  onProgress?.(85, "Packaging DOCX file...");
 
   const doc = new Document({
     sections: [
@@ -327,9 +330,13 @@ export async function exportBiodataToDocx(
   });
 
   const blob = await Packer.toBlob(doc);
-  const outFilename = filename || `${biodata.title.replace(/[^a-zA-Z0-9_-]/g, '_')}.docx`;
+  const outFilename =
+    filename || `${biodata.title.replace(/[^a-zA-Z0-9_-]/g, "_")}.docx`;
 
-  onProgress?.(95, 'Downloading file...');
-  saveAs(blob, outFilename.endsWith('.docx') ? outFilename : `${outFilename}.docx`);
-  onProgress?.(100, 'Complete!');
+  onProgress?.(95, "Downloading file...");
+  saveAs(
+    blob,
+    outFilename.endsWith(".docx") ? outFilename : `${outFilename}.docx`,
+  );
+  onProgress?.(100, "Complete!");
 }

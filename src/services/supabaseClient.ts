@@ -1,14 +1,14 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const STORAGE_KEY_URL = 'biodata_supabase_url';
-const STORAGE_KEY_KEY = 'biodata_supabase_anon_key';
+const STORAGE_KEY_URL = "biodata_supabase_url";
+const STORAGE_KEY_KEY = "biodata_supabase_anon_key";
 
 export function getSupabaseCredentials(): { url: string; anonKey: string } {
-  const envUrl = import.meta.env.VITE_SUPABASE_URL || '';
-  const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+  const envUrl = import.meta.env.VITE_SUPABASE_URL || "";
+  const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
-  const localUrl = localStorage.getItem(STORAGE_KEY_URL) || '';
-  const localKey = localStorage.getItem(STORAGE_KEY_KEY) || '';
+  const localUrl = localStorage.getItem(STORAGE_KEY_URL) || "";
+  const localKey = localStorage.getItem(STORAGE_KEY_KEY) || "";
 
   return {
     url: (envUrl || localUrl).trim(),
@@ -38,9 +38,9 @@ export function isSupabaseConfigured(): boolean {
   return Boolean(
     url &&
     anonKey &&
-    url.startsWith('https://') &&
+    url.startsWith("https://") &&
     anonKey.length > 20 &&
-    !url.includes('your-project')
+    !url.includes("your-project"),
   );
 }
 
@@ -64,7 +64,7 @@ export function getSupabaseClient(): SupabaseClient | null {
     });
     return cachedClient;
   } catch (err) {
-    console.error('Failed to create Supabase client:', err);
+    console.error("Failed to create Supabase client:", err);
     return null;
   }
 }

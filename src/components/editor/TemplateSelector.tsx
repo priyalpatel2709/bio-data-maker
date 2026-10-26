@@ -1,8 +1,8 @@
-import React from 'react';
-import { useBiodata } from '../../context/BiodataContext';
-import { TEMPLATES } from '../../data/templateCatalog';
-import { TemplateThumbnail } from '../preview/TemplateThumbnail';
-import { Check, Sparkles } from 'lucide-react';
+import React from "react";
+import { useBiodata } from "../../context/BiodataContext";
+import { TEMPLATES } from "../../data/templateCatalog";
+import { TemplateThumbnail } from "../preview/TemplateThumbnail";
+import { Check, Sparkles } from "lucide-react";
 
 export const TemplateSelector: React.FC = () => {
   const { document, setTemplate } = useBiodata();
@@ -11,9 +11,12 @@ export const TemplateSelector: React.FC = () => {
   return (
     <div className="space-y-4 pb-24">
       <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm">
-        <h4 className="text-sm font-bold text-slate-900">Switch Template Layout</h4>
+        <h4 className="text-sm font-bold text-slate-900">
+          Switch Template Layout
+        </h4>
         <p className="text-xs text-slate-500 mt-0.5">
-          Choose a design. All your fields, custom data, and edits are 100% preserved.
+          Choose a design. All your fields, custom data, and edits are 100%
+          preserved.
         </p>
       </div>
 
@@ -26,8 +29,8 @@ export const TemplateSelector: React.FC = () => {
               onClick={() => setTemplate(tpl.id)}
               className={`cursor-pointer rounded-2xl border p-4 transition-all duration-200 flex items-start gap-4 ${
                 isSelected
-                  ? 'border-rose-500 bg-rose-50/30 ring-2 ring-rose-200 shadow-md'
-                  : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'
+                  ? "border-rose-500 bg-rose-50/30 ring-2 ring-rose-200 shadow-md"
+                  : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
               }`}
             >
               {/* Actual Live Template Thumbnail */}
@@ -72,7 +75,10 @@ export const TemplateSelector: React.FC = () => {
                 </p>
 
                 <div className="mt-2 text-[11px] text-slate-500">
-                  <span className="font-semibold text-slate-700">Best for:</span> {tpl.bestFor}
+                  <span className="font-semibold text-slate-700">
+                    Best for:
+                  </span>{" "}
+                  {tpl.bestFor}
                 </div>
               </div>
             </div>

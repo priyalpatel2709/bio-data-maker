@@ -1,7 +1,7 @@
-import React from 'react';
-import { BiodataDocument } from '../../../types/biodata';
-import { DocumentPhoto } from '../DocumentPhoto';
-import { calculateAge, formatDate } from '../../../utils/calculateAge';
+import React from "react";
+import { BiodataDocument } from "../../../types/biodata";
+import { DocumentPhoto } from "../DocumentPhoto";
+import { calculateAge, formatDate } from "../../../utils/calculateAge";
 
 interface TemplateProps {
   document: BiodataDocument;
@@ -12,9 +12,9 @@ export const ModernMinimal: React.FC<TemplateProps> = ({ document }) => {
   const visibleSections = sections.filter((s) => s.visible);
 
   // Extract name for prominent modern header
-  const personalSec = sections.find((s) => s.key === 'personal');
+  const personalSec = sections.find((s) => s.key === "personal");
   const nameField = personalSec?.fields.find(
-    (f) => f.id.includes('name') || f.label.toLowerCase().includes('name')
+    (f) => f.id.includes("name") || f.label.toLowerCase().includes("name"),
   );
   const candidateName = nameField?.value || document.title;
 
@@ -42,7 +42,11 @@ export const ModernMinimal: React.FC<TemplateProps> = ({ document }) => {
           </div>
 
           {styling.showPhoto && (
-            <DocumentPhoto photoUrl={photoUrl} styling={styling} className="shadow-sm" />
+            <DocumentPhoto
+              photoUrl={photoUrl}
+              styling={styling}
+              className="shadow-sm"
+            />
           )}
         </div>
 
@@ -74,20 +78,28 @@ export const ModernMinimal: React.FC<TemplateProps> = ({ document }) => {
                 {/* Field Grid */}
                 <div
                   className={`grid ${
-                    styling.columns === 2 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'
+                    styling.columns === 2
+                      ? "grid-cols-1 sm:grid-cols-2"
+                      : "grid-cols-1"
                   } gap-3 sm:gap-4`}
                 >
                   {visibleFields.map((field) => {
                     const isDob =
-                      field.id.includes('dob') || field.label.toLowerCase().includes('date of birth');
-                    const calculatedAge = isDob ? calculateAge(field.value) : null;
-                    const displayValue = field.type === 'date' ? formatDate(field.value) : field.value;
+                      field.id.includes("dob") ||
+                      field.label.toLowerCase().includes("date of birth");
+                    const calculatedAge = isDob
+                      ? calculateAge(field.value)
+                      : null;
+                    const displayValue =
+                      field.type === "date"
+                        ? formatDate(field.value)
+                        : field.value;
 
                     return (
                       <div
                         key={field.id}
                         className={`bg-slate-50/70 p-2.5 rounded-xl border border-slate-100 ${
-                          field.type === 'textarea' ? 'sm:col-span-2' : ''
+                          field.type === "textarea" ? "sm:col-span-2" : ""
                         }`}
                       >
                         <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">
@@ -97,7 +109,7 @@ export const ModernMinimal: React.FC<TemplateProps> = ({ document }) => {
                           className="text-xs sm:text-sm font-medium text-slate-800 leading-relaxed"
                           style={{ fontFamily: styling.fontFamilyBody }}
                         >
-                          {displayValue || '—'}
+                          {displayValue || "—"}
                           {calculatedAge !== null && (
                             <span className="ml-1.5 text-xs text-rose-600 font-semibold">
                               ({calculatedAge} yrs)

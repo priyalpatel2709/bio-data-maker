@@ -1,4 +1,10 @@
-export type FieldType = 'text' | 'textarea' | 'number' | 'date' | 'select' | 'boolean';
+export type FieldType =
+  | "text"
+  | "textarea"
+  | "number"
+  | "date"
+  | "select"
+  | "boolean";
 
 export interface CustomField {
   id: string;
@@ -21,64 +27,90 @@ export interface BiodataSection {
   fields: CustomField[];
 }
 
-export type TemplateId = 
-  | 'mandala-radiance'
-  | 'marigold-toran'
-  | 'vintage-parchment'
-  | 'instant-royal-maroon'
-  | 'instant-peacock-navy'
-  | 'instant-floral-blush'
-  | 'classic-traditional'
-  | 'simple-box'
-  | 'floral-border'
-  | 'modern-minimal'
-  | 'elegant-premium'
-  | 'family-focused'
-  | 'professional'
-  | 'photo-focused';
+export type TemplateId =
+  | "mandala-radiance"
+  | "marigold-toran"
+  | "vintage-parchment"
+  | "instant-royal-maroon"
+  | "instant-peacock-navy"
+  | "instant-floral-blush"
+  | "classic-traditional"
+  | "simple-box"
+  | "floral-border"
+  | "modern-minimal"
+  | "elegant-premium"
+  | "family-focused"
+  | "professional"
+  | "photo-focused";
 
-export type Language = 'en' | 'hi' | 'gu';
+export type Language = "en" | "hi" | "gu";
 
-export type FontOption = 'Inter' | 'Playfair Display' | 'Merriweather' | 'Montserrat' | 'Cinzel' | 'Cormorant Garamond';
-export type SpacingOption = 'compact' | 'normal' | 'relaxed';
-export type BorderStyle = 'none' | 'simple' | 'double' | 'ornate' | 'decorative';
-export type PhotoShape = 'circle' | 'rounded' | 'square' | 'oval';
-export type PhotoPosition = 'top-left' | 'top-center' | 'top-right' | 'sidebar';
-export type HeaderSymbol = 'ganesha' | 'om' | 'swastik' | 'ek-onkar' | 'bismillah' | 'cross' | 'lotus' | 'custom' | 'none';
+export type FontOption =
+  | "Inter"
+  | "Playfair Display"
+  | "Merriweather"
+  | "Montserrat"
+  | "Cinzel"
+  | "Cormorant Garamond";
+export type SpacingOption = "compact" | "normal" | "relaxed";
+export type BorderStyle =
+  | "none"
+  | "simple"
+  | "double"
+  | "ornate"
+  | "decorative";
+export type PhotoShape = "circle" | "rounded" | "square" | "oval";
+export type PhotoPosition = "top-left" | "top-center" | "top-right" | "sidebar";
+export type HeaderSymbol =
+  | "ganesha"
+  | "om"
+  | "swastik"
+  | "ek-onkar"
+  | "bismillah"
+  | "cross"
+  | "lotus"
+  | "custom"
+  | "none";
 
 export interface StylingConfig {
   templateId: TemplateId;
   language?: Language;
   headerSymbol?: HeaderSymbol;
-  customHeaderSymbol?: string;     // custom icon/emoji like 🕉️, 🌺, 🪔, etc.
-  customHeaderText?: string;       // custom mantra/slogan like "|| Jai Shri Krishna ||"
-  showEmblem?: boolean;            // toggle emblem display on/off
-  showDocumentTitle?: boolean;     // toggle "BIODATA" heading on/off
-  customDocumentTitle?: string;    // customize or rename "BIODATA" heading
-  primaryColor: string;       // Hex color for headings, accents
-  accentColor: string;        // Secondary color for badges, borders
-  backgroundColor: string;    // Document canvas background (e.g. #FFFFFF or soft ivory)
-  textColor: string;          // Primary text color (#1E293B)
-  subtextColor: string;       // Muted field label color (#64748B)
-  backgroundImageUrl?: string;// Optional user uploaded background
-  backgroundPattern: 'none' | 'floral' | 'damask' | 'mandala' | 'subtle-grid' | 'parchment';
-  backgroundOpacity: number;  // 0.05 to 1.0
+  customHeaderSymbol?: string; // custom icon/emoji like 🕉️, 🌺, 🪔, etc.
+  customHeaderText?: string; // custom mantra/slogan like "|| Jai Shri Krishna ||"
+  showEmblem?: boolean; // toggle emblem display on/off
+  showDocumentTitle?: boolean; // toggle "BIODATA" heading on/off
+  customDocumentTitle?: string; // customize or rename "BIODATA" heading
+  primaryColor: string; // Hex color for headings, accents
+  accentColor: string; // Secondary color for badges, borders
+  backgroundColor: string; // Document canvas background (e.g. #FFFFFF or soft ivory)
+  textColor: string; // Primary text color (#1E293B)
+  subtextColor: string; // Muted field label color (#64748B)
+  backgroundImageUrl?: string; // Optional user uploaded background
+  backgroundPattern:
+    | "none"
+    | "floral"
+    | "damask"
+    | "mandala"
+    | "subtle-grid"
+    | "parchment";
+  backgroundOpacity: number; // 0.05 to 1.0
   fontFamilyHeading: FontOption;
   fontFamilyBody: FontOption;
-  fontSize: 'compact' | 'normal' | 'relaxed';
+  fontSize: "compact" | "normal" | "relaxed";
   spacing: SpacingOption;
   columns: 1 | 2;
   borderStyle: BorderStyle;
   photoShape: PhotoShape;
   photoPosition: PhotoPosition;
   photoBorder: boolean;
-  photoSize: 'small' | 'medium' | 'large';
-  photoWidth?: number;              // Custom photo width in px (70 to 320)
-  photoHeight?: number;             // Custom photo height in px (80 to 420)
+  photoSize: "small" | "medium" | "large";
+  photoWidth?: number; // Custom photo width in px (70 to 320)
+  photoHeight?: number; // Custom photo height in px (80 to 420)
   photoAspectRatioLocked?: boolean; // Lock aspect ratio during resize
   showPhoto: boolean;
   showWatermark: boolean;
-  paperSize: 'a4' | 'letter';
+  paperSize: "a4" | "letter";
 }
 
 export interface AttachedImage {
@@ -104,7 +136,7 @@ export interface BiodataDocument {
 export interface TemplateDefinition {
   id: TemplateId;
   name: string;
-  category: 'traditional' | 'modern' | 'executive' | 'creative';
+  category: "traditional" | "modern" | "executive" | "creative";
   description: string;
   bestFor: string;
   previewColor: string;

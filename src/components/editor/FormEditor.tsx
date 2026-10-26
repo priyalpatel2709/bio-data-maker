@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -7,26 +7,21 @@ import {
   useSensor,
   useSensors,
   DragEndEvent,
-} from '@dnd-kit/core';
+} from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { useBiodata } from '../../context/BiodataContext';
-import { CustomField, BiodataSection } from '../../types/biodata';
-import { SortableSectionItem } from './SortableSectionItem';
-import { CustomFieldModal } from './CustomFieldModal';
-import { CustomSectionModal } from './CustomSectionModal';
-import { AttachedImagesManager } from './AttachedImagesManager';
-import { Button } from '../common/Button';
-import {
-  Plus,
-  RotateCcw,
-  Sparkles,
-  Languages,
-} from 'lucide-react';
+} from "@dnd-kit/sortable";
+import { useBiodata } from "../../context/BiodataContext";
+import { CustomField, BiodataSection } from "../../types/biodata";
+import { SortableSectionItem } from "./SortableSectionItem";
+import { CustomFieldModal } from "./CustomFieldModal";
+import { CustomSectionModal } from "./CustomSectionModal";
+import { AttachedImagesManager } from "./AttachedImagesManager";
+import { Button } from "../common/Button";
+import { Plus, RotateCcw, Sparkles, Languages } from "lucide-react";
 
 export const FormEditor: React.FC = () => {
   const {
@@ -48,11 +43,15 @@ export const FormEditor: React.FC = () => {
 
   // Modals state
   const [fieldModalOpen, setFieldModalOpen] = useState(false);
-  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
+    null,
+  );
   const [editingField, setEditingField] = useState<CustomField | null>(null);
 
   const [sectionModalOpen, setSectionModalOpen] = useState(false);
-  const [editingSection, setEditingSection] = useState<BiodataSection | null>(null);
+  const [editingSection, setEditingSection] = useState<BiodataSection | null>(
+    null,
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -62,7 +61,7 @@ export const FormEditor: React.FC = () => {
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const sectionIds = document.sections.map((s) => s.id);
@@ -72,22 +71,36 @@ export const FormEditor: React.FC = () => {
     if (!over || active.id === over.id) return;
 
     // Check if dragging a section
-    const activeSectionIndex = document.sections.findIndex((s) => s.id === active.id);
-    const overSectionIndex = document.sections.findIndex((s) => s.id === over.id);
+    const activeSectionIndex = document.sections.findIndex(
+      (s) => s.id === active.id,
+    );
+    const overSectionIndex = document.sections.findIndex(
+      (s) => s.id === over.id,
+    );
 
     if (activeSectionIndex !== -1 && overSectionIndex !== -1) {
-      const newSections = arrayMove(document.sections, activeSectionIndex, overSectionIndex);
+      const newSections = arrayMove(
+        document.sections,
+        activeSectionIndex,
+        overSectionIndex,
+      );
       reorderSections(newSections);
       return;
     }
 
     // Check if dragging a field inside a section
     for (const section of document.sections) {
-      const activeFieldIndex = section.fields.findIndex((f) => f.id === active.id);
+      const activeFieldIndex = section.fields.findIndex(
+        (f) => f.id === active.id,
+      );
       const overFieldIndex = section.fields.findIndex((f) => f.id === over.id);
 
       if (activeFieldIndex !== -1 && overFieldIndex !== -1) {
-        const newFields = arrayMove(section.fields, activeFieldIndex, overFieldIndex);
+        const newFields = arrayMove(
+          section.fields,
+          activeFieldIndex,
+          overFieldIndex,
+        );
         reorderFields(section.id, newFields);
         return;
       }
@@ -106,7 +119,7 @@ export const FormEditor: React.FC = () => {
     setFieldModalOpen(true);
   };
 
-  const handleSaveField = (fieldData: Omit<CustomField, 'id'>) => {
+  const handleSaveField = (fieldData: Omit<CustomField, "id">) => {
     if (!selectedSectionId) return;
     if (editingField) {
       updateField(selectedSectionId, editingField.id, fieldData);
@@ -128,7 +141,9 @@ export const FormEditor: React.FC = () => {
     }
   };
 
-  const currentSectionForModal = document.sections.find((s) => s.id === selectedSectionId);
+  const currentSectionForModal = document.sections.find(
+    (s) => s.id === selectedSectionId,
+  );
 
   return (
     <div className="space-y-6 pb-24">
@@ -154,7 +169,7 @@ export const FormEditor: React.FC = () => {
             size="sm"
             icon={<RotateCcw className="w-3.5 h-3.5 text-slate-500" />}
             onClick={() => {
-              if (window.confirm('Reset all fields to sample profile data?')) {
+              if (window.confirm("Reset all fields to sample profile data?")) {
                 resetToDefault();
               }
             }}
@@ -173,7 +188,7 @@ export const FormEditor: React.FC = () => {
               setSectionModalOpen(true);
             }}
           >
-            {t('addSection')}
+            {t("addSection")}
           </Button>
         </div>
       </div>
@@ -186,13 +201,13 @@ export const FormEditor: React.FC = () => {
           </div>
           <div>
             <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-              <span>{t('translateButton')}</span>
+              <span>{t("translateButton")}</span>
               <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-rose-200/70 text-rose-900">
                 EN • हिं • ગુજ
               </span>
             </div>
             <p className="text-[11px] text-slate-500 leading-tight">
-              {t('translateBiodataNotice')}
+              {t("translateBiodataNotice")}
             </p>
           </div>
         </div>
@@ -200,33 +215,33 @@ export const FormEditor: React.FC = () => {
         <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-auto bg-white/90 p-1 rounded-xl border border-slate-200/80 shadow-xs">
           <button
             type="button"
-            onClick={() => translateBiodata('en')}
+            onClick={() => translateBiodata("en")}
             className={`px-3 py-1 text-xs rounded-lg font-bold transition-all ${
-              language === 'en'
-                ? 'bg-slate-900 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              language === "en"
+                ? "bg-slate-900 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
           >
             🇬🇧 English
           </button>
           <button
             type="button"
-            onClick={() => translateBiodata('hi')}
+            onClick={() => translateBiodata("hi")}
             className={`px-3 py-1 text-xs rounded-lg font-bold transition-all ${
-              language === 'hi'
-                ? 'bg-rose-700 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              language === "hi"
+                ? "bg-rose-700 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
           >
             🇮🇳 हिन्दी
           </button>
           <button
             type="button"
-            onClick={() => translateBiodata('gu')}
+            onClick={() => translateBiodata("gu")}
             className={`px-3 py-1 text-xs rounded-lg font-bold transition-all ${
-              language === 'gu'
-                ? 'bg-amber-600 text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              language === "gu"
+                ? "bg-amber-600 text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
             }`}
           >
             🇮🇳 ગુજરાતી
@@ -235,14 +250,23 @@ export const FormEditor: React.FC = () => {
       </div>
 
       {/* Sections List with Drag and Drop */}
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={sectionIds} strategy={verticalListSortingStrategy}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={sectionIds}
+          strategy={verticalListSortingStrategy}
+        >
           <div className="space-y-4">
             {document.sections.map((section) => (
               <SortableSectionItem
                 key={section.id}
                 section={section}
-                onUpdateField={(fId, val) => updateField(section.id, fId, { value: val })}
+                onUpdateField={(fId, val) =>
+                  updateField(section.id, fId, { value: val })
+                }
                 onToggleFieldVisibility={(fId) => {
                   const target = section.fields.find((f) => f.id === fId);
                   if (target) {
@@ -257,7 +281,9 @@ export const FormEditor: React.FC = () => {
                 }
                 onRenameSection={() => handleOpenRenameSection(section)}
                 onDeleteSection={() => {
-                  if (window.confirm(`Delete the "${section.title}" section?`)) {
+                  if (
+                    window.confirm(`Delete the "${section.title}" section?`)
+                  ) {
                     deleteSection(section.id);
                   }
                 }}
@@ -270,9 +296,12 @@ export const FormEditor: React.FC = () => {
       {/* Add Section Prompt Card */}
       <div className="text-center p-6 border-2 border-dashed border-slate-200 hover:border-rose-400 rounded-2xl bg-white/50 transition-colors">
         <Sparkles className="w-6 h-6 text-rose-500 mx-auto mb-2" />
-        <h4 className="text-sm font-bold text-slate-800">Need more custom sections?</h4>
+        <h4 className="text-sm font-bold text-slate-800">
+          Need more custom sections?
+        </h4>
         <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-          Add astrological details, property & assets, partner preferences, or ancestral roots.
+          Add astrological details, property & assets, partner preferences, or
+          ancestral roots.
         </p>
         <Button
           type="button"
@@ -298,7 +327,9 @@ export const FormEditor: React.FC = () => {
         onClose={() => setFieldModalOpen(false)}
         onSave={handleSaveField}
         initialField={editingField}
-        sectionTitle={currentSectionForModal ? currentSectionForModal.title : 'Section'}
+        sectionTitle={
+          currentSectionForModal ? currentSectionForModal.title : "Section"
+        }
       />
 
       {/* Section Modal */}
@@ -306,8 +337,8 @@ export const FormEditor: React.FC = () => {
         isOpen={sectionModalOpen}
         onClose={() => setSectionModalOpen(false)}
         onSave={handleSaveSection}
-        initialTitle={editingSection ? editingSection.title : ''}
-        initialDescription={editingSection ? editingSection.description : ''}
+        initialTitle={editingSection ? editingSection.title : ""}
+        initialDescription={editingSection ? editingSection.description : ""}
       />
     </div>
   );

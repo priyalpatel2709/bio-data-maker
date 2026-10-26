@@ -1,38 +1,53 @@
-import React from 'react';
-import { ResumeDocument } from '../../../types/resume';
+import React from "react";
+import { ResumeDocument } from "../../../types/resume";
 
 interface TemplateProps {
   resume: ResumeDocument;
 }
 
-export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({ resume }) => {
-  const { contact, summary, experience, education, skillCategories, projects, certifications, customSections, styling } = resume;
+export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
+  resume,
+}) => {
+  const {
+    contact,
+    summary,
+    experience,
+    education,
+    skillCategories,
+    projects,
+    certifications,
+    customSections,
+    styling,
+  } = resume;
 
-  const primaryColor = styling.primaryColor || '#7C2D12';
+  const primaryColor = styling.primaryColor || "#7C2D12";
 
-  const isLetter = styling.paperSize === 'letter';
-  const docWidth = isLetter ? '816px' : '794px';
-  const docMinHeight = isLetter ? '1056px' : '1123px';
+  const isLetter = styling.paperSize === "letter";
+  const docWidth = isLetter ? "816px" : "794px";
+  const docMinHeight = isLetter ? "1056px" : "1123px";
 
   const paddingClass =
-    styling.pageMargin === 'compact'
-      ? 'p-6'
-      : styling.pageMargin === 'spacious'
-      ? 'p-12'
-      : 'p-10';
+    styling.pageMargin === "compact"
+      ? "p-6"
+      : styling.pageMargin === "spacious"
+        ? "p-12"
+        : "p-10";
 
   const fontStyle = {
-    fontFamily: `${styling.fontFamily || 'Lora'}, Georgia, serif`,
+    fontFamily: `${styling.fontFamily || "Lora"}, Georgia, serif`,
     width: docWidth,
     minHeight: docMinHeight,
-    boxSizing: 'border-box' as const,
+    boxSizing: "border-box" as const,
   };
 
-  const isSinglePage = styling.pageSplitAt === 'single-page';
-  const splitAt = styling.pageSplitAt || 'auto';
+  const isSinglePage = styling.pageSplitAt === "single-page";
+  const splitAt = styling.pageSplitAt || "auto";
   const hasPage2 =
     !isSinglePage &&
-    (projects.length > 0 || education.length > 0 || certifications.length > 0 || customSections.length > 0);
+    (projects.length > 0 ||
+      education.length > 0 ||
+      certifications.length > 0 ||
+      customSections.length > 0);
   const totalPages = hasPage2 ? 2 : 1;
 
   const renderHeader = (isPage2: boolean = false) => {
@@ -41,10 +56,18 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({ resume }) => 
       return (
         <header className="border-b border-stone-300 pb-2.5 mb-4 flex flex-row items-center justify-between text-xs">
           <div>
-            <span className="font-serif font-semibold text-stone-900 text-sm">{contact.fullName}</span>
-            {contact.jobTitle && <span className="text-stone-600 italic ml-2">— {contact.jobTitle}</span>}
+            <span className="font-serif font-semibold text-stone-900 text-sm">
+              {contact.fullName}
+            </span>
+            {contact.jobTitle && (
+              <span className="text-stone-600 italic ml-2">
+                — {contact.jobTitle}
+              </span>
+            )}
           </div>
-          <span className="font-sans text-[10px] uppercase tracking-wider text-stone-500 font-medium">Page 2 of 2</span>
+          <span className="font-sans text-[10px] uppercase tracking-wider text-stone-500 font-medium">
+            Page 2 of 2
+          </span>
         </header>
       );
     }
@@ -55,7 +78,7 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({ resume }) => 
           className="text-3xl font-serif font-medium tracking-wide text-stone-900"
           style={{ color: primaryColor }}
         >
-          {contact.fullName || 'Your Full Name'}
+          {contact.fullName || "Your Full Name"}
         </h1>
         {contact.jobTitle && (
           <p className="text-xs tracking-wider uppercase text-stone-600 mt-0.5 italic">
@@ -66,7 +89,9 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({ resume }) => 
           {contact.email && <span>{contact.email}</span>}
           {contact.phone && <span>• {contact.phone}</span>}
           {contact.location && <span>• {contact.location}</span>}
-          {contact.website && <span>• {contact.website.replace(/^https?:\/\//, '')}</span>}
+          {contact.website && (
+            <span>• {contact.website.replace(/^https?:\/\//, "")}</span>
+          )}
         </div>
       </header>
     );
@@ -87,14 +112,22 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({ resume }) => 
             <div key={edu.id}>
               <div className="flex flex-row justify-between items-baseline gap-2">
                 <span className="font-semibold text-stone-900 text-sm">
-                  {edu.degree} {edu.fieldOfStudy ? `in ${edu.fieldOfStudy}` : ''}
+                  {edu.degree}{" "}
+                  {edu.fieldOfStudy ? `in ${edu.fieldOfStudy}` : ""}
                 </span>
                 <span className="text-xs text-stone-500 font-sans">
-                  {edu.startDate} – {edu.isCurrent ? 'Present' : edu.endDate}
+                  {edu.startDate} – {edu.isCurrent ? "Present" : edu.endDate}
                 </span>
               </div>
-              <p className="text-xs text-stone-700 italic">{edu.institution}{edu.location ? `, ${edu.location}` : ''}</p>
-              {edu.gradeOrGpa && <p className="text-xs text-stone-600 mt-0.5">{edu.gradeOrGpa}</p>}
+              <p className="text-xs text-stone-700 italic">
+                {edu.institution}
+                {edu.location ? `, ${edu.location}` : ""}
+              </p>
+              {edu.gradeOrGpa && (
+                <p className="text-xs text-stone-600 mt-0.5">
+                  {edu.gradeOrGpa}
+                </p>
+              )}
             </div>
           ))}
         </div>
@@ -117,10 +150,11 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({ resume }) => 
             <div key={exp.id}>
               <div className="flex flex-row justify-between items-baseline gap-2">
                 <span className="font-semibold text-stone-900 text-sm">
-                  {exp.position}, <span className="italic font-normal">{exp.company}</span>
+                  {exp.position},{" "}
+                  <span className="italic font-normal">{exp.company}</span>
                 </span>
                 <span className="text-xs text-stone-500 font-sans">
-                  {exp.startDate} – {exp.isCurrent ? 'Present' : exp.endDate}
+                  {exp.startDate} – {exp.isCurrent ? "Present" : exp.endDate}
                 </span>
               </div>
               {exp.bullets.length > 0 && (
@@ -168,10 +202,20 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({ resume }) => 
           {projects.map((proj) => (
             <div key={proj.id} className="text-xs">
               <div className="flex flex-row justify-between items-baseline gap-2">
-                <span className="font-semibold text-stone-900">{proj.name}</span>
-                {proj.link && <span className="text-xs font-sans text-stone-500">{proj.link}</span>}
+                <span className="font-semibold text-stone-900">
+                  {proj.name}
+                </span>
+                {proj.link && (
+                  <span className="text-xs font-sans text-stone-500">
+                    {proj.link}
+                  </span>
+                )}
               </div>
-              {proj.roleOrSubtitle && <p className="italic text-xs text-stone-600">{proj.roleOrSubtitle}</p>}
+              {proj.roleOrSubtitle && (
+                <p className="italic text-xs text-stone-600">
+                  {proj.roleOrSubtitle}
+                </p>
+              )}
               {proj.bullets.length > 0 && (
                 <ul className="mt-0.5 space-y-0.5 list-disc list-outside ml-4 text-stone-800">
                   {proj.bullets.map((b, idx) => (
@@ -198,9 +242,16 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({ resume }) => 
         </h2>
         <div className="space-y-1 text-xs text-stone-800">
           {certifications.map((c) => (
-            <div key={c.id} className="flex flex-row justify-between items-baseline gap-2">
-              <span><strong>{c.name}</strong> — {c.issuer}</span>
-              {c.issueDate && <span className="text-stone-500 font-sans">{c.issueDate}</span>}
+            <div
+              key={c.id}
+              className="flex flex-row justify-between items-baseline gap-2"
+            >
+              <span>
+                <strong>{c.name}</strong> — {c.issuer}
+              </span>
+              {c.issueDate && (
+                <span className="text-stone-500 font-sans">{c.issueDate}</span>
+              )}
             </div>
           ))}
         </div>
@@ -222,7 +273,7 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({ resume }) => 
           {skillCategories.map((sc) => (
             <div key={sc.id} className="flex flex-row items-baseline gap-2">
               <strong className="w-36 shrink-0">{sc.categoryName}: </strong>
-              <span className="flex-1">{sc.skills.join(', ')}</span>
+              <span className="flex-1">{sc.skills.join(", ")}</span>
             </div>
           ))}
         </div>
@@ -248,7 +299,9 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({ resume }) => 
                 <div key={it.id}>
                   <strong>{it.title}</strong>
                   {it.subtitle && <span> — {it.subtitle}</span>}
-                  {it.description && <p className="text-stone-600 mt-0.5">{it.description}</p>}
+                  {it.description && (
+                    <p className="text-stone-600 mt-0.5">{it.description}</p>
+                  )}
                 </div>
               ))}
             </div>
@@ -263,7 +316,9 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({ resume }) => 
     return (
       <footer className="mt-auto pt-3 border-t border-stone-200 flex items-center justify-between font-sans text-[10px] text-stone-400">
         <span>{contact.fullName} — Academic Curriculum Vitae</span>
-        <span>Page {pageNumber} of {totalPages}</span>
+        <span>
+          Page {pageNumber} of {totalPages}
+        </span>
       </footer>
     );
   };

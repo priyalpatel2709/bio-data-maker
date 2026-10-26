@@ -1,8 +1,8 @@
-import React from 'react';
-import { BiodataDocument } from '../../../types/biodata';
-import { DocumentPhoto } from '../DocumentPhoto';
-import { calculateAge, formatDate } from '../../../utils/calculateAge';
-import { Sparkles, Heart } from 'lucide-react';
+import React from "react";
+import { BiodataDocument } from "../../../types/biodata";
+import { DocumentPhoto } from "../DocumentPhoto";
+import { calculateAge, formatDate } from "../../../utils/calculateAge";
+import { Sparkles, Heart } from "lucide-react";
 
 interface TemplateProps {
   document: BiodataDocument;
@@ -12,9 +12,9 @@ export const PhotoFocused: React.FC<TemplateProps> = ({ document }) => {
   const { styling, sections, photoUrl } = document;
   const visibleSections = sections.filter((s) => s.visible);
 
-  const personalSec = sections.find((s) => s.key === 'personal');
+  const personalSec = sections.find((s) => s.key === "personal");
   const nameField = personalSec?.fields.find(
-    (f) => f.id.includes('name') || f.label.toLowerCase().includes('name')
+    (f) => f.id.includes("name") || f.label.toLowerCase().includes("name"),
   );
   const candidateName = nameField?.value || document.title;
 
@@ -44,7 +44,7 @@ export const PhotoFocused: React.FC<TemplateProps> = ({ document }) => {
                 styling={{
                   ...styling,
                   photoBorder: true,
-                  photoShape: 'circle',
+                  photoShape: "circle",
                 }}
                 className="w-36 h-36 border-4 border-white shadow-xl"
               />
@@ -89,20 +89,28 @@ export const PhotoFocused: React.FC<TemplateProps> = ({ document }) => {
 
                 <div
                   className={`grid ${
-                    styling.columns === 2 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'
+                    styling.columns === 2
+                      ? "grid-cols-1 sm:grid-cols-2"
+                      : "grid-cols-1"
                   } gap-3`}
                 >
                   {visibleFields.map((field) => {
                     const isDob =
-                      field.id.includes('dob') || field.label.toLowerCase().includes('date of birth');
-                    const calculatedAge = isDob ? calculateAge(field.value) : null;
-                    const displayValue = field.type === 'date' ? formatDate(field.value) : field.value;
+                      field.id.includes("dob") ||
+                      field.label.toLowerCase().includes("date of birth");
+                    const calculatedAge = isDob
+                      ? calculateAge(field.value)
+                      : null;
+                    const displayValue =
+                      field.type === "date"
+                        ? formatDate(field.value)
+                        : field.value;
 
                     return (
                       <div
                         key={field.id}
                         className={`bg-white/80 p-3 rounded-xl border border-slate-200/80 shadow-sm ${
-                          field.type === 'textarea' ? 'sm:col-span-2' : ''
+                          field.type === "textarea" ? "sm:col-span-2" : ""
                         }`}
                       >
                         <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block mb-0.5">
@@ -112,7 +120,7 @@ export const PhotoFocused: React.FC<TemplateProps> = ({ document }) => {
                           className="text-xs sm:text-sm font-semibold text-slate-800 leading-relaxed block"
                           style={{ fontFamily: styling.fontFamilyBody }}
                         >
-                          {displayValue || '—'}
+                          {displayValue || "—"}
                           {calculatedAge !== null && (
                             <span className="ml-1 text-xs text-rose-600 font-bold">
                               ({calculatedAge} yrs)

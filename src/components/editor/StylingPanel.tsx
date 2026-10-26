@@ -1,9 +1,9 @@
-import React from 'react';
-import { useBiodata } from '../../context/BiodataContext';
-import { FontOption, SpacingOption, BorderStyle } from '../../types/biodata';
-import { ColorPicker } from '../common/ColorPicker';
-import { PhotoUploader } from './PhotoUploader';
-import { BackgroundPicker } from './BackgroundPicker';
+import React from "react";
+import { useBiodata } from "../../context/BiodataContext";
+import { FontOption, SpacingOption, BorderStyle } from "../../types/biodata";
+import { ColorPicker } from "../common/ColorPicker";
+import { PhotoUploader } from "./PhotoUploader";
+import { BackgroundPicker } from "./BackgroundPicker";
 import {
   Palette,
   Type,
@@ -12,33 +12,33 @@ import {
   Languages,
   Sparkles,
   Heading,
-} from 'lucide-react';
+} from "lucide-react";
 
 export const StylingPanel: React.FC = () => {
   const { document, updateStyling, translateBiodata } = useBiodata();
   const { styling } = document;
 
   const fontOptions: FontOption[] = [
-    'Inter',
-    'Playfair Display',
-    'Cinzel',
-    'Cormorant Garamond',
-    'Merriweather',
-    'Montserrat',
+    "Inter",
+    "Playfair Display",
+    "Cinzel",
+    "Cormorant Garamond",
+    "Merriweather",
+    "Montserrat",
   ];
 
   const spacingOptions: { id: SpacingOption; label: string }[] = [
-    { id: 'compact', label: 'Compact' },
-    { id: 'normal', label: 'Balanced' },
-    { id: 'relaxed', label: 'Spacious' },
+    { id: "compact", label: "Compact" },
+    { id: "normal", label: "Balanced" },
+    { id: "relaxed", label: "Spacious" },
   ];
 
   const borderOptions: { id: BorderStyle; label: string }[] = [
-    { id: 'none', label: 'None' },
-    { id: 'simple', label: 'Minimal Box' },
-    { id: 'double', label: 'Classic Double' },
-    { id: 'ornate', label: 'Royal Ornate' },
-    { id: 'decorative', label: 'Floral Corner' },
+    { id: "none", label: "None" },
+    { id: "simple", label: "Minimal Box" },
+    { id: "double", label: "Classic Double" },
+    { id: "ornate", label: "Royal Ornate" },
+    { id: "decorative", label: "Floral Corner" },
   ];
 
   return (
@@ -48,7 +48,9 @@ export const StylingPanel: React.FC = () => {
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2">
             <Languages className="w-4 h-4 text-rose-600" />
-            <h4 className="text-sm font-bold text-slate-900">Document Language / ભાષા / भाषा</h4>
+            <h4 className="text-sm font-bold text-slate-900">
+              Document Language / ભાષા / भाषा
+            </h4>
           </div>
           <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200/50">
             Multilingual
@@ -57,11 +59,22 @@ export const StylingPanel: React.FC = () => {
 
         <div className="grid grid-cols-3 gap-2">
           {[
-            { id: 'en' as const, label: 'English', native: 'English', flag: '🇬🇧' },
-            { id: 'hi' as const, label: 'Hindi', native: 'हिन्दी', flag: '🇮🇳' },
-            { id: 'gu' as const, label: 'Gujarati', native: 'ગુજરાતી', flag: '🇮🇳' },
+            {
+              id: "en" as const,
+              label: "English",
+              native: "English",
+              flag: "🇬🇧",
+            },
+            { id: "hi" as const, label: "Hindi", native: "हिन्दी", flag: "🇮🇳" },
+            {
+              id: "gu" as const,
+              label: "Gujarati",
+              native: "ગુજરાતી",
+              flag: "🇮🇳",
+            },
           ].map((langItem) => {
-            const isSelected = (styling.language || document.language || 'en') === langItem.id;
+            const isSelected =
+              (styling.language || document.language || "en") === langItem.id;
             return (
               <button
                 key={langItem.id}
@@ -69,13 +82,15 @@ export const StylingPanel: React.FC = () => {
                 onClick={() => translateBiodata(langItem.id)}
                 className={`p-3 rounded-xl border text-center transition-all ${
                   isSelected
-                    ? 'border-rose-500 bg-rose-50/80 text-rose-950 font-bold shadow-xs'
-                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                    ? "border-rose-500 bg-rose-50/80 text-rose-950 font-bold shadow-xs"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                 }`}
               >
                 <div className="text-lg mb-1">{langItem.flag}</div>
                 <div className="text-xs font-bold">{langItem.native}</div>
-                <div className="text-[10px] text-slate-400 font-normal">{langItem.label}</div>
+                <div className="text-[10px] text-slate-400 font-normal">
+                  {langItem.label}
+                </div>
               </button>
             );
           })}
@@ -86,7 +101,9 @@ export const StylingPanel: React.FC = () => {
       <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-5">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
           <Palette className="w-4 h-4 text-rose-600" />
-          <h4 className="text-sm font-bold text-slate-900">Color Palette & Highlights</h4>
+          <h4 className="text-sm font-bold text-slate-900">
+            Color Palette & Highlights
+          </h4>
         </div>
 
         <ColorPicker
@@ -108,8 +125,12 @@ export const StylingPanel: React.FC = () => {
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-rose-600" />
             <div>
-              <h4 className="text-sm font-bold text-slate-900">Auspicious Header Emblem</h4>
-              <p className="text-xs text-slate-500">Sacred opening symbol & invocation mantra</p>
+              <h4 className="text-sm font-bold text-slate-900">
+                Auspicious Header Emblem
+              </h4>
+              <p className="text-xs text-slate-500">
+                Sacred opening symbol & invocation mantra
+              </p>
             </div>
           </div>
           {/* Toggle Emblem Visibility */}
@@ -122,7 +143,7 @@ export const StylingPanel: React.FC = () => {
             />
             <div className="w-9 h-5 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600 relative"></div>
             <span className="text-xs font-semibold text-slate-700">
-              {styling.showEmblem !== false ? 'Shown' : 'Hidden'}
+              {styling.showEmblem !== false ? "Shown" : "Hidden"}
             </span>
           </label>
         </div>
@@ -136,35 +157,37 @@ export const StylingPanel: React.FC = () => {
               </label>
               <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                 {[
-                  { id: 'ganesha' as const, label: 'Ganesha', icon: '🐘' },
-                  { id: 'om' as const, label: 'Om ॐ', icon: 'ॐ' },
-                  { id: 'swastik' as const, label: 'Swastik', icon: '卐' },
-                  { id: 'ek-onkar' as const, label: 'Ek Onkar', icon: 'ੴ' },
-                  { id: 'bismillah' as const, label: 'Bismillah', icon: '☪' },
-                  { id: 'cross' as const, label: 'Cross', icon: '✝' },
-                  { id: 'lotus' as const, label: 'Lotus', icon: '🪷' },
-                  { id: 'custom' as const, label: 'Custom', icon: '✏️' },
-                  { id: 'none' as const, label: 'None', icon: '✕' },
+                  { id: "ganesha" as const, label: "Ganesha", icon: "🐘" },
+                  { id: "om" as const, label: "Om ॐ", icon: "ॐ" },
+                  { id: "swastik" as const, label: "Swastik", icon: "卐" },
+                  { id: "ek-onkar" as const, label: "Ek Onkar", icon: "ੴ" },
+                  { id: "bismillah" as const, label: "Bismillah", icon: "☪" },
+                  { id: "cross" as const, label: "Cross", icon: "✝" },
+                  { id: "lotus" as const, label: "Lotus", icon: "🪷" },
+                  { id: "custom" as const, label: "Custom", icon: "✏️" },
+                  { id: "none" as const, label: "None", icon: "✕" },
                 ].map((item) => (
                   <button
                     key={item.id}
                     type="button"
                     onClick={() => updateStyling({ headerSymbol: item.id })}
                     className={`p-2 rounded-xl border text-center transition-all flex flex-col items-center justify-center ${
-                      (styling.headerSymbol || 'ganesha') === item.id
-                        ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold shadow-xs'
-                        : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                      (styling.headerSymbol || "ganesha") === item.id
+                        ? "border-rose-500 bg-rose-50 text-rose-700 font-bold shadow-xs"
+                        : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                     }`}
                   >
                     <span className="text-base mb-0.5">{item.icon}</span>
-                    <span className="text-[10px] truncate block w-full">{item.label}</span>
+                    <span className="text-[10px] truncate block w-full">
+                      {item.label}
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Custom Icon/Emoji Field if custom is chosen */}
-            {styling.headerSymbol === 'custom' && (
+            {styling.headerSymbol === "custom" && (
               <div className="bg-rose-50/50 p-3.5 rounded-xl border border-rose-200/60 space-y-2">
                 <label className="block text-xs font-bold text-rose-950">
                   Custom Icon / Emoji
@@ -172,8 +195,10 @@ export const StylingPanel: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
-                    value={styling.customHeaderSymbol || ''}
-                    onChange={(e) => updateStyling({ customHeaderSymbol: e.target.value })}
+                    value={styling.customHeaderSymbol || ""}
+                    onChange={(e) =>
+                      updateStyling({ customHeaderSymbol: e.target.value })
+                    }
                     placeholder="e.g. 🌺, 🪔, 🔱, 🚩, ✨"
                     className="flex-1 px-3 py-2 text-sm bg-white border border-rose-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-center text-lg"
                     maxLength={10}
@@ -181,7 +206,7 @@ export const StylingPanel: React.FC = () => {
                   {styling.customHeaderSymbol && (
                     <button
                       type="button"
-                      onClick={() => updateStyling({ customHeaderSymbol: '' })}
+                      onClick={() => updateStyling({ customHeaderSymbol: "" })}
                       className="px-2.5 py-2 text-xs text-rose-600 hover:bg-rose-100 rounded-lg font-medium"
                     >
                       Clear
@@ -190,12 +215,27 @@ export const StylingPanel: React.FC = () => {
                 </div>
                 {/* Quick suggestions */}
                 <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                  <span className="text-[10px] text-slate-500 font-medium">Quick suggestions:</span>
-                  {['🌺', '🪔', '🔱', '🚩', '✨', '🕊️', '💐', '🔔', '🌿', '❤️'].map((emoji) => (
+                  <span className="text-[10px] text-slate-500 font-medium">
+                    Quick suggestions:
+                  </span>
+                  {[
+                    "🌺",
+                    "🪔",
+                    "🔱",
+                    "🚩",
+                    "✨",
+                    "🕊️",
+                    "💐",
+                    "🔔",
+                    "🌿",
+                    "❤️",
+                  ].map((emoji) => (
                     <button
                       key={emoji}
                       type="button"
-                      onClick={() => updateStyling({ customHeaderSymbol: emoji })}
+                      onClick={() =>
+                        updateStyling({ customHeaderSymbol: emoji })
+                      }
                       className="w-7 h-7 flex items-center justify-center text-sm bg-white hover:bg-rose-100 border border-slate-200 rounded-md transition-all active:scale-95"
                     >
                       {emoji}
@@ -214,7 +254,7 @@ export const StylingPanel: React.FC = () => {
                 {styling.customHeaderText && (
                   <button
                     type="button"
-                    onClick={() => updateStyling({ customHeaderText: '' })}
+                    onClick={() => updateStyling({ customHeaderText: "" })}
                     className="text-[11px] text-rose-600 hover:underline"
                   >
                     Reset to Default
@@ -223,13 +263,16 @@ export const StylingPanel: React.FC = () => {
               </div>
               <input
                 type="text"
-                value={styling.customHeaderText || ''}
-                onChange={(e) => updateStyling({ customHeaderText: e.target.value })}
+                value={styling.customHeaderText || ""}
+                onChange={(e) =>
+                  updateStyling({ customHeaderText: e.target.value })
+                }
                 placeholder="e.g. || Jai Shri Krishna || or || Shree Ganeshaya Namah ||"
                 className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-slate-800"
               />
               <p className="text-[11px] text-slate-400">
-                Leave empty for automatic deity mantra in the document's language, or enter your preferred prayer/slogan.
+                Leave empty for automatic deity mantra in the document's
+                language, or enter your preferred prayer/slogan.
               </p>
             </div>
           </div>
@@ -242,8 +285,12 @@ export const StylingPanel: React.FC = () => {
           <div className="flex items-center gap-2">
             <Heading className="w-4 h-4 text-rose-600" />
             <div>
-              <h4 className="text-sm font-bold text-slate-900">Document Title ("BIODATA")</h4>
-              <p className="text-xs text-slate-500">Rename or remove the main top title</p>
+              <h4 className="text-sm font-bold text-slate-900">
+                Document Title ("BIODATA")
+              </h4>
+              <p className="text-xs text-slate-500">
+                Rename or remove the main top title
+              </p>
             </div>
           </div>
           {/* Toggle Title Visibility */}
@@ -251,12 +298,14 @@ export const StylingPanel: React.FC = () => {
             <input
               type="checkbox"
               checked={styling.showDocumentTitle !== false}
-              onChange={(e) => updateStyling({ showDocumentTitle: e.target.checked })}
+              onChange={(e) =>
+                updateStyling({ showDocumentTitle: e.target.checked })
+              }
               className="sr-only peer"
             />
             <div className="w-9 h-5 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600 relative"></div>
             <span className="text-xs font-semibold text-slate-700">
-              {styling.showDocumentTitle !== false ? 'Shown' : 'Hidden'}
+              {styling.showDocumentTitle !== false ? "Shown" : "Hidden"}
             </span>
           </label>
         </div>
@@ -270,7 +319,7 @@ export const StylingPanel: React.FC = () => {
               {styling.customDocumentTitle && (
                 <button
                   type="button"
-                  onClick={() => updateStyling({ customDocumentTitle: '' })}
+                  onClick={() => updateStyling({ customDocumentTitle: "" })}
                   className="text-[11px] text-rose-600 hover:underline"
                 >
                   Reset to Default
@@ -279,30 +328,36 @@ export const StylingPanel: React.FC = () => {
             </div>
             <input
               type="text"
-              value={styling.customDocumentTitle || ''}
-              onChange={(e) => updateStyling({ customDocumentTitle: e.target.value })}
+              value={styling.customDocumentTitle || ""}
+              onChange={(e) =>
+                updateStyling({ customDocumentTitle: e.target.value })
+              }
               placeholder="e.g. BIODATA, MARRIAGE BIODATA, BIO-DATA"
               className="w-full px-3 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 text-slate-800"
             />
 
             {/* Quick title presets */}
             <div className="flex items-center gap-1.5 flex-wrap pt-1">
-              <span className="text-[10px] text-slate-500 font-medium">Quick presets:</span>
+              <span className="text-[10px] text-slate-500 font-medium">
+                Quick presets:
+              </span>
               {[
-                'BIODATA',
-                'MARRIAGE BIODATA',
-                'BIO-DATA',
-                'MATRIMONIAL BIODATA',
-                'MATRIMONIAL RESUME',
+                "BIODATA",
+                "MARRIAGE BIODATA",
+                "BIO-DATA",
+                "MATRIMONIAL BIODATA",
+                "MATRIMONIAL RESUME",
               ].map((titlePreset) => (
                 <button
                   key={titlePreset}
                   type="button"
-                  onClick={() => updateStyling({ customDocumentTitle: titlePreset })}
+                  onClick={() =>
+                    updateStyling({ customDocumentTitle: titlePreset })
+                  }
                   className={`px-2 py-1 text-[11px] rounded-lg border transition-all ${
-                    (styling.customDocumentTitle || '') === titlePreset
-                      ? 'border-rose-500 bg-rose-50 text-rose-700 font-semibold'
-                      : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                    (styling.customDocumentTitle || "") === titlePreset
+                      ? "border-rose-500 bg-rose-50 text-rose-700 font-semibold"
+                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                   }`}
                 >
                   {titlePreset}
@@ -310,7 +365,8 @@ export const StylingPanel: React.FC = () => {
               ))}
             </div>
             <p className="text-[11px] text-slate-400">
-              You can rename this to whatever you prefer, or toggle the switch above to remove the title completely.
+              You can rename this to whatever you prefer, or toggle the switch
+              above to remove the title completely.
             </p>
           </div>
         )}
@@ -320,7 +376,9 @@ export const StylingPanel: React.FC = () => {
       <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-5">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
           <Type className="w-4 h-4 text-rose-600" />
-          <h4 className="text-sm font-bold text-slate-900">Typography & Hierarchy</h4>
+          <h4 className="text-sm font-bold text-slate-900">
+            Typography & Hierarchy
+          </h4>
         </div>
 
         <div>
@@ -335,13 +393,15 @@ export const StylingPanel: React.FC = () => {
                 onClick={() => updateStyling({ fontFamilyHeading: font })}
                 className={`p-2.5 rounded-xl border text-left transition-all ${
                   styling.fontFamilyHeading === font
-                    ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold shadow-sm'
-                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                    ? "border-rose-500 bg-rose-50 text-rose-700 font-bold shadow-sm"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                 }`}
                 style={{ fontFamily: font }}
               >
                 <span className="text-sm block">{font}</span>
-                <span className="text-[10px] text-slate-400 block mt-0.5">Sample Heading</span>
+                <span className="text-[10px] text-slate-400 block mt-0.5">
+                  Sample Heading
+                </span>
               </button>
             ))}
           </div>
@@ -359,13 +419,15 @@ export const StylingPanel: React.FC = () => {
                 onClick={() => updateStyling({ fontFamilyBody: font })}
                 className={`p-2.5 rounded-xl border text-left transition-all ${
                   styling.fontFamilyBody === font
-                    ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold shadow-sm'
-                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                    ? "border-rose-500 bg-rose-50 text-rose-700 font-bold shadow-sm"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                 }`}
                 style={{ fontFamily: font }}
               >
                 <span className="text-sm block">{font}</span>
-                <span className="text-[10px] text-slate-400 block mt-0.5">Regular body text</span>
+                <span className="text-[10px] text-slate-400 block mt-0.5">
+                  Regular body text
+                </span>
               </button>
             ))}
           </div>
@@ -376,15 +438,15 @@ export const StylingPanel: React.FC = () => {
             Text Size Scale
           </label>
           <div className="grid grid-cols-3 gap-2">
-            {(['compact', 'normal', 'relaxed'] as const).map((size) => (
+            {(["compact", "normal", "relaxed"] as const).map((size) => (
               <button
                 key={size}
                 type="button"
                 onClick={() => updateStyling({ fontSize: size })}
                 className={`py-2 rounded-xl border text-xs font-medium capitalize transition-all ${
                   styling.fontSize === size
-                    ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold shadow-sm'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                    ? "border-rose-500 bg-rose-50 text-rose-700 font-bold shadow-sm"
+                    : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                 }`}
               >
                 {size}
@@ -407,8 +469,8 @@ export const StylingPanel: React.FC = () => {
           </label>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { col: 1 as const, label: 'Single Column (Linear)' },
-              { col: 2 as const, label: 'Two Columns (Compact)' },
+              { col: 1 as const, label: "Single Column (Linear)" },
+              { col: 2 as const, label: "Two Columns (Compact)" },
             ].map((c) => (
               <button
                 key={c.col}
@@ -416,8 +478,8 @@ export const StylingPanel: React.FC = () => {
                 onClick={() => updateStyling({ columns: c.col })}
                 className={`py-2.5 px-3 rounded-xl border text-xs font-medium transition-all ${
                   styling.columns === c.col
-                    ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold shadow-sm'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                    ? "border-rose-500 bg-rose-50 text-rose-700 font-bold shadow-sm"
+                    : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                 }`}
               >
                 {c.label}
@@ -438,8 +500,8 @@ export const StylingPanel: React.FC = () => {
                 onClick={() => updateStyling({ spacing: s.id })}
                 className={`py-2 rounded-xl border text-xs font-medium transition-all ${
                   styling.spacing === s.id
-                    ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold shadow-sm'
-                    : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                    ? "border-rose-500 bg-rose-50 text-rose-700 font-bold shadow-sm"
+                    : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
                 }`}
               >
                 {s.label}
@@ -453,7 +515,9 @@ export const StylingPanel: React.FC = () => {
       <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-4">
         <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
           <Frame className="w-4 h-4 text-rose-600" />
-          <h4 className="text-sm font-bold text-slate-900">Document Frame & Border Style</h4>
+          <h4 className="text-sm font-bold text-slate-900">
+            Document Frame & Border Style
+          </h4>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -464,8 +528,8 @@ export const StylingPanel: React.FC = () => {
               onClick={() => updateStyling({ borderStyle: b.id })}
               className={`p-2.5 rounded-xl border text-center transition-all ${
                 styling.borderStyle === b.id
-                  ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold shadow-sm'
-                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                  ? "border-rose-500 bg-rose-50 text-rose-700 font-bold shadow-sm"
+                  : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
               }`}
             >
               <span className="text-xs">{b.label}</span>

@@ -1,20 +1,20 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { useBiodata } from '../../context/BiodataContext';
-import { PATTERNS } from '../../assets/patterns';
-import { MandalaRadiance } from './templates/MandalaRadiance';
-import { MarigoldToran } from './templates/MarigoldToran';
-import { VintageParchment } from './templates/VintageParchment';
-import { ClassicTraditional } from './templates/ClassicTraditional';
-import { SimpleBox } from './templates/SimpleBox';
-import { FloralBorder } from './templates/FloralBorder';
-import { InstantRoyalMaroon } from './templates/InstantRoyalMaroon';
-import { InstantPeacockNavy } from './templates/InstantPeacockNavy';
-import { InstantFloralBlush } from './templates/InstantFloralBlush';
-import { ModernMinimal } from './templates/ModernMinimal';
-import { ElegantPremium } from './templates/ElegantPremium';
-import { FamilyFocused } from './templates/FamilyFocused';
-import { Professional } from './templates/Professional';
-import { PhotoFocused } from './templates/PhotoFocused';
+import React, { useRef, useState, useEffect } from "react";
+import { useBiodata } from "../../context/BiodataContext";
+import { PATTERNS } from "../../assets/patterns";
+import { MandalaRadiance } from "./templates/MandalaRadiance";
+import { MarigoldToran } from "./templates/MarigoldToran";
+import { VintageParchment } from "./templates/VintageParchment";
+import { ClassicTraditional } from "./templates/ClassicTraditional";
+import { SimpleBox } from "./templates/SimpleBox";
+import { FloralBorder } from "./templates/FloralBorder";
+import { InstantRoyalMaroon } from "./templates/InstantRoyalMaroon";
+import { InstantPeacockNavy } from "./templates/InstantPeacockNavy";
+import { InstantFloralBlush } from "./templates/InstantFloralBlush";
+import { ModernMinimal } from "./templates/ModernMinimal";
+import { ElegantPremium } from "./templates/ElegantPremium";
+import { FamilyFocused } from "./templates/FamilyFocused";
+import { Professional } from "./templates/Professional";
+import { PhotoFocused } from "./templates/PhotoFocused";
 import {
   ZoomIn,
   ZoomOut,
@@ -22,8 +22,8 @@ import {
   Minimize2,
   Printer,
   Download,
-} from 'lucide-react';
-import { Button } from '../common/Button';
+} from "lucide-react";
+import { Button } from "../common/Button";
 
 export const LivePreview: React.FC = () => {
   const { document, setExportModalOpen } = useBiodata();
@@ -47,8 +47,8 @@ export const LivePreview: React.FC = () => {
     };
 
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handlePrint = () => {
@@ -60,33 +60,33 @@ export const LivePreview: React.FC = () => {
   // Render correct template component
   const renderTemplate = () => {
     switch (styling.templateId) {
-      case 'mandala-radiance':
+      case "mandala-radiance":
         return <MandalaRadiance document={document} />;
-      case 'marigold-toran':
+      case "marigold-toran":
         return <MarigoldToran document={document} />;
-      case 'vintage-parchment':
+      case "vintage-parchment":
         return <VintageParchment document={document} />;
-      case 'instant-royal-maroon':
+      case "instant-royal-maroon":
         return <InstantRoyalMaroon document={document} />;
-      case 'instant-peacock-navy':
+      case "instant-peacock-navy":
         return <InstantPeacockNavy document={document} />;
-      case 'instant-floral-blush':
+      case "instant-floral-blush":
         return <InstantFloralBlush document={document} />;
-      case 'simple-box':
+      case "simple-box":
         return <SimpleBox document={document} />;
-      case 'floral-border':
+      case "floral-border":
         return <FloralBorder document={document} />;
-      case 'modern-minimal':
+      case "modern-minimal":
         return <ModernMinimal document={document} />;
-      case 'elegant-premium':
+      case "elegant-premium":
         return <ElegantPremium document={document} />;
-      case 'family-focused':
+      case "family-focused":
         return <FamilyFocused document={document} />;
-      case 'professional':
+      case "professional":
         return <Professional document={document} />;
-      case 'photo-focused':
+      case "photo-focused":
         return <PhotoFocused document={document} />;
-      case 'classic-traditional':
+      case "classic-traditional":
       default:
         return <ClassicTraditional document={document} />;
     }
@@ -96,7 +96,9 @@ export const LivePreview: React.FC = () => {
     <div
       ref={containerRef}
       className={`relative flex flex-col h-full ${
-        isFullScreen ? 'fixed inset-0 z-50 bg-slate-900/90 p-4 sm:p-8 backdrop-blur-md' : ''
+        isFullScreen
+          ? "fixed inset-0 z-50 bg-slate-900/90 p-4 sm:p-8 backdrop-blur-md"
+          : ""
       }`}
     >
       {/* Top Floating Control Bar */}
@@ -104,7 +106,9 @@ export const LivePreview: React.FC = () => {
         <div className="flex items-center gap-1.5 text-xs text-slate-600">
           <span className="font-semibold text-slate-800">A4 Preview</span>
           <span className="text-slate-400">•</span>
-          <span className="font-mono text-slate-500">{Math.round(scale * 100)}%</span>
+          <span className="font-mono text-slate-500">
+            {Math.round(scale * 100)}%
+          </span>
         </div>
 
         {/* Zoom & Action Controls */}
@@ -131,9 +135,13 @@ export const LivePreview: React.FC = () => {
             type="button"
             onClick={() => setIsFullScreen(!isFullScreen)}
             className="p-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
-            title={isFullScreen ? 'Exit Full Screen' : 'Full Screen Preview'}
+            title={isFullScreen ? "Exit Full Screen" : "Full Screen Preview"}
           >
-            {isFullScreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            {isFullScreen ? (
+              <Minimize2 className="w-4 h-4" />
+            ) : (
+              <Maximize2 className="w-4 h-4" />
+            )}
           </button>
 
           <div className="h-4 w-[1px] bg-slate-200 mx-1" />
@@ -165,8 +173,8 @@ export const LivePreview: React.FC = () => {
         <div
           style={{
             transform: `scale(${scale})`,
-            transformOrigin: 'top center',
-            transition: 'transform 0.15s ease-out',
+            transformOrigin: "top center",
+            transition: "transform 0.15s ease-out",
           }}
           className="shrink-0 mb-12 shadow-2xl transition-all"
         >
@@ -175,12 +183,12 @@ export const LivePreview: React.FC = () => {
             id="printable-biodata"
             className="a4-document-container relative overflow-hidden text-slate-800"
             style={{
-              backgroundColor: styling.backgroundColor || '#FFFFFF',
+              backgroundColor: styling.backgroundColor || "#FFFFFF",
               fontFamily: styling.fontFamilyBody,
             }}
           >
             {/* Background Pattern Layer */}
-            {styling.backgroundPattern !== 'none' && (
+            {styling.backgroundPattern !== "none" && (
               <div
                 className="absolute inset-0 pointer-events-none z-0"
                 style={{
@@ -214,8 +222,8 @@ export const LivePreview: React.FC = () => {
                     key={img.id}
                     className="relative w-full min-h-[297mm] p-8 sm:p-11 flex flex-col justify-between border-t-2 border-slate-300 print:break-before-page"
                     style={{
-                      backgroundColor: styling.backgroundColor || '#FFFFFF',
-                      pageBreakBefore: 'always',
+                      backgroundColor: styling.backgroundColor || "#FFFFFF",
+                      pageBreakBefore: "always",
                     }}
                   >
                     {/* Subtle outer decorative frame matching styling */}
@@ -252,7 +260,7 @@ export const LivePreview: React.FC = () => {
                       <div className="max-w-[170mm] max-h-[220mm] rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-slate-50 flex items-center justify-center">
                         <img
                           src={img.url}
-                          alt={img.caption || 'Attached Document Photo'}
+                          alt={img.caption || "Attached Document Photo"}
                           className="max-h-[210mm] max-w-full object-contain"
                         />
                       </div>
@@ -267,7 +275,9 @@ export const LivePreview: React.FC = () => {
                         {img.caption || `Attachment #${idx + 1}`}
                       </h4>
                       {img.filename && (
-                        <p className="text-[10px] text-slate-400 mt-0.5">{img.filename}</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">
+                          {img.filename}
+                        </p>
                       )}
                     </div>
                   </div>

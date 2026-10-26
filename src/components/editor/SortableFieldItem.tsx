@@ -1,8 +1,8 @@
-import React from 'react';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { CustomField } from '../../types/biodata';
-import { calculateAge } from '../../utils/calculateAge';
+import React from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { CustomField } from "../../types/biodata";
+import { calculateAge } from "../../utils/calculateAge";
 import {
   GripVertical,
   Eye,
@@ -10,7 +10,7 @@ import {
   Edit2,
   Trash2,
   Calendar,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface SortableFieldItemProps {
   sectionId: string;
@@ -42,7 +42,9 @@ export const SortableFieldItem: React.FC<SortableFieldItemProps> = ({
     transition,
   };
 
-  const isDob = field.id.includes('dob') || field.label.toLowerCase().includes('date of birth');
+  const isDob =
+    field.id.includes("dob") ||
+    field.label.toLowerCase().includes("date of birth");
   const calculatedAge = isDob ? calculateAge(field.value) : null;
 
   return (
@@ -51,10 +53,10 @@ export const SortableFieldItem: React.FC<SortableFieldItemProps> = ({
       style={style}
       className={`group relative bg-white border rounded-xl p-3.5 transition-all duration-150 ${
         isDragging
-          ? 'opacity-50 border-rose-400 shadow-lg z-20'
+          ? "opacity-50 border-rose-400 shadow-lg z-20"
           : field.visible
-          ? 'border-slate-200/90 hover:border-slate-300 shadow-sm'
-          : 'border-slate-200 bg-slate-50/70 opacity-60'
+            ? "border-slate-200/90 hover:border-slate-300 shadow-sm"
+            : "border-slate-200 bg-slate-50/70 opacity-60"
       }`}
     >
       {/* Top Header Row */}
@@ -69,7 +71,7 @@ export const SortableFieldItem: React.FC<SortableFieldItemProps> = ({
           >
             <GripVertical className="w-4 h-4" />
           </button>
-          
+
           <span className="text-xs font-semibold text-slate-800 truncate">
             {field.label}
             {field.required && <span className="text-rose-500 ml-1">*</span>}
@@ -90,12 +92,16 @@ export const SortableFieldItem: React.FC<SortableFieldItemProps> = ({
             onClick={onToggleVisibility}
             className={`p-1.5 rounded-lg transition-colors ${
               field.visible
-                ? 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
-                : 'text-amber-600 bg-amber-50 hover:bg-amber-100'
+                ? "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+                : "text-amber-600 bg-amber-50 hover:bg-amber-100"
             }`}
-            title={field.visible ? 'Hide from document' : 'Show in document'}
+            title={field.visible ? "Hide from document" : "Show in document"}
           >
-            {field.visible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+            {field.visible ? (
+              <Eye className="w-3.5 h-3.5" />
+            ) : (
+              <EyeOff className="w-3.5 h-3.5" />
+            )}
           </button>
 
           <button
@@ -120,7 +126,7 @@ export const SortableFieldItem: React.FC<SortableFieldItemProps> = ({
 
       {/* Field Input Control */}
       <div className="mt-1">
-        {field.type === 'textarea' ? (
+        {field.type === "textarea" ? (
           <textarea
             rows={2}
             value={field.value}
@@ -128,7 +134,9 @@ export const SortableFieldItem: React.FC<SortableFieldItemProps> = ({
             placeholder={field.placeholder || `Enter ${field.label}...`}
             className="w-full text-xs rounded-lg border border-slate-200 p-2.5 bg-slate-50/50 text-slate-800 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-rose-500 transition-colors"
           />
-        ) : field.type === 'select' && field.options && field.options.length > 0 ? (
+        ) : field.type === "select" &&
+          field.options &&
+          field.options.length > 0 ? (
           <select
             value={field.value}
             onChange={(e) => onUpdateValue(e.target.value)}
@@ -141,17 +149,17 @@ export const SortableFieldItem: React.FC<SortableFieldItemProps> = ({
               </option>
             ))}
           </select>
-        ) : field.type === 'boolean' ? (
+        ) : field.type === "boolean" ? (
           <div className="flex gap-2">
-            {['Yes', 'No'].map((opt) => (
+            {["Yes", "No"].map((opt) => (
               <button
                 key={opt}
                 type="button"
                 onClick={() => onUpdateValue(opt)}
                 className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors ${
                   field.value === opt
-                    ? 'bg-rose-600 text-white border-rose-600 shadow-sm'
-                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                    ? "bg-rose-600 text-white border-rose-600 shadow-sm"
+                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
                 }`}
               >
                 {opt}
@@ -160,7 +168,13 @@ export const SortableFieldItem: React.FC<SortableFieldItemProps> = ({
           </div>
         ) : (
           <input
-            type={field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : 'text'}
+            type={
+              field.type === "number"
+                ? "number"
+                : field.type === "date"
+                  ? "date"
+                  : "text"
+            }
             value={field.value}
             onChange={(e) => onUpdateValue(e.target.value)}
             placeholder={field.placeholder || `Enter ${field.label}...`}

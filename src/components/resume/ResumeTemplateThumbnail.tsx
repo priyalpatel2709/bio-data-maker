@@ -1,7 +1,7 @@
-import React from 'react';
-import { ResumeTemplateId, ResumeDocument } from '../../types/resume';
-import { defaultResume, RESUME_TEMPLATES } from '../../data/defaultResume';
-import { ResumeTemplateRenderer } from './ResumeTemplateRenderer';
+import React from "react";
+import { ResumeTemplateId, ResumeDocument } from "../../types/resume";
+import { defaultResume, RESUME_TEMPLATES } from "../../data/defaultResume";
+import { ResumeTemplateRenderer } from "./ResumeTemplateRenderer";
 
 interface ResumeTemplateThumbnailProps {
   templateId: ResumeTemplateId;
@@ -11,11 +11,13 @@ interface ResumeTemplateThumbnailProps {
   docOverride?: ResumeDocument;
 }
 
-export const ResumeTemplateThumbnail: React.FC<ResumeTemplateThumbnailProps> = ({
+export const ResumeTemplateThumbnail: React.FC<
+  ResumeTemplateThumbnailProps
+> = ({
   templateId,
   scale = 0.34,
   height = 260,
-  className = '',
+  className = "",
   docOverride,
 }) => {
   const tplDef = RESUME_TEMPLATES.find((t) => t.id === templateId);
@@ -28,7 +30,7 @@ export const ResumeTemplateThumbnail: React.FC<ResumeTemplateThumbnailProps> = (
       ...baseDoc.styling,
       ...(tplDef?.defaultStyling || {}),
       templateId,
-      pageSplitAt: 'single-page',
+      pageSplitAt: "single-page",
     },
   };
 
@@ -40,10 +42,10 @@ export const ResumeTemplateThumbnail: React.FC<ResumeTemplateThumbnailProps> = (
       <div
         className="shrink-0 origin-top shadow-md"
         style={{
-          width: '794px', // A4 pixel width
-          minHeight: '1123px', // A4 pixel height
+          width: "794px", // A4 pixel width
+          minHeight: "1123px", // A4 pixel height
           transform: `scale(${scale})`,
-          backgroundColor: '#FFFFFF',
+          backgroundColor: "#FFFFFF",
         }}
       >
         <ResumeTemplateRenderer resume={doc} />

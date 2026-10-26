@@ -1,10 +1,10 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
-import { useResume } from '../../context/ResumeContext';
-import { ResumeTemplateRenderer } from './ResumeTemplateRenderer';
-import { generateResumePlainText } from '../../utils/resumeStorage';
-import { usePageMetrics } from '../../utils/pageMetrics';
-import { auditResume } from '../../utils/atsAuditor';
-import { ATSAuditorModal } from './ATSAuditorModal';
+import React, { useRef, useState, useEffect, useMemo } from "react";
+import { useResume } from "../../context/ResumeContext";
+import { ResumeTemplateRenderer } from "./ResumeTemplateRenderer";
+import { generateResumePlainText } from "../../utils/resumeStorage";
+import { usePageMetrics } from "../../utils/pageMetrics";
+import { auditResume } from "../../utils/atsAuditor";
+import { ATSAuditorModal } from "./ATSAuditorModal";
 import {
   ZoomIn,
   ZoomOut,
@@ -20,10 +20,11 @@ import {
   FileText,
   Layers,
   HelpCircle,
-} from 'lucide-react';
+} from "lucide-react";
 
 export const ResumeLivePreview: React.FC = () => {
-  const { document, previewZoom, setPreviewZoom, setExportModalOpen } = useResume();
+  const { document, previewZoom, setPreviewZoom, setExportModalOpen } =
+    useResume();
   const containerRef = useRef<HTMLDivElement>(null);
   const documentWrapperRef = useRef<HTMLDivElement>(null);
   const [copiedText, setCopiedText] = useState(false);
@@ -31,10 +32,10 @@ export const ResumeLivePreview: React.FC = () => {
   const [showPageGuides, setShowPageGuides] = useState(true);
   const [isAuditorOpen, setIsAuditorOpen] = useState(false);
 
-  const isLetter = document.styling.paperSize === 'letter';
+  const isLetter = document.styling.paperSize === "letter";
   const pageWidthPx = isLetter ? 816 : 794;
 
-  const isSinglePage = document.styling.pageSplitAt === 'single-page';
+  const isSinglePage = document.styling.pageSplitAt === "single-page";
   const hasPage2 =
     !isSinglePage &&
     (document.projects.length > 0 ||
@@ -44,7 +45,10 @@ export const ResumeLivePreview: React.FC = () => {
   const totalPages = hasPage2 ? 2 : 1;
 
   // Real-time page boundary measurements
-  const metrics = usePageMetrics(documentWrapperRef, document.styling.paperSize);
+  const metrics = usePageMetrics(
+    documentWrapperRef,
+    document.styling.paperSize,
+  );
 
   // Auto-fit calculation
   useEffect(() => {
@@ -52,14 +56,17 @@ export const ResumeLivePreview: React.FC = () => {
       if (!containerRef.current) return;
       const parentWidth = containerRef.current.clientWidth - 48;
       if (parentWidth > 0) {
-        const calculated = Math.min(1.0, Math.max(0.4, (parentWidth - 32) / pageWidthPx));
+        const calculated = Math.min(
+          1.0,
+          Math.max(0.4, (parentWidth - 32) / pageWidthPx),
+        );
         setFitScale(calculated);
       }
     };
 
     calculateFit();
-    window.addEventListener('resize', calculateFit);
-    return () => window.removeEventListener('resize', calculateFit);
+    window.addEventListener("resize", calculateFit);
+    return () => window.removeEventListener("resize", calculateFit);
   }, [pageWidthPx]);
 
   // Comprehensive rule-based ATS audit
@@ -77,7 +84,12 @@ export const ResumeLivePreview: React.FC = () => {
   };
 
   // Zoom scale multiplier
-  const scale = previewZoom === 'fit' ? fitScale : typeof previewZoom === 'number' ? previewZoom : 0.85;
+  const scale =
+    previewZoom === "fit"
+      ? fitScale
+      : typeof previewZoom === "number"
+        ? previewZoom
+        : 0.85;
 
   return (
     <div className="flex-1 flex flex-col h-full bg-slate-200/80 overflow-hidden relative">
@@ -91,10 +103,10 @@ export const ResumeLivePreview: React.FC = () => {
             onClick={() => setIsAuditorOpen(true)}
             className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition hover:shadow-xs active:scale-95 cursor-pointer ${
               atsReport.overallScore >= 80
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
+                ? "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"
                 : atsReport.overallScore >= 60
-                ? 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
-                : 'bg-rose-50 text-rose-800 border-rose-300 hover:bg-rose-100'
+                  ? "bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100"
+                  : "bg-rose-50 text-rose-800 border-rose-300 hover:bg-rose-100"
             }`}
             title="Click to view detailed Rule-Based ATS Audit & Action Verbs breakdown"
           >
@@ -113,7 +125,9 @@ export const ResumeLivePreview: React.FC = () => {
                 title={`Page 1 is overflowing by ~${metrics.estimatedLinesOver} lines (${metrics.overflowPx}px). Upon export this will spill onto page 2.`}
               >
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                <span>Spills into Page 2 (+{metrics.estimatedLinesOver} lines)</span>
+                <span>
+                  Spills into Page 2 (+{metrics.estimatedLinesOver} lines)
+                </span>
               </div>
             ) : (
               <div
@@ -121,7 +135,10 @@ export const ResumeLivePreview: React.FC = () => {
                 title={`Perfect 1-Page fit (${metrics.fillPercentage}% filled). Highest recruiter preference.`}
               >
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <span>1 Page {isLetter ? 'Letter' : 'A4'} ({metrics.fillPercentage}% full)</span>
+                <span>
+                  1 Page {isLetter ? "Letter" : "A4"} ({metrics.fillPercentage}%
+                  full)
+                </span>
               </div>
             )
           ) : (
@@ -130,7 +147,7 @@ export const ResumeLivePreview: React.FC = () => {
               title="2-Page Resume: Split across two distinct pages with matched headers & margins."
             >
               <FileText className="w-3.5 h-3.5 text-teal-600 shrink-0" />
-              <span>2 Pages {isLetter ? 'Letter' : 'A4'}</span>
+              <span>2 Pages {isLetter ? "Letter" : "A4"}</span>
             </div>
           )}
 
@@ -140,8 +157,8 @@ export const ResumeLivePreview: React.FC = () => {
             onClick={() => setShowPageGuides((prev) => !prev)}
             className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border transition ${
               showPageGuides
-                ? 'bg-teal-50 text-teal-800 border-teal-300'
-                : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                ? "bg-teal-50 text-teal-800 border-teal-300"
+                : "bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200"
             }`}
             title="Toggle visual page boundary lines & overflow indicators"
           >
@@ -155,7 +172,13 @@ export const ResumeLivePreview: React.FC = () => {
           {/* Zoom controls */}
           <div className="flex items-center bg-slate-100 rounded-lg p-0.5 border border-slate-200 text-slate-600">
             <button
-              onClick={() => setPreviewZoom(typeof previewZoom === 'number' ? Math.max(0.4, previewZoom - 0.1) : Math.max(0.4, fitScale - 0.1))}
+              onClick={() =>
+                setPreviewZoom(
+                  typeof previewZoom === "number"
+                    ? Math.max(0.4, previewZoom - 0.1)
+                    : Math.max(0.4, fitScale - 0.1),
+                )
+              }
               className="p-1 hover:text-slate-900 hover:bg-white rounded transition"
               title="Zoom Out"
             >
@@ -165,16 +188,26 @@ export const ResumeLivePreview: React.FC = () => {
               {Math.round(scale * 100)}%
             </span>
             <button
-              onClick={() => setPreviewZoom(typeof previewZoom === 'number' ? Math.min(1.4, previewZoom + 0.1) : Math.min(1.4, fitScale + 0.1))}
+              onClick={() =>
+                setPreviewZoom(
+                  typeof previewZoom === "number"
+                    ? Math.min(1.4, previewZoom + 0.1)
+                    : Math.min(1.4, fitScale + 0.1),
+                )
+              }
               className="p-1 hover:text-slate-900 hover:bg-white rounded transition"
               title="Zoom In"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
             <button
-              onClick={() => setPreviewZoom(previewZoom === 'fit' ? 1.0 : 'fit')}
+              onClick={() =>
+                setPreviewZoom(previewZoom === "fit" ? 1.0 : "fit")
+              }
               className={`p-1 rounded transition text-[11px] font-semibold px-2 ${
-                previewZoom === 'fit' ? 'bg-white text-slate-900 shadow-2xs' : 'hover:text-slate-900'
+                previewZoom === "fit"
+                  ? "bg-white text-slate-900 shadow-2xs"
+                  : "hover:text-slate-900"
               }`}
               title="Fit to Screen"
             >
@@ -188,8 +221,14 @@ export const ResumeLivePreview: React.FC = () => {
             className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
             title="Copy plain ATS text to clipboard"
           >
-            {copiedText ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-            <span className="hidden md:inline">{copiedText ? 'Copied ATS Text' : 'Copy ATS'}</span>
+            {copiedText ? (
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
+            ) : (
+              <Copy className="w-3.5 h-3.5" />
+            )}
+            <span className="hidden md:inline">
+              {copiedText ? "Copied ATS Text" : "Copy ATS"}
+            </span>
           </button>
 
           {/* Vector Print button */}
@@ -222,8 +261,8 @@ export const ResumeLivePreview: React.FC = () => {
           ref={documentWrapperRef}
           style={{
             transform: `scale(${scale})`,
-            transformOrigin: 'top center',
-            transition: 'transform 0.12s ease-out',
+            transformOrigin: "top center",
+            transition: "transform 0.12s ease-out",
             width: `${pageWidthPx}px`,
           }}
           className="preview-scale-wrapper shrink-0 mb-16 relative"
@@ -243,7 +282,8 @@ export const ResumeLivePreview: React.FC = () => {
               <div className="relative border-b-2 border-dashed border-rose-500/80 w-full flex items-center justify-center">
                 <span className="absolute -top-3.5 bg-rose-600 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-0.5 rounded-full shadow-md flex items-center gap-1.5">
                   <FileText className="w-3 h-3" />
-                  {isLetter ? 'US Letter' : 'A4'} Page 1 End ({metrics.nominalPageHeightPx}px)
+                  {isLetter ? "US Letter" : "A4"} Page 1 End (
+                  {metrics.nominalPageHeightPx}px)
                 </span>
               </div>
 
@@ -258,11 +298,13 @@ export const ResumeLivePreview: React.FC = () => {
                   <div className="flex items-center gap-2 font-bold text-rose-800">
                     <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
                     <span>
-                      Content overflow detected: ~{metrics.estimatedLinesOver} lines ({metrics.overflowPx}px) past Page 1.
+                      Content overflow detected: ~{metrics.estimatedLinesOver}{" "}
+                      lines ({metrics.overflowPx}px) past Page 1.
                     </span>
                   </div>
                   <p className="text-[11px] text-rose-700">
-                    Recruiter tip: To fit cleanly onto 1 page, switch to "Compact" margins in Styling, or trim 1-2 bullet points.
+                    Recruiter tip: To fit cleanly onto 1 page, switch to
+                    "Compact" margins in Styling, or trim 1-2 bullet points.
                   </p>
                 </div>
               )}
@@ -275,18 +317,24 @@ export const ResumeLivePreview: React.FC = () => {
               metrics.isOverflowing ? (
                 <span className="inline-flex items-center gap-1 text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-300 shadow-2xs">
                   <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-                  Overflowing Page 1 by ~{metrics.estimatedLinesOver} lines (spills onto Page 2)
+                  Overflowing Page 1 by ~{metrics.estimatedLinesOver} lines
+                  (spills onto Page 2)
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/80 shadow-2xs">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  Fits cleanly on 1 standard {isLetter ? 'US Letter' : 'A4'} page ({metrics.fillPercentage}% full)
+                  Fits cleanly on 1 standard {isLetter
+                    ? "US Letter"
+                    : "A4"}{" "}
+                  page ({metrics.fillPercentage}% full)
                 </span>
               )
             ) : (
               <span className="inline-flex items-center gap-1 text-teal-800 bg-teal-50 px-3.5 py-1 rounded-full border border-teal-200/80 shadow-2xs">
                 <FileText className="w-3.5 h-3.5 text-teal-600" />
-                Paginated across {totalPages} distinct {isLetter ? 'US Letter' : 'A4'} pages with matched margins & headers
+                Paginated across {totalPages} distinct{" "}
+                {isLetter ? "US Letter" : "A4"} pages with matched margins &
+                headers
               </span>
             )}
           </div>

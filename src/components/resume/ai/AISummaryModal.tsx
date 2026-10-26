@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useResume } from '../../../context/ResumeContext';
-import { generateSummary, isAIConfigured } from '../../../services/aiService';
-import { X, Sparkles, Check, RefreshCw, Loader2, Settings } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { useResume } from "../../../context/ResumeContext";
+import { generateSummary, isAIConfigured } from "../../../services/aiService";
+import { X, Sparkles, Check, RefreshCw, Loader2, Settings } from "lucide-react";
 
 interface AISummaryModalProps {
   isOpen: boolean;
@@ -28,7 +28,7 @@ export const AISummaryModal: React.FC<AISummaryModalProps> = ({
     try {
       const skills = document.skillCategories.flatMap((sc) => sc.skills);
       const topExperiences = document.experience.map(
-        (e) => `${e.position} at ${e.company}`
+        (e) => `${e.position} at ${e.company}`,
       );
 
       const results = await generateSummary({
@@ -39,7 +39,7 @@ export const AISummaryModal: React.FC<AISummaryModalProps> = ({
       });
       setSummaries(results);
     } catch (err: any) {
-      setError(err.message || 'Failed to generate summary options.');
+      setError(err.message || "Failed to generate summary options.");
     } finally {
       setLoading(false);
     }
@@ -59,9 +59,21 @@ export const AISummaryModal: React.FC<AISummaryModalProps> = ({
   if (!isOpen) return null;
 
   const toneBadges = [
-    { title: 'Impact & Quantified Track Record', badge: 'High Impact', color: 'bg-emerald-50 text-emerald-800 border-emerald-300' },
-    { title: 'Technical Mastery & Domain Depth', badge: 'Technical Depth', color: 'bg-blue-50 text-blue-800 border-blue-300' },
-    { title: 'Leadership & Scaled Execution', badge: 'Leadership', color: 'bg-purple-50 text-purple-800 border-purple-300' },
+    {
+      title: "Impact & Quantified Track Record",
+      badge: "High Impact",
+      color: "bg-emerald-50 text-emerald-800 border-emerald-300",
+    },
+    {
+      title: "Technical Mastery & Domain Depth",
+      badge: "Technical Depth",
+      color: "bg-blue-50 text-blue-800 border-blue-300",
+    },
+    {
+      title: "Leadership & Scaled Execution",
+      badge: "Leadership",
+      color: "bg-purple-50 text-purple-800 border-purple-300",
+    },
   ];
 
   return (
@@ -77,7 +89,9 @@ export const AISummaryModal: React.FC<AISummaryModalProps> = ({
               <h3 className="font-bold text-sm sm:text-base leading-tight">
                 AI Professional Summary Generator
               </h3>
-              <p className="text-xs text-teal-200">Crafted from your experience & skills</p>
+              <p className="text-xs text-teal-200">
+                Crafted from your experience & skills
+              </p>
             </div>
           </div>
           <button
@@ -95,9 +109,12 @@ export const AISummaryModal: React.FC<AISummaryModalProps> = ({
               <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center mx-auto">
                 <Settings className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-slate-900 text-sm">AI Router API Key Required</h4>
+              <h4 className="font-bold text-slate-900 text-sm">
+                AI Router API Key Required
+              </h4>
               <p className="text-slate-600 max-w-sm mx-auto leading-relaxed">
-                Connect your API key for Nara Router, OpenRouter, or AgentRouter once to generate professional summaries instantly.
+                Connect your API key for Nara Router, OpenRouter, or AgentRouter
+                once to generate professional summaries instantly.
               </p>
               <button
                 type="button"
@@ -117,7 +134,8 @@ export const AISummaryModal: React.FC<AISummaryModalProps> = ({
                 <div className="py-10 text-center space-y-2">
                   <Loader2 className="w-6 h-6 animate-spin text-teal-700 mx-auto" />
                   <p className="text-slate-600 font-medium">
-                    Synthesizing your experience into executive summary drafts...
+                    Synthesizing your experience into executive summary
+                    drafts...
                   </p>
                 </div>
               )}

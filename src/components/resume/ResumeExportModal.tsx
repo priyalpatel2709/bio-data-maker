@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { useResume } from '../../context/ResumeContext';
-import { exportResumeToPdf } from './exportResumePdf';
-import { exportResumeToDocx } from './exportResumeDocx';
-import { generateResumePlainText } from '../../utils/resumeStorage';
-import confetti from 'canvas-confetti';
+import React, { useState } from "react";
+import { useResume } from "../../context/ResumeContext";
+import { exportResumeToPdf } from "./exportResumePdf";
+import { exportResumeToDocx } from "./exportResumeDocx";
+import { generateResumePlainText } from "../../utils/resumeStorage";
+import confetti from "canvas-confetti";
 import {
   X,
   FileDown,
@@ -17,16 +17,21 @@ import {
   Download,
   Printer,
   Info,
-} from 'lucide-react';
+} from "lucide-react";
 
 export const ResumeExportModal: React.FC = () => {
   const { document, exportModalOpen, setExportModalOpen } = useResume();
-  const [format, setFormat] = useState<'vector_print' | 'pdf' | 'docx' | 'ats_txt' | 'json'>('vector_print');
+  const [format, setFormat] = useState<
+    "vector_print" | "pdf" | "docx" | "ats_txt" | "json"
+  >("vector_print");
   const [isExporting, setIsExporting] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [statusMessage, setStatusMessage] = useState('');
+  const [statusMessage, setStatusMessage] = useState("");
   const [filename, setFilename] = useState(() => {
-    const safeName = (document.contact.fullName || 'Resume').replace(/[^a-zA-Z0-9]/g, '_');
+    const safeName = (document.contact.fullName || "Resume").replace(
+      /[^a-zA-Z0-9]/g,
+      "_",
+    );
     return `${safeName}_Resume`;
   });
   const [copiedTxt, setCopiedTxt] = useState(false);
@@ -34,7 +39,7 @@ export const ResumeExportModal: React.FC = () => {
   if (!exportModalOpen) return null;
 
   const handleExport = async () => {
-    if (format === 'vector_print') {
+    if (format === "vector_print") {
       window.print();
       try {
         confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
@@ -47,11 +52,11 @@ export const ResumeExportModal: React.FC = () => {
 
     setIsExporting(true);
     setProgress(5);
-    setStatusMessage('Preparing export file...');
+    setStatusMessage("Preparing export file...");
 
     try {
-      if (format === 'pdf') {
-        await exportResumeToPdf('resume-preview-document', {
+      if (format === "pdf") {
+        await exportResumeToPdf("resume-preview-document", {
           filename: `${filename}.pdf`,
           paperSize: document.styling.paperSize,
           onProgress: (p, msg) => {
@@ -59,25 +64,25 @@ export const ResumeExportModal: React.FC = () => {
             setStatusMessage(msg);
           },
         });
-      } else if (format === 'docx') {
+      } else if (format === "docx") {
         await exportResumeToDocx(document, `${filename}.docx`, (p, msg) => {
           setProgress(p);
           setStatusMessage(msg);
         });
-      } else if (format === 'ats_txt') {
+      } else if (format === "ats_txt") {
         const text = generateResumePlainText(document);
-        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
         const url = URL.createObjectURL(blob);
-        const link = window.document.createElement('a');
+        const link = window.document.createElement("a");
         link.href = url;
         link.download = `${filename}_ATS.txt`;
         link.click();
         URL.revokeObjectURL(url);
-      } else if (format === 'json') {
+      } else if (format === "json") {
         const jsonStr = JSON.stringify(document, null, 2);
-        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const blob = new Blob([jsonStr], { type: "application/json" });
         const url = URL.createObjectURL(blob);
-        const link = window.document.createElement('a');
+        const link = window.document.createElement("a");
         link.href = url;
         link.download = `${filename}.json`;
         link.click();
@@ -85,7 +90,7 @@ export const ResumeExportModal: React.FC = () => {
       }
 
       setProgress(100);
-      setStatusMessage('Export completed!');
+      setStatusMessage("Export completed!");
 
       try {
         confetti({
@@ -102,8 +107,8 @@ export const ResumeExportModal: React.FC = () => {
         setExportModalOpen(false);
       }, 900);
     } catch (err: any) {
-      console.error('Export failed:', err);
-      setStatusMessage('Export error: ' + (err?.message || 'Unknown error'));
+      console.error("Export failed:", err);
+      setStatusMessage("Export error: " + (err?.message || "Unknown error"));
       setIsExporting(false);
     }
   };
@@ -125,8 +130,12 @@ export const ResumeExportModal: React.FC = () => {
               <Download className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900">Export Your Resume</h3>
-              <p className="text-xs text-slate-500">Select standard format for job applications</p>
+              <h3 className="text-base font-bold text-slate-900">
+                Export Your Resume
+              </h3>
+              <p className="text-xs text-slate-500">
+                Select standard format for job applications
+              </p>
             </div>
           </div>
           <button
@@ -141,16 +150,18 @@ export const ResumeExportModal: React.FC = () => {
         <div className="p-6 space-y-4 text-xs">
           {/* Format Picker */}
           <div>
-            <label className="block font-bold text-slate-700 mb-2">Select Export Format</label>
+            <label className="block font-bold text-slate-700 mb-2">
+              Select Export Format
+            </label>
             <div className="grid grid-cols-2 gap-2.5">
               {/* Native Vector Print (Recommended) */}
               <button
                 type="button"
-                onClick={() => setFormat('vector_print')}
+                onClick={() => setFormat("vector_print")}
                 className={`col-span-2 p-3 rounded-xl border text-left transition flex items-center justify-between ${
-                  format === 'vector_print'
-                    ? 'border-teal-600 bg-teal-50/70 ring-2 ring-teal-600/20'
-                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                  format === "vector_print"
+                    ? "border-teal-600 bg-teal-50/70 ring-2 ring-teal-600/20"
+                    : "border-slate-200 hover:border-slate-300 bg-white"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -159,13 +170,16 @@ export const ResumeExportModal: React.FC = () => {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="font-bold text-slate-900 text-sm">Crisp Vector PDF (Browser Print)</h4>
+                      <h4 className="font-bold text-slate-900 text-sm">
+                        Crisp Vector PDF (Browser Print)
+                      </h4>
                       <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
                         Recommended
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-600 mt-0.5">
-                      100% crisp selectable text, pixel-perfect vectors, and smallest file size.
+                      100% crisp selectable text, pixel-perfect vectors, and
+                      smallest file size.
                     </p>
                   </div>
                 </div>
@@ -174,11 +188,11 @@ export const ResumeExportModal: React.FC = () => {
               {/* Raster PDF via html2canvas */}
               <button
                 type="button"
-                onClick={() => setFormat('pdf')}
+                onClick={() => setFormat("pdf")}
                 className={`p-3 rounded-xl border text-left transition flex flex-col justify-between ${
-                  format === 'pdf'
-                    ? 'border-teal-600 bg-teal-50/50 ring-2 ring-teal-600/20'
-                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                  format === "pdf"
+                    ? "border-teal-600 bg-teal-50/50 ring-2 ring-teal-600/20"
+                    : "border-slate-200 hover:border-slate-300 bg-white"
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -190,19 +204,23 @@ export const ResumeExportModal: React.FC = () => {
                   </span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-xs">Standard PDF</h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Automated 1-click download file</p>
+                  <h4 className="font-bold text-slate-900 text-xs">
+                    Standard PDF
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Automated 1-click download file
+                  </p>
                 </div>
               </button>
 
               {/* Word Docx */}
               <button
                 type="button"
-                onClick={() => setFormat('docx')}
+                onClick={() => setFormat("docx")}
                 className={`p-3 rounded-xl border text-left transition flex flex-col justify-between ${
-                  format === 'docx'
-                    ? 'border-teal-600 bg-teal-50/50 ring-2 ring-teal-600/20'
-                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                  format === "docx"
+                    ? "border-teal-600 bg-teal-50/50 ring-2 ring-teal-600/20"
+                    : "border-slate-200 hover:border-slate-300 bg-white"
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -214,19 +232,23 @@ export const ResumeExportModal: React.FC = () => {
                   </span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-xs">Microsoft Word</h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Editable native Word doc</p>
+                  <h4 className="font-bold text-slate-900 text-xs">
+                    Microsoft Word
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Editable native Word doc
+                  </p>
                 </div>
               </button>
 
               {/* ATS Plain Text */}
               <button
                 type="button"
-                onClick={() => setFormat('ats_txt')}
+                onClick={() => setFormat("ats_txt")}
                 className={`p-3 rounded-xl border text-left transition flex flex-col justify-between ${
-                  format === 'ats_txt'
-                    ? 'border-teal-600 bg-teal-50/50 ring-2 ring-teal-600/20'
-                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                  format === "ats_txt"
+                    ? "border-teal-600 bg-teal-50/50 ring-2 ring-teal-600/20"
+                    : "border-slate-200 hover:border-slate-300 bg-white"
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -238,19 +260,23 @@ export const ResumeExportModal: React.FC = () => {
                   </span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-xs">Plain Text (.txt)</h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">For pasting into portal boxes</p>
+                  <h4 className="font-bold text-slate-900 text-xs">
+                    Plain Text (.txt)
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    For pasting into portal boxes
+                  </p>
                 </div>
               </button>
 
               {/* JSON Backup */}
               <button
                 type="button"
-                onClick={() => setFormat('json')}
+                onClick={() => setFormat("json")}
                 className={`p-3 rounded-xl border text-left transition flex flex-col justify-between ${
-                  format === 'json'
-                    ? 'border-teal-600 bg-teal-50/50 ring-2 ring-teal-600/20'
-                    : 'border-slate-200 hover:border-slate-300 bg-white'
+                  format === "json"
+                    ? "border-teal-600 bg-teal-50/50 ring-2 ring-teal-600/20"
+                    : "border-slate-200 hover:border-slate-300 bg-white"
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -262,30 +288,40 @@ export const ResumeExportModal: React.FC = () => {
                   </span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-xs">JSON Data</h4>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Backup / device transfer</p>
+                  <h4 className="font-bold text-slate-900 text-xs">
+                    JSON Data
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Backup / device transfer
+                  </p>
                 </div>
               </button>
             </div>
           </div>
 
           {/* Browser Vector Print Tip Callout */}
-          {format === 'vector_print' && (
+          {format === "vector_print" && (
             <div className="p-3 bg-teal-50/80 border border-teal-200 rounded-xl text-[11px] text-teal-900 flex items-start gap-2">
               <Info className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold">Browser Print Tip for Pixel-Perfect PDF:</p>
+                <p className="font-bold">
+                  Browser Print Tip for Pixel-Perfect PDF:
+                </p>
                 <p className="text-teal-800">
-                  In the print dialog, set <strong>Destination</strong> to <em>"Save as PDF"</em> and <strong>Margins</strong> to <em>"None"</em>.
+                  In the print dialog, set <strong>Destination</strong> to{" "}
+                  <em>"Save as PDF"</em> and <strong>Margins</strong> to{" "}
+                  <em>"None"</em>.
                 </p>
               </div>
             </div>
           )}
 
           {/* Filename Input */}
-          {format !== 'vector_print' && (
+          {format !== "vector_print" && (
             <div>
-              <label className="block font-bold text-slate-700 mb-1">File Name</label>
+              <label className="block font-bold text-slate-700 mb-1">
+                File Name
+              </label>
               <div className="flex items-center">
                 <input
                   type="text"
@@ -294,7 +330,7 @@ export const ResumeExportModal: React.FC = () => {
                   className="flex-1 px-3 py-2 rounded-l-lg border border-slate-300 focus:outline-teal-600 text-xs font-medium"
                 />
                 <span className="px-3 py-2 bg-slate-100 border border-l-0 border-slate-300 text-slate-600 rounded-r-lg font-mono text-xs">
-                  .{format === 'ats_txt' ? 'txt' : format}
+                  .{format === "ats_txt" ? "txt" : format}
                 </span>
               </div>
             </div>
@@ -305,8 +341,12 @@ export const ResumeExportModal: React.FC = () => {
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
               <div>
-                <span className="font-bold text-slate-800">Quick Copy Plain Text</span>
-                <p className="text-[10px] text-slate-500">Copy text directly without downloading</p>
+                <span className="font-bold text-slate-800">
+                  Quick Copy Plain Text
+                </span>
+                <p className="text-[10px] text-slate-500">
+                  Copy text directly without downloading
+                </p>
               </div>
             </div>
             <button
@@ -314,8 +354,12 @@ export const ResumeExportModal: React.FC = () => {
               onClick={handleCopyAts}
               className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 font-semibold text-xs flex items-center gap-1.5 transition"
             >
-              {copiedTxt ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copiedTxt ? 'Copied!' : 'Copy Text'}</span>
+              {copiedTxt ? (
+                <Check className="w-3.5 h-3.5 text-emerald-600" />
+              ) : (
+                <Copy className="w-3.5 h-3.5" />
+              )}
+              <span>{copiedTxt ? "Copied!" : "Copy Text"}</span>
             </button>
           </div>
 
@@ -352,13 +396,17 @@ export const ResumeExportModal: React.FC = () => {
             disabled={isExporting}
             className="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 transition shadow-sm active:scale-95 flex items-center gap-2 disabled:opacity-50"
           >
-            {format === 'vector_print' ? <Printer className="w-4 h-4" /> : <Download className="w-4 h-4" />}
+            {format === "vector_print" ? (
+              <Printer className="w-4 h-4" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
             <span>
               {isExporting
-                ? 'Generating...'
-                : format === 'vector_print'
-                ? 'Print / Save as PDF'
-                : `Download ${format.toUpperCase()}`}
+                ? "Generating..."
+                : format === "vector_print"
+                  ? "Print / Save as PDF"
+                  : `Download ${format.toUpperCase()}`}
             </span>
           </button>
         </div>

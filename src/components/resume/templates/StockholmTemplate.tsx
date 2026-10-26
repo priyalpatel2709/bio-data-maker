@@ -1,6 +1,6 @@
-import React from 'react';
-import { ResumeDocument } from '../../../types/resume';
-import { Mail, Phone, MapPin, Globe, Linkedin, Github } from 'lucide-react';
+import React from "react";
+import { ResumeDocument } from "../../../types/resume";
+import { Mail, Phone, MapPin, Globe, Linkedin, Github } from "lucide-react";
 
 interface TemplateProps {
   resume: ResumeDocument;
@@ -19,32 +19,35 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
     styling,
   } = resume;
 
-  const primaryColor = styling.primaryColor || '#0F766E';
-  const textColor = styling.textColor || '#1E293B';
-  const isLetter = styling.paperSize === 'letter';
-  const docWidth = isLetter ? '816px' : '794px';
-  const docMinHeight = isLetter ? '1056px' : '1123px';
+  const primaryColor = styling.primaryColor || "#0F766E";
+  const textColor = styling.textColor || "#1E293B";
+  const isLetter = styling.paperSize === "letter";
+  const docWidth = isLetter ? "816px" : "794px";
+  const docMinHeight = isLetter ? "1056px" : "1123px";
 
   const paddingClass =
-    styling.pageMargin === 'compact'
-      ? 'p-6'
-      : styling.pageMargin === 'spacious'
-      ? 'p-12'
-      : 'p-9';
+    styling.pageMargin === "compact"
+      ? "p-6"
+      : styling.pageMargin === "spacious"
+        ? "p-12"
+        : "p-9";
 
   const fontStyle = {
-    fontFamily: `${styling.fontFamily || 'Inter'}, -apple-system, BlinkMacSystemFont, sans-serif`,
+    fontFamily: `${styling.fontFamily || "Inter"}, -apple-system, BlinkMacSystemFont, sans-serif`,
     color: textColor,
     width: docWidth,
     minHeight: docMinHeight,
-    boxSizing: 'border-box' as const,
+    boxSizing: "border-box" as const,
   };
 
-  const isSinglePage = styling.pageSplitAt === 'single-page';
-  const splitAt = styling.pageSplitAt || 'auto';
+  const isSinglePage = styling.pageSplitAt === "single-page";
+  const splitAt = styling.pageSplitAt || "auto";
   const hasPage2 =
     !isSinglePage &&
-    (projects.length > 0 || education.length > 0 || certifications.length > 0 || customSections.length > 0);
+    (projects.length > 0 ||
+      education.length > 0 ||
+      certifications.length > 0 ||
+      customSections.length > 0);
   const totalPages = hasPage2 ? 2 : 1;
 
   // Header Component (Stockholm signature header banner)
@@ -55,7 +58,7 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
         <header className="border-b border-slate-200 pb-2 mb-4 flex flex-row items-center justify-between text-xs">
           <div>
             <span className="font-bold text-slate-900 text-sm tracking-tight">
-              {contact.fullName || 'Candidate Name'}
+              {contact.fullName || "Candidate Name"}
             </span>
             {contact.jobTitle && (
               <span className="text-slate-500 ml-2">— {contact.jobTitle}</span>
@@ -63,7 +66,10 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
           </div>
           <span
             className="text-[10px] font-bold px-2 py-0.5 rounded"
-            style={{ backgroundColor: `${primaryColor}15`, color: primaryColor }}
+            style={{
+              backgroundColor: `${primaryColor}15`,
+              color: primaryColor,
+            }}
           >
             Page 2 of 2
           </span>
@@ -75,10 +81,13 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
       <header className="pb-5 mb-5 border-b border-slate-200 flex flex-row items-center justify-between gap-5">
         <div className="flex-1">
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
-            {contact.fullName || 'Your Full Name'}
+            {contact.fullName || "Your Full Name"}
           </h1>
           {contact.jobTitle && (
-            <p className="text-sm font-semibold mt-1 tracking-wide" style={{ color: primaryColor }}>
+            <p
+              className="text-sm font-semibold mt-1 tracking-wide"
+              style={{ color: primaryColor }}
+            >
               {contact.jobTitle}
             </p>
           )}
@@ -89,11 +98,11 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
             src={contact.photoUrl}
             alt={contact.fullName}
             className={`w-20 h-20 object-cover shadow-sm border-2 shrink-0 ${
-              styling.photoShape === 'circle'
-                ? 'rounded-full'
-                : styling.photoShape === 'rounded'
-                ? 'rounded-xl'
-                : 'rounded-none'
+              styling.photoShape === "circle"
+                ? "rounded-full"
+                : styling.photoShape === "rounded"
+                  ? "rounded-xl"
+                  : "rounded-none"
             }`}
             style={{ borderColor: primaryColor }}
           />
@@ -136,26 +145,35 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
           )}
           {contact.location && (
             <div>
-              <span className="font-semibold block text-slate-800">Location</span>
+              <span className="font-semibold block text-slate-800">
+                Location
+              </span>
               {contact.location}
             </div>
           )}
           {contact.linkedin && (
             <div className="break-words">
-              <span className="font-semibold block text-slate-800">LinkedIn</span>
-              {contact.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//, '')}
+              <span className="font-semibold block text-slate-800">
+                LinkedIn
+              </span>
+              {contact.linkedin.replace(
+                /^https?:\/\/(www\.)?linkedin\.com\/in\//,
+                "",
+              )}
             </div>
           )}
           {contact.github && (
             <div className="break-words">
               <span className="font-semibold block text-slate-800">GitHub</span>
-              {contact.github.replace(/^https?:\/\/(www\.)?github\.com\//, '')}
+              {contact.github.replace(/^https?:\/\/(www\.)?github\.com\//, "")}
             </div>
           )}
           {contact.website && (
             <div className="break-words">
-              <span className="font-semibold block text-slate-800">Portfolio</span>
-              {contact.website.replace(/^https?:\/\//, '')}
+              <span className="font-semibold block text-slate-800">
+                Portfolio
+              </span>
+              {contact.website.replace(/^https?:\/\//, "")}
             </div>
           )}
         </div>
@@ -170,7 +188,9 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
           <div className="space-y-2.5">
             {skillCategories.map((sc) => (
               <div key={sc.id}>
-                <div className="font-semibold text-slate-800 text-[11px] mb-1">{sc.categoryName}</div>
+                <div className="font-semibold text-slate-800 text-[11px] mb-1">
+                  {sc.categoryName}
+                </div>
                 <div className="flex flex-wrap gap-1">
                   {sc.skills.map((skill, idx) => (
                     <span
@@ -198,7 +218,7 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
               <div key={c.id}>
                 <div className="font-semibold text-slate-900">{c.name}</div>
                 <div className="text-slate-500 text-[10px]">
-                  {c.issuer} {c.issueDate ? `(${c.issueDate})` : ''}
+                  {c.issuer} {c.issueDate ? `(${c.issueDate})` : ""}
                 </div>
               </div>
             ))}
@@ -213,8 +233,10 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
     if (!summary) return null;
     return (
       <section>
-        {renderSectionTitle('Profile')}
-        <p className="text-xs text-slate-700 leading-relaxed text-justify">{summary}</p>
+        {renderSectionTitle("Profile")}
+        <p className="text-xs text-slate-700 leading-relaxed text-justify">
+          {summary}
+        </p>
       </section>
     );
   };
@@ -223,19 +245,21 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
     if (experience.length === 0) return null;
     return (
       <section>
-        {renderSectionTitle('Employment History')}
+        {renderSectionTitle("Employment History")}
         <div className="space-y-3.5">
           {experience.map((exp) => (
             <div key={exp.id} className="text-xs">
               <div className="flex flex-row justify-between items-baseline gap-2">
-                <span className="font-bold text-slate-900 text-[13px]">{exp.position}</span>
+                <span className="font-bold text-slate-900 text-[13px]">
+                  {exp.position}
+                </span>
                 <span className="text-slate-400 font-medium text-[11px] shrink-0">
-                  {exp.startDate} — {exp.isCurrent ? 'Present' : exp.endDate}
+                  {exp.startDate} — {exp.isCurrent ? "Present" : exp.endDate}
                 </span>
               </div>
               <div className="text-slate-600 font-medium text-xs mt-0.5">
                 {exp.company}
-                {exp.location ? `, ${exp.location}` : ''}
+                {exp.location ? `, ${exp.location}` : ""}
               </div>
               {exp.bullets.length > 0 && (
                 <ul className="mt-1 space-y-1 list-disc list-outside ml-4 text-xs text-slate-700">
@@ -257,22 +281,24 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
     if (education.length === 0) return null;
     return (
       <section>
-        {renderSectionTitle('Education')}
+        {renderSectionTitle("Education")}
         <div className="space-y-3">
           {education.map((edu) => (
             <div key={edu.id} className="text-xs">
               <div className="flex flex-row justify-between items-baseline gap-2">
                 <span className="font-bold text-slate-900">{edu.degree}</span>
                 <span className="text-slate-400 font-medium text-[11px] shrink-0">
-                  {edu.startDate} — {edu.isCurrent ? 'Present' : edu.endDate}
+                  {edu.startDate} — {edu.isCurrent ? "Present" : edu.endDate}
                 </span>
               </div>
               <div className="text-slate-600 text-xs mt-0.5">
                 {edu.institution}
-                {edu.location ? `, ${edu.location}` : ''}
+                {edu.location ? `, ${edu.location}` : ""}
               </div>
               {edu.gradeOrGpa && (
-                <div className="text-slate-500 text-[11px] mt-0.5">{edu.gradeOrGpa}</div>
+                <div className="text-slate-500 text-[11px] mt-0.5">
+                  {edu.gradeOrGpa}
+                </div>
               )}
               {edu.bullets && edu.bullets.length > 0 && (
                 <ul className="mt-1 space-y-0.5 list-disc list-outside ml-4 text-xs text-slate-700">
@@ -292,7 +318,7 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
     if (projects.length === 0) return null;
     return (
       <section>
-        {renderSectionTitle('Projects')}
+        {renderSectionTitle("Projects")}
         <div className="space-y-3">
           {projects.map((proj) => (
             <div key={proj.id} className="text-xs">
@@ -300,12 +326,14 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
                 <span className="font-bold text-slate-900">{proj.name}</span>
                 {(proj.startDate || proj.endDate) && (
                   <span className="text-slate-400 font-medium text-[11px] shrink-0">
-                    {proj.startDate} {proj.endDate ? `— ${proj.endDate}` : ''}
+                    {proj.startDate} {proj.endDate ? `— ${proj.endDate}` : ""}
                   </span>
                 )}
               </div>
               {proj.roleOrSubtitle && (
-                <div className="text-slate-600 text-xs italic">{proj.roleOrSubtitle}</div>
+                <div className="text-slate-600 text-xs italic">
+                  {proj.roleOrSubtitle}
+                </div>
               )}
               {proj.bullets.length > 0 && (
                 <ul className="mt-1 space-y-0.5 list-disc list-outside ml-4 text-xs text-slate-700">
@@ -338,11 +366,21 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
                     <div className="flex justify-between items-baseline font-bold text-slate-900">
                       <span>{item.title}</span>
                       {item.date && (
-                        <span className="text-slate-400 font-normal text-[11px]">{item.date}</span>
+                        <span className="text-slate-400 font-normal text-[11px]">
+                          {item.date}
+                        </span>
                       )}
                     </div>
-                    {item.subtitle && <div className="text-slate-600 italic">{item.subtitle}</div>}
-                    {item.description && <p className="text-slate-700 mt-0.5">{item.description}</p>}
+                    {item.subtitle && (
+                      <div className="text-slate-600 italic">
+                        {item.subtitle}
+                      </div>
+                    )}
+                    {item.description && (
+                      <p className="text-slate-700 mt-0.5">
+                        {item.description}
+                      </p>
+                    )}
                     {item.bullets && item.bullets.length > 0 && (
                       <ul className="mt-1 list-disc list-outside ml-4 space-y-0.5 text-slate-700">
                         {item.bullets.map((b, idx) => (
@@ -363,7 +401,7 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
     if (!styling.showPageNumbers) return null;
     return (
       <footer className="mt-auto pt-3 border-t border-slate-200 flex justify-between items-center text-[10px] text-slate-400 font-medium">
-        <span>{contact.fullName || 'Candidate Resume'}</span>
+        <span>{contact.fullName || "Candidate Resume"}</span>
         <span>
           Page {pageNumber} of {totalPages}
         </span>
@@ -384,7 +422,7 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
       );
     }
 
-    if (splitAt === 'projects') {
+    if (splitAt === "projects") {
       return (
         <div className="space-y-4">
           {renderSummary()}
@@ -393,7 +431,7 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
       );
     }
 
-    if (splitAt === 'education') {
+    if (splitAt === "education") {
       return (
         <div className="space-y-4">
           {renderSummary()}
@@ -413,7 +451,7 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
   };
 
   const renderPage2Sections = () => {
-    if (splitAt === 'projects') {
+    if (splitAt === "projects") {
       return (
         <div className="space-y-4">
           {renderProjects()}
@@ -423,7 +461,7 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
       );
     }
 
-    if (splitAt === 'education') {
+    if (splitAt === "education") {
       return (
         <div className="space-y-4">
           {renderEducation()}
@@ -479,7 +517,9 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
                 <div className="text-[11px] text-slate-500">
                   {contact.fullName}
                   {contact.phone && <div className="mt-1">{contact.phone}</div>}
-                  {contact.email && <div className="mt-0.5 break-words">{contact.email}</div>}
+                  {contact.email && (
+                    <div className="mt-0.5 break-words">{contact.email}</div>
+                  )}
                 </div>
               </div>
               <main className="flex-1">{renderPage2Sections()}</main>

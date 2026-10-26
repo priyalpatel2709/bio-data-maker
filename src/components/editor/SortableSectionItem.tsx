@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import { useSortable } from '@dnd-kit/sortable';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { BiodataSection, CustomField } from '../../types/biodata';
-import { SortableFieldItem } from './SortableFieldItem';
-import { Button } from '../common/Button';
+import React, { useState } from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { BiodataSection, CustomField } from "../../types/biodata";
+import { SortableFieldItem } from "./SortableFieldItem";
+import { Button } from "../common/Button";
 import {
   GripVertical,
   ChevronDown,
@@ -15,7 +18,7 @@ import {
   Edit2,
   Trash2,
   Layers,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface SortableSectionItemProps {
   section: BiodataSection;
@@ -65,10 +68,10 @@ export const SortableSectionItem: React.FC<SortableSectionItemProps> = ({
       style={style}
       className={`bg-white border rounded-2xl shadow-sm transition-all overflow-hidden ${
         isDragging
-          ? 'opacity-60 border-rose-500 shadow-xl z-30'
+          ? "opacity-60 border-rose-500 shadow-xl z-30"
           : section.visible
-          ? 'border-slate-200/90'
-          : 'border-slate-200 bg-slate-50/80 opacity-75'
+            ? "border-slate-200/90"
+            : "border-slate-200 bg-slate-50/80 opacity-75"
       }`}
     >
       {/* Section Header Accordion Bar */}
@@ -117,12 +120,20 @@ export const SortableSectionItem: React.FC<SortableSectionItemProps> = ({
             onClick={onToggleSectionVisibility}
             className={`p-1.5 rounded-lg transition-colors ${
               section.visible
-                ? 'text-slate-500 hover:text-slate-800 hover:bg-slate-200/60'
-                : 'text-amber-600 bg-amber-50 hover:bg-amber-100'
+                ? "text-slate-500 hover:text-slate-800 hover:bg-slate-200/60"
+                : "text-amber-600 bg-amber-50 hover:bg-amber-100"
             }`}
-            title={section.visible ? 'Hide section from document' : 'Show section in document'}
+            title={
+              section.visible
+                ? "Hide section from document"
+                : "Show section in document"
+            }
           >
-            {section.visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            {section.visible ? (
+              <Eye className="w-4 h-4" />
+            ) : (
+              <EyeOff className="w-4 h-4" />
+            )}
           </button>
 
           <button
@@ -150,7 +161,11 @@ export const SortableSectionItem: React.FC<SortableSectionItemProps> = ({
             onClick={() => setIsOpen(!isOpen)}
             className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg transition-colors"
           >
-            {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {isOpen ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
           </button>
         </div>
       </div>
@@ -158,7 +173,10 @@ export const SortableSectionItem: React.FC<SortableSectionItemProps> = ({
       {/* Accordion Content: Fields list */}
       {isOpen && (
         <div className="p-4 space-y-3">
-          <SortableContext items={fieldIds} strategy={verticalListSortingStrategy}>
+          <SortableContext
+            items={fieldIds}
+            strategy={verticalListSortingStrategy}
+          >
             <div className="space-y-2.5">
               {section.fields.map((field) => (
                 <SortableFieldItem

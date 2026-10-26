@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { useAuth } from '../../context/AuthContext';
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { useAuth } from "../../context/AuthContext";
 import {
   X,
   LogIn,
@@ -15,26 +15,32 @@ import {
   Cloud,
   ArrowRight,
   Sparkles,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialMode?: 'login' | 'signup';
+  initialMode?: "login" | "signup";
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
-  initialMode = 'login',
+  initialMode = "login",
 }) => {
-  const { signIn, signUp, resetPasswordForEmail, resendConfirmationEmail, isConfigured } = useAuth();
+  const {
+    signIn,
+    signUp,
+    resetPasswordForEmail,
+    resendConfirmationEmail,
+    isConfigured,
+  } = useAuth();
 
-  const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>(initialMode);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">(initialMode);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [showResendBtn, setShowResendBtn] = useState(false);
@@ -47,24 +53,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       setMode(initialMode);
       setErrorMessage(null);
       setSuccessMessage(null);
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOpen, initialMode]);
 
   // Handle escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
@@ -75,53 +81,63 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setSuccessMessage(null);
 
     if (!isConfigured) {
-      setErrorMessage('Cloud database service is not available. Please try again later.');
+      setErrorMessage(
+        "Cloud database service is not available. Please try again later.",
+      );
       return;
     }
 
     if (!email.trim()) {
-      setErrorMessage('Please enter your email address.');
+      setErrorMessage("Please enter your email address.");
       return;
     }
 
-    if (mode === 'forgot') {
+    if (mode === "forgot") {
       setLoading(true);
       const { error } = await resetPasswordForEmail(email.trim());
       setLoading(false);
       if (error) {
         setErrorMessage(error.message);
       } else {
-        setSuccessMessage('Password reset link sent! Check your email inbox.');
+        setSuccessMessage("Password reset link sent! Check your email inbox.");
       }
       return;
     }
 
     if (!password) {
-      setErrorMessage('Please enter your password.');
+      setErrorMessage("Please enter your password.");
       return;
     }
 
-    if (mode === 'signup') {
+    if (mode === "signup") {
       if (password.length < 6) {
-        setErrorMessage('Password must be at least 6 characters.');
+        setErrorMessage("Password must be at least 6 characters.");
         return;
       }
       if (password !== confirmPassword) {
-        setErrorMessage('Passwords do not match.');
+        setErrorMessage("Passwords do not match.");
         return;
       }
 
       setLoading(true);
-      const { error, user } = await signUp(email.trim(), password, fullName.trim());
+      const { error, user } = await signUp(
+        email.trim(),
+        password,
+        fullName.trim(),
+      );
       setLoading(false);
 
       if (error) {
         setErrorMessage(error.message);
       } else {
         if (user && !user.confirmed_at) {
-          setSuccessMessage('Account created! Please check your email inbox to confirm your account.');
+          setSuccessMessage(
+            "Account created! Please check your email inbox to confirm your account.",
+          );
         } else {
-          setSuccessMessage('Welcome! Your account has been created and synced.');
+          setSuccessMessage(
+            "Welcome! Your account has been created and synced.",
+          );
           setTimeout(() => {
             onClose();
           }, 1200);
@@ -136,19 +152,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
       if (error) {
         const isNotConfirmed =
-          (error as any).code === 'email_not_confirmed' ||
-          error.message?.toLowerCase().includes('email not confirmed');
+          (error as any).code === "email_not_confirmed" ||
+          error.message?.toLowerCase().includes("email not confirmed");
 
         if (isNotConfirmed) {
           setShowResendBtn(true);
           setErrorMessage(
-            'Your email address has not been confirmed yet. Please click the link in your confirmation email. (Or disable "Confirm email" in Supabase Dashboard > Authentication > Providers > Email for instant testing).'
+            'Your email address has not been confirmed yet. Please click the link in your confirmation email. (Or disable "Confirm email" in Supabase Dashboard > Authentication > Providers > Email for instant testing).',
           );
         } else {
           setErrorMessage(error.message);
         }
       } else {
-        setSuccessMessage('Signed in successfully! Your data is synced.');
+        setSuccessMessage("Signed in successfully! Your data is synced.");
         setTimeout(() => {
           onClose();
         }, 800);
@@ -164,7 +180,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     if (error) {
       setErrorMessage(error.message);
     } else {
-      setSuccessMessage('Confirmation email resent! Please check your inbox.');
+      setSuccessMessage("Confirmation email resent! Please check your inbox.");
     }
   };
 
@@ -185,9 +201,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
             <div>
               <h3 className="text-base font-bold text-slate-900">
-                {mode === 'login' && 'Sign In to Your Account'}
-                {mode === 'signup' && 'Create New Account'}
-                {mode === 'forgot' && 'Reset Password'}
+                {mode === "login" && "Sign In to Your Account"}
+                {mode === "signup" && "Create New Account"}
+                {mode === "forgot" && "Reset Password"}
               </h3>
               <p className="text-xs text-slate-500">
                 Sync biodatas, resumes, and AI keys across devices
@@ -204,19 +220,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         </div>
 
         {/* Mode Selector Tabs */}
-        {mode !== 'forgot' && (
+        {mode !== "forgot" && (
           <div className="flex border-b border-slate-100 bg-slate-100/70 p-1.5 gap-1.5">
             <button
               type="button"
               onClick={() => {
-                setMode('login');
+                setMode("login");
                 setErrorMessage(null);
                 setSuccessMessage(null);
               }}
               className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-2 transition-all ${
-                mode === 'login'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
+                mode === "login"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
               }`}
             >
               <LogIn className="w-3.5 h-3.5 text-teal-700" />
@@ -225,14 +241,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <button
               type="button"
               onClick={() => {
-                setMode('signup');
+                setMode("signup");
                 setErrorMessage(null);
                 setSuccessMessage(null);
               }}
               className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-2 transition-all ${
-                mode === 'signup'
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-900 hover:bg-white/50'
+                mode === "signup"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
               }`}
             >
               <UserPlus className="w-3.5 h-3.5 text-rose-600" />
@@ -258,7 +274,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-900 bg-rose-100 hover:bg-rose-200 px-3 py-1.5 rounded-lg transition-colors"
                   >
                     <Mail className="w-3.5 h-3.5" />
-                    <span>{resending ? 'Sending email...' : 'Resend Confirmation Email'}</span>
+                    <span>
+                      {resending
+                        ? "Sending email..."
+                        : "Resend Confirmation Email"}
+                    </span>
                   </button>
                 </div>
               )}
@@ -272,7 +292,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           )}
 
-          {mode === 'signup' && (
+          {mode === "signup" && (
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Full Name (Optional)
@@ -307,17 +327,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           </div>
 
-          {mode !== 'forgot' && (
+          {mode !== "forgot" && (
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-xs font-semibold text-slate-700">
                   Password
                 </label>
-                {mode === 'login' && (
+                {mode === "login" && (
                   <button
                     type="button"
                     onClick={() => {
-                      setMode('forgot');
+                      setMode("forgot");
                       setErrorMessage(null);
                       setSuccessMessage(null);
                     }}
@@ -341,7 +361,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           )}
 
-          {mode === 'signup' && (
+          {mode === "signup" && (
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Confirm Password
@@ -360,12 +380,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           )}
 
-          {mode === 'forgot' && (
+          {mode === "forgot" && (
             <div className="text-right">
               <button
                 type="button"
                 onClick={() => {
-                  setMode('login');
+                  setMode("login");
                   setErrorMessage(null);
                   setSuccessMessage(null);
                 }}
@@ -389,21 +409,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </>
             ) : (
               <>
-                {mode === 'login' && <span>Sign In & Sync Data</span>}
-                {mode === 'signup' && <span>Create Account & Sync Data</span>}
-                {mode === 'forgot' && <span>Send Reset Instructions</span>}
+                {mode === "login" && <span>Sign In & Sync Data</span>}
+                {mode === "signup" && <span>Create Account & Sync Data</span>}
+                {mode === "forgot" && <span>Send Reset Instructions</span>}
               </>
             )}
           </button>
 
           {/* Switch mode inline helper */}
-          {mode === 'login' && (
+          {mode === "login" && (
             <div className="text-center pt-2">
-              <span className="text-xs text-slate-500">Don't have an account? </span>
+              <span className="text-xs text-slate-500">
+                Don't have an account?{" "}
+              </span>
               <button
                 type="button"
                 onClick={() => {
-                  setMode('signup');
+                  setMode("signup");
                   setErrorMessage(null);
                   setSuccessMessage(null);
                 }}
@@ -414,13 +436,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           )}
 
-          {mode === 'signup' && (
+          {mode === "signup" && (
             <div className="text-center pt-2">
-              <span className="text-xs text-slate-500">Already have an account? </span>
+              <span className="text-xs text-slate-500">
+                Already have an account?{" "}
+              </span>
               <button
                 type="button"
                 onClick={() => {
-                  setMode('login');
+                  setMode("login");
                   setErrorMessage(null);
                   setSuccessMessage(null);
                 }}
@@ -434,7 +458,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           {/* Offline / Guest Mode Banner */}
           <div className="pt-3 border-t border-slate-100 text-center">
             <p className="text-[11px] text-slate-500">
-              You can also continue as a guest without signing in. All work is kept safe in your browser's local storage.
+              You can also continue as a guest without signing in. All work is
+              kept safe in your browser's local storage.
             </p>
           </div>
         </form>

@@ -1,6 +1,6 @@
-import React from 'react';
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import React from "react";
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -18,12 +18,16 @@ export const Input: React.FC<InputProps> = ({
   id,
   ...props
 }) => {
-  const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
+  const inputId =
+    id || (label ? label.toLowerCase().replace(/\s+/g, "-") : undefined);
 
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={inputId} className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+        <label
+          htmlFor={inputId}
+          className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5"
+        >
           {label}
           {props.required && <span className="text-rose-500 ml-1">*</span>}
         </label>
@@ -38,13 +42,15 @@ export const Input: React.FC<InputProps> = ({
           id={inputId}
           className={twMerge(
             clsx(
-              'block w-full rounded-lg border text-sm transition-colors duration-150',
-              'bg-white text-slate-900 placeholder:text-slate-400',
-              'focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500',
-              icon ? 'pl-9 pr-3 py-2' : 'px-3 py-2',
-              error ? 'border-red-400 focus:ring-red-400' : 'border-slate-200 hover:border-slate-300',
-              className
-            )
+              "block w-full rounded-lg border text-sm transition-colors duration-150",
+              "bg-white text-slate-900 placeholder:text-slate-400",
+              "focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500",
+              icon ? "pl-9 pr-3 py-2" : "px-3 py-2",
+              error
+                ? "border-red-400 focus:ring-red-400"
+                : "border-slate-200 hover:border-slate-300",
+              className,
+            ),
           )}
           {...props}
         />

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Modal } from '../common/Modal';
-import { Input } from '../common/Input';
-import { Button } from '../common/Button';
+import React, { useState, useEffect } from "react";
+import { Modal } from "../common/Modal";
+import { Input } from "../common/Input";
+import { Button } from "../common/Button";
 
 interface CustomSectionModalProps {
   isOpen: boolean;
@@ -15,23 +15,23 @@ export const CustomSectionModal: React.FC<CustomSectionModalProps> = ({
   isOpen,
   onClose,
   onSave,
-  initialTitle = '',
-  initialDescription = '',
+  initialTitle = "",
+  initialDescription = "",
 }) => {
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     setTitle(initialTitle);
     setDescription(initialDescription);
-    setError('');
+    setError("");
   }, [initialTitle, initialDescription, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
-      setError('Section title is required');
+      setError("Section title is required");
       return;
     }
     onSave(title.trim(), description.trim());
@@ -42,7 +42,7 @@ export const CustomSectionModal: React.FC<CustomSectionModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={initialTitle ? 'Rename Section' : 'Create Custom Section'}
+      title={initialTitle ? "Rename Section" : "Create Custom Section"}
       description="Organize your biodata with a custom group of fields"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -67,7 +67,7 @@ export const CustomSectionModal: React.FC<CustomSectionModalProps> = ({
             Cancel
           </Button>
           <Button type="submit" variant="primary">
-            {initialTitle ? 'Save Changes' : 'Create Section'}
+            {initialTitle ? "Save Changes" : "Create Section"}
           </Button>
         </div>
       </form>

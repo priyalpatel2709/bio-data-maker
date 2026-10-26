@@ -1,16 +1,16 @@
 export type ResumeTemplateId =
-  | 'modern-tech'
-  | 'executive-corporate'
-  | 'minimalist-ats'
-  | 'creative-split'
-  | 'compact-engineering'
-  | 'elegant-academic'
-  | 'monochrome-classic'
-  | 'classic'
-  | 'stockholm'
-  | 'sydney'
-  | 'dublin'
-  | 'vienna';
+  | "modern-tech"
+  | "executive-corporate"
+  | "minimalist-ats"
+  | "creative-split"
+  | "compact-engineering"
+  | "elegant-academic"
+  | "monochrome-classic"
+  | "classic"
+  | "stockholm"
+  | "sydney"
+  | "dublin"
+  | "vienna";
 
 export interface ResumeContactInfo {
   fullName: string;
@@ -92,12 +92,12 @@ export interface CustomResumeSection {
 }
 
 export type ResumeFontOption =
-  | 'Inter'
-  | 'Roboto'
-  | 'Montserrat'
-  | 'Merriweather'
-  | 'Playfair Display'
-  | 'Lora';
+  | "Inter"
+  | "Roboto"
+  | "Montserrat"
+  | "Merriweather"
+  | "Playfair Display"
+  | "Lora";
 
 export interface ResumeStylingConfig {
   templateId: ResumeTemplateId;
@@ -106,28 +106,28 @@ export interface ResumeStylingConfig {
   textColor: string;
   backgroundColor: string;
   fontFamily: ResumeFontOption;
-  fontSize: 'compact' | 'normal' | 'relaxed';
-  spacing: 'compact' | 'normal' | 'relaxed';
-  paperSize: 'a4' | 'letter';
+  fontSize: "compact" | "normal" | "relaxed";
+  spacing: "compact" | "normal" | "relaxed";
+  paperSize: "a4" | "letter";
   showPhoto: boolean;
-  photoShape: 'circle' | 'rounded' | 'square';
-  skillsDisplay: 'chips' | 'dots' | 'comma';
+  photoShape: "circle" | "rounded" | "square";
+  skillsDisplay: "chips" | "dots" | "comma";
   atsOptimized: boolean;
-  pageMargin: 'compact' | 'normal' | 'spacious';
+  pageMargin: "compact" | "normal" | "spacious";
   showPage2Header: boolean;
   showPageNumbers: boolean;
-  pageSplitAt: 'auto' | 'projects' | 'education' | 'skills' | 'single-page';
+  pageSplitAt: "auto" | "projects" | "education" | "skills" | "single-page";
 }
 
 export type ResumeSectionKey =
-  | 'contact'
-  | 'summary'
-  | 'experience'
-  | 'education'
-  | 'skills'
-  | 'projects'
-  | 'certifications'
-  | 'custom';
+  | "contact"
+  | "summary"
+  | "experience"
+  | "education"
+  | "skills"
+  | "projects"
+  | "certifications"
+  | "custom";
 
 export interface ResumeSectionMeta {
   key: ResumeSectionKey;
@@ -151,7 +151,7 @@ export interface ResumeDocument {
   customSections: CustomResumeSection[];
   sectionOrder: ResumeSectionMeta[];
   styling: ResumeStylingConfig;
-  coverLetter?: import('./coverLetter').CoverLetterDocument;
+  coverLetter?: import("./coverLetter").CoverLetterDocument;
   targetJob?: {
     title: string;
     company: string;

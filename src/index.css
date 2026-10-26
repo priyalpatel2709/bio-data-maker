@@ -46,8 +46,9 @@
     size: auto;
     margin: 0;
   }
-  
-  html, body {
+
+  html,
+  body {
     margin: 0 !important;
     padding: 0 !important;
     background: #ffffff !important;
@@ -63,9 +64,12 @@
     visibility: hidden;
   }
 
-  #printable-biodata, #printable-biodata *,
-  #resume-preview-document, #resume-preview-document *,
-  #printable-cover-letter, #printable-cover-letter * {
+  #printable-biodata,
+  #printable-biodata *,
+  #resume-preview-document,
+  #resume-preview-document *,
+  #printable-cover-letter,
+  #printable-cover-letter * {
     visibility: visible;
   }
 
@@ -77,7 +81,9 @@
     margin: 0 auto !important;
   }
 
-  #printable-biodata, #resume-preview-document, #printable-cover-letter {
+  #printable-biodata,
+  #resume-preview-document,
+  #printable-cover-letter {
     position: static !important;
     width: 100% !important;
     max-width: 210mm !important;
@@ -112,5 +118,10 @@
 
 /* Ornate Traditional Border Accents */
 .border-ornate-corner {
-  background-image: radial-gradient(circle at 100% 100%, transparent 6px, currentColor 7px, transparent 8px);
+  background-image: radial-gradient(
+    circle at 100% 100%,
+    transparent 6px,
+    currentColor 7px,
+    transparent 8px
+  );
 }

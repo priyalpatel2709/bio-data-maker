@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useBiodata } from '../../context/BiodataContext';
-import { Language } from '../../types/biodata';
-import { Languages, Check, ChevronDown, Sparkles } from 'lucide-react';
+import React, { useState, useRef, useEffect } from "react";
+import { useBiodata } from "../../context/BiodataContext";
+import { Language } from "../../types/biodata";
+import { Languages, Check, ChevronDown, Sparkles } from "lucide-react";
 
 interface LanguageSwitcherProps {
   className?: string;
@@ -9,32 +9,43 @@ interface LanguageSwitcherProps {
 }
 
 export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
-  className = '',
+  className = "",
   compact = false,
 }) => {
   const { language, setLanguage, translateBiodata } = useBiodata();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const languages: { id: Language; label: string; nativeName: string; flag: string }[] = [
-    { id: 'en', label: 'English', nativeName: 'English', flag: '🇬🇧' },
-    { id: 'hi', label: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳' },
-    { id: 'gu', label: 'Gujarati', nativeName: 'ગુજરાતી', flag: '🇮🇳' },
+  const languages: {
+    id: Language;
+    label: string;
+    nativeName: string;
+    flag: string;
+  }[] = [
+    { id: "en", label: "English", nativeName: "English", flag: "🇬🇧" },
+    { id: "hi", label: "Hindi", nativeName: "हिन्दी", flag: "🇮🇳" },
+    { id: "gu", label: "Gujarati", nativeName: "ગુજરાતી", flag: "🇮🇳" },
   ];
 
   const currentLang = languages.find((l) => l.id === language) || languages[0];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
-    window.addEventListener('mousedown', handleClickOutside);
-    return () => window.removeEventListener('mousedown', handleClickOutside);
+    window.addEventListener("mousedown", handleClickOutside);
+    return () => window.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelectLanguage = (langId: Language, alsoTranslateBiodata = true) => {
+  const handleSelectLanguage = (
+    langId: Language,
+    alsoTranslateBiodata = true,
+  ) => {
     if (alsoTranslateBiodata) {
       translateBiodata(langId);
     } else {
@@ -44,7 +55,10 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   };
 
   return (
-    <div className={`relative inline-block text-left ${className}`} ref={dropdownRef}>
+    <div
+      className={`relative inline-block text-left ${className}`}
+      ref={dropdownRef}
+    >
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -69,14 +83,16 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
                 onClick={() => handleSelectLanguage(item.id, true)}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-colors ${
                   language === item.id
-                    ? 'bg-rose-50 text-rose-900 font-bold'
-                    : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                    ? "bg-rose-50 text-rose-900 font-bold"
+                    : "text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
                 <div className="flex items-center gap-2.5">
                   <span className="text-base">{item.flag}</span>
                   <div className="text-left">
-                    <div className="text-xs font-bold leading-tight">{item.nativeName}</div>
+                    <div className="text-xs font-bold leading-tight">
+                      {item.nativeName}
+                    </div>
                     <div className="text-[10px] text-slate-400 font-normal leading-tight">
                       {item.label}
                     </div>

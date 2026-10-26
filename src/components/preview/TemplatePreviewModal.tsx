@@ -1,16 +1,16 @@
-import React from 'react';
-import { TemplateDefinition } from '../../types/biodata';
-import { defaultBiodata } from '../../data/defaultBiodata';
-import { TemplateThumbnail } from './TemplateThumbnail';
-import { Modal } from '../common/Modal';
-import { Button } from '../common/Button';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import React from "react";
+import { TemplateDefinition } from "../../types/biodata";
+import { defaultBiodata } from "../../data/defaultBiodata";
+import { TemplateThumbnail } from "./TemplateThumbnail";
+import { Modal } from "../common/Modal";
+import { Button } from "../common/Button";
+import { Sparkles, ArrowRight } from "lucide-react";
 
 interface TemplatePreviewModalProps {
   template: TemplateDefinition | null;
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (templateId: TemplateDefinition['id']) => void;
+  onSelect: (templateId: TemplateDefinition["id"]) => void;
 }
 
 export const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
@@ -50,14 +50,18 @@ export const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
               >
                 {template.category}
               </span>
-              <h4 className="text-xl font-extrabold text-slate-900">{template.name}</h4>
+              <h4 className="text-xl font-extrabold text-slate-900">
+                {template.name}
+              </h4>
               <p className="text-xs text-slate-600 mt-2 leading-relaxed">
                 {template.description}
               </p>
             </div>
 
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-xs text-slate-700">
-              <strong className="block text-slate-900 mb-1">Recommended for:</strong>
+              <strong className="block text-slate-900 mb-1">
+                Recommended for:
+              </strong>
               {template.bestFor}
             </div>
 

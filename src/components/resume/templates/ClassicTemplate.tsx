@@ -1,5 +1,5 @@
-import React from 'react';
-import { ResumeDocument } from '../../../types/resume';
+import React from "react";
+import { ResumeDocument } from "../../../types/resume";
 
 interface TemplateProps {
   resume: ResumeDocument;
@@ -18,32 +18,35 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     styling,
   } = resume;
 
-  const primaryColor = styling.primaryColor || '#1A365D';
-  const textColor = styling.textColor || '#111827';
-  const isLetter = styling.paperSize === 'letter';
-  const docWidth = isLetter ? '816px' : '794px';
-  const docMinHeight = isLetter ? '1056px' : '1123px';
+  const primaryColor = styling.primaryColor || "#1A365D";
+  const textColor = styling.textColor || "#111827";
+  const isLetter = styling.paperSize === "letter";
+  const docWidth = isLetter ? "816px" : "794px";
+  const docMinHeight = isLetter ? "1056px" : "1123px";
 
   const paddingClass =
-    styling.pageMargin === 'compact'
-      ? 'p-6'
-      : styling.pageMargin === 'spacious'
-      ? 'p-12'
-      : 'p-9';
+    styling.pageMargin === "compact"
+      ? "p-6"
+      : styling.pageMargin === "spacious"
+        ? "p-12"
+        : "p-9";
 
   const fontStyle = {
-    fontFamily: `${styling.fontFamily || 'Merriweather'}, Georgia, serif`,
+    fontFamily: `${styling.fontFamily || "Merriweather"}, Georgia, serif`,
     color: textColor,
     width: docWidth,
     minHeight: docMinHeight,
-    boxSizing: 'border-box' as const,
+    boxSizing: "border-box" as const,
   };
 
-  const isSinglePage = styling.pageSplitAt === 'single-page';
-  const splitAt = styling.pageSplitAt || 'auto';
+  const isSinglePage = styling.pageSplitAt === "single-page";
+  const splitAt = styling.pageSplitAt || "auto";
   const hasPage2 =
     !isSinglePage &&
-    (projects.length > 0 || education.length > 0 || certifications.length > 0 || customSections.length > 0);
+    (projects.length > 0 ||
+      education.length > 0 ||
+      certifications.length > 0 ||
+      customSections.length > 0);
   const totalPages = hasPage2 ? 2 : 1;
 
   // Header Component
@@ -54,10 +57,12 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
         <header className="border-b border-slate-300 pb-2 mb-4 flex flex-row items-center justify-between text-xs">
           <div>
             <span className="font-bold text-slate-900 text-sm tracking-wide">
-              {contact.fullName || 'Candidate Name'}
+              {contact.fullName || "Candidate Name"}
             </span>
             {contact.jobTitle && (
-              <span className="text-slate-600 ml-2 italic">— {contact.jobTitle}</span>
+              <span className="text-slate-600 ml-2 italic">
+                — {contact.jobTitle}
+              </span>
             )}
           </div>
           <div className="flex items-center gap-3 text-slate-500 text-[11px]">
@@ -65,7 +70,10 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
             {contact.phone && <span>• {contact.phone}</span>}
             <span
               className="font-semibold px-2 py-0.5 rounded text-[10px]"
-              style={{ backgroundColor: `${primaryColor}15`, color: primaryColor }}
+              style={{
+                backgroundColor: `${primaryColor}15`,
+                color: primaryColor,
+              }}
             >
               Page 2 of 2
             </span>
@@ -82,11 +90,11 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
               src={contact.photoUrl}
               alt={contact.fullName}
               className={`w-20 h-20 object-cover mb-3 border-2 shadow-xs ${
-                styling.photoShape === 'circle'
-                  ? 'rounded-full'
-                  : styling.photoShape === 'rounded'
-                  ? 'rounded-lg'
-                  : 'rounded-none'
+                styling.photoShape === "circle"
+                  ? "rounded-full"
+                  : styling.photoShape === "rounded"
+                    ? "rounded-lg"
+                    : "rounded-none"
               }`}
               style={{ borderColor: primaryColor }}
             />
@@ -97,7 +105,7 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
             className="text-2xl sm:text-3xl font-bold tracking-tight"
             style={{ color: primaryColor }}
           >
-            {contact.fullName || 'Your Full Name'}
+            {contact.fullName || "Your Full Name"}
           </h1>
 
           {/* Job Title / Headline */}
@@ -114,24 +122,36 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
             {contact.phone && <span>{contact.phone}</span>}
             {contact.phone && contact.email && <span>•</span>}
             {contact.email && (
-              <span className="font-medium text-slate-700">{contact.email}</span>
+              <span className="font-medium text-slate-700">
+                {contact.email}
+              </span>
             )}
             {contact.linkedin && (
               <>
                 <span>•</span>
-                <span>{contact.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//, 'linkedin.com/in/')}</span>
+                <span>
+                  {contact.linkedin.replace(
+                    /^https?:\/\/(www\.)?linkedin\.com\/in\//,
+                    "linkedin.com/in/",
+                  )}
+                </span>
               </>
             )}
             {contact.github && (
               <>
                 <span>•</span>
-                <span>{contact.github.replace(/^https?:\/\/(www\.)?github\.com\//, 'github.com/')}</span>
+                <span>
+                  {contact.github.replace(
+                    /^https?:\/\/(www\.)?github\.com\//,
+                    "github.com/",
+                  )}
+                </span>
               </>
             )}
             {contact.website && (
               <>
                 <span>•</span>
-                <span>{contact.website.replace(/^https?:\/\//, '')}</span>
+                <span>{contact.website.replace(/^https?:\/\//, "")}</span>
               </>
             )}
           </div>
@@ -155,8 +175,10 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     if (!summary) return null;
     return (
       <section>
-        {renderSectionHeading('Profile')}
-        <p className="text-xs text-slate-800 leading-relaxed text-justify">{summary}</p>
+        {renderSectionHeading("Profile")}
+        <p className="text-xs text-slate-800 leading-relaxed text-justify">
+          {summary}
+        </p>
       </section>
     );
   };
@@ -165,22 +187,28 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     if (experience.length === 0) return null;
     return (
       <section>
-        {renderSectionHeading('Employment History')}
+        {renderSectionHeading("Employment History")}
         <div className="space-y-3.5">
           {experience.map((exp) => (
             <div key={exp.id}>
               {/* Top line: Job Title (left) & Date Period (right) */}
               <div className="flex flex-row justify-between items-baseline gap-2 text-xs">
-                <span className="font-bold text-slate-900 text-[13px]">{exp.position}</span>
+                <span className="font-bold text-slate-900 text-[13px]">
+                  {exp.position}
+                </span>
                 <span className="text-slate-500 font-medium text-[11px] shrink-0">
-                  {exp.startDate} — {exp.isCurrent ? 'Present' : exp.endDate}
+                  {exp.startDate} — {exp.isCurrent ? "Present" : exp.endDate}
                 </span>
               </div>
 
               {/* Sub line: Employer & Location */}
               <div className="text-xs text-slate-700 font-medium mt-0.5">
                 <span>{exp.company}</span>
-                {exp.location && <span className="text-slate-500 italic">, {exp.location}</span>}
+                {exp.location && (
+                  <span className="text-slate-500 italic">
+                    , {exp.location}
+                  </span>
+                )}
               </div>
 
               {/* Bullet list */}
@@ -204,7 +232,7 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     if (education.length === 0) return null;
     return (
       <section>
-        {renderSectionHeading('Education')}
+        {renderSectionHeading("Education")}
         <div className="space-y-3">
           {education.map((edu) => (
             <div key={edu.id} className="text-xs">
@@ -212,19 +240,23 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
                 <div>
                   <span className="font-bold text-slate-900">{edu.degree}</span>
                   {edu.fieldOfStudy && (
-                    <span className="text-slate-800 font-medium">, {edu.fieldOfStudy}</span>
+                    <span className="text-slate-800 font-medium">
+                      , {edu.fieldOfStudy}
+                    </span>
                   )}
                   <div className="text-slate-700 text-xs mt-0.5">
                     {edu.institution}
-                    {edu.location ? `, ${edu.location}` : ''}
+                    {edu.location ? `, ${edu.location}` : ""}
                   </div>
                 </div>
                 <div className="text-right shrink-0">
                   <span className="text-slate-500 font-medium text-[11px]">
-                    {edu.startDate} — {edu.isCurrent ? 'Present' : edu.endDate}
+                    {edu.startDate} — {edu.isCurrent ? "Present" : edu.endDate}
                   </span>
                   {edu.gradeOrGpa && (
-                    <div className="text-slate-600 text-[11px]">{edu.gradeOrGpa}</div>
+                    <div className="text-slate-600 text-[11px]">
+                      {edu.gradeOrGpa}
+                    </div>
                   )}
                 </div>
               </div>
@@ -246,14 +278,16 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     if (skillCategories.length === 0) return null;
     return (
       <section>
-        {renderSectionHeading('Skills')}
+        {renderSectionHeading("Skills")}
         <div className="space-y-1.5 text-xs text-slate-800">
           {skillCategories.map((sc) => (
             <div key={sc.id} className="flex flex-row items-baseline gap-2">
               <span className="font-bold text-slate-900 w-36 shrink-0 text-xs">
                 {sc.categoryName}:
               </span>
-              <span className="flex-1 text-slate-800">{sc.skills.join(', ')}</span>
+              <span className="flex-1 text-slate-800">
+                {sc.skills.join(", ")}
+              </span>
             </div>
           ))}
         </div>
@@ -265,7 +299,7 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     if (projects.length === 0) return null;
     return (
       <section>
-        {renderSectionHeading('Key Projects')}
+        {renderSectionHeading("Key Projects")}
         <div className="space-y-3">
           {projects.map((proj) => (
             <div key={proj.id} className="text-xs">
@@ -273,19 +307,22 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
                 <div>
                   <span className="font-bold text-slate-900">{proj.name}</span>
                   {proj.roleOrSubtitle && (
-                    <span className="text-slate-700 font-medium"> — {proj.roleOrSubtitle}</span>
+                    <span className="text-slate-700 font-medium">
+                      {" "}
+                      — {proj.roleOrSubtitle}
+                    </span>
                   )}
                 </div>
                 {(proj.startDate || proj.endDate) && (
                   <span className="text-slate-500 font-medium text-[11px] shrink-0">
-                    {proj.startDate} {proj.endDate ? `— ${proj.endDate}` : ''}
+                    {proj.startDate} {proj.endDate ? `— ${proj.endDate}` : ""}
                   </span>
                 )}
               </div>
               {proj.techStack && proj.techStack.length > 0 && (
                 <div className="text-[11px] text-slate-600 mt-0.5">
                   <span className="font-medium text-slate-700">Tech: </span>
-                  {proj.techStack.join(', ')}
+                  {proj.techStack.join(", ")}
                 </div>
               )}
               {proj.bullets.length > 0 && (
@@ -308,13 +345,17 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     if (certifications.length === 0) return null;
     return (
       <section>
-        {renderSectionHeading('Certifications')}
+        {renderSectionHeading("Certifications")}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
           {certifications.map((cert) => (
-            <div key={cert.id} className="border-l-2 pl-2" style={{ borderColor: primaryColor }}>
+            <div
+              key={cert.id}
+              className="border-l-2 pl-2"
+              style={{ borderColor: primaryColor }}
+            >
               <div className="font-bold text-slate-900">{cert.name}</div>
               <div className="text-slate-600 text-[11px]">
-                {cert.issuer} {cert.issueDate ? `(${cert.issueDate})` : ''}
+                {cert.issuer} {cert.issueDate ? `(${cert.issueDate})` : ""}
               </div>
             </div>
           ))}
@@ -338,11 +379,21 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
                     <div className="flex justify-between items-baseline font-bold text-slate-900">
                       <span>{item.title}</span>
                       {item.date && (
-                        <span className="text-slate-500 font-normal text-[11px]">{item.date}</span>
+                        <span className="text-slate-500 font-normal text-[11px]">
+                          {item.date}
+                        </span>
                       )}
                     </div>
-                    {item.subtitle && <div className="text-slate-700 italic">{item.subtitle}</div>}
-                    {item.description && <p className="text-slate-800 mt-0.5">{item.description}</p>}
+                    {item.subtitle && (
+                      <div className="text-slate-700 italic">
+                        {item.subtitle}
+                      </div>
+                    )}
+                    {item.description && (
+                      <p className="text-slate-800 mt-0.5">
+                        {item.description}
+                      </p>
+                    )}
                     {item.bullets && item.bullets.length > 0 && (
                       <ul className="mt-1 list-disc list-outside ml-4 space-y-0.5 text-slate-800">
                         {item.bullets.map((b, idx) => (
@@ -363,7 +414,7 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     if (!styling.showPageNumbers) return null;
     return (
       <footer className="mt-auto pt-3 border-t border-slate-300 flex justify-between items-center text-[10px] text-slate-500 font-medium">
-        <span>{contact.fullName || 'Candidate Resume'}</span>
+        <span>{contact.fullName || "Candidate Resume"}</span>
         <span>
           Page {pageNumber} of {totalPages}
         </span>
@@ -387,7 +438,7 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
       );
     }
 
-    if (splitAt === 'projects') {
+    if (splitAt === "projects") {
       return (
         <div className="space-y-4">
           {renderSummary()}
@@ -396,7 +447,7 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
       );
     }
 
-    if (splitAt === 'education') {
+    if (splitAt === "education") {
       return (
         <div className="space-y-4">
           {renderSummary()}
@@ -406,7 +457,7 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
       );
     }
 
-    if (splitAt === 'skills') {
+    if (splitAt === "skills") {
       return (
         <div className="space-y-4">
           {renderSummary()}
@@ -428,7 +479,7 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
   };
 
   const renderPage2Sections = () => {
-    if (splitAt === 'projects') {
+    if (splitAt === "projects") {
       return (
         <div className="space-y-4">
           {renderProjects()}
@@ -440,7 +491,7 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
       );
     }
 
-    if (splitAt === 'education') {
+    if (splitAt === "education") {
       return (
         <div className="space-y-4">
           {renderEducation()}
@@ -451,7 +502,7 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
       );
     }
 
-    if (splitAt === 'skills') {
+    if (splitAt === "skills") {
       return (
         <div className="space-y-4">
           {renderSkills()}

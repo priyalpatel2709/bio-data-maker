@@ -1,33 +1,48 @@
-import React from 'react';
-import { ResumeDocument } from '../../../types/resume';
-import { Mail, Phone, MapPin, Globe, Linkedin, Github } from 'lucide-react';
+import React from "react";
+import { ResumeDocument } from "../../../types/resume";
+import { Mail, Phone, MapPin, Globe, Linkedin, Github } from "lucide-react";
 
 interface TemplateProps {
   resume: ResumeDocument;
 }
 
-export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) => {
-  const { contact, summary, experience, education, skillCategories, projects, certifications, customSections, styling } = resume;
+export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
+  resume,
+}) => {
+  const {
+    contact,
+    summary,
+    experience,
+    education,
+    skillCategories,
+    projects,
+    certifications,
+    customSections,
+    styling,
+  } = resume;
 
-  const primaryColor = styling.primaryColor || '#4338CA';
-  const isCompact = styling.fontSize === 'compact';
+  const primaryColor = styling.primaryColor || "#4338CA";
+  const isCompact = styling.fontSize === "compact";
 
-  const isLetter = styling.paperSize === 'letter';
-  const docWidth = isLetter ? '816px' : '794px';
-  const docMinHeight = isLetter ? '1056px' : '1123px';
+  const isLetter = styling.paperSize === "letter";
+  const docWidth = isLetter ? "816px" : "794px";
+  const docMinHeight = isLetter ? "1056px" : "1123px";
 
   const fontStyle = {
-    fontFamily: `${styling.fontFamily || 'Montserrat'}, -apple-system, BlinkMacSystemFont, sans-serif`,
+    fontFamily: `${styling.fontFamily || "Montserrat"}, -apple-system, BlinkMacSystemFont, sans-serif`,
     width: docWidth,
     minHeight: docMinHeight,
-    boxSizing: 'border-box' as const,
+    boxSizing: "border-box" as const,
   };
 
-  const isSinglePage = styling.pageSplitAt === 'single-page';
-  const splitAt = styling.pageSplitAt || 'auto';
+  const isSinglePage = styling.pageSplitAt === "single-page";
+  const splitAt = styling.pageSplitAt || "auto";
   const hasPage2 =
     !isSinglePage &&
-    (projects.length > 0 || education.length > 0 || certifications.length > 0 || customSections.length > 0);
+    (projects.length > 0 ||
+      education.length > 0 ||
+      certifications.length > 0 ||
+      customSections.length > 0);
   const totalPages = hasPage2 ? 2 : 1;
 
   const renderSidebar = (isPage2: boolean = false) => {
@@ -42,11 +57,11 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
                   src={contact.photoUrl}
                   alt={contact.fullName}
                   className={`w-24 h-24 object-cover mb-3 border-4 shadow-sm ${
-                    styling.photoShape === 'circle'
-                      ? 'rounded-full'
-                      : styling.photoShape === 'rounded'
-                      ? 'rounded-2xl'
-                      : 'rounded-none'
+                    styling.photoShape === "circle"
+                      ? "rounded-full"
+                      : styling.photoShape === "rounded"
+                        ? "rounded-2xl"
+                        : "rounded-none"
                   }`}
                   style={{ borderColor: primaryColor }}
                 />
@@ -55,15 +70,25 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
                 {contact.fullName}
               </h2>
               {contact.jobTitle && (
-                <p className="text-xs font-semibold mt-1" style={{ color: primaryColor }}>
+                <p
+                  className="text-xs font-semibold mt-1"
+                  style={{ color: primaryColor }}
+                >
                   {contact.jobTitle}
                 </p>
               )}
             </div>
           ) : (
             <div className="pb-3 border-b border-slate-200">
-              <h3 className="text-base font-extrabold text-slate-900">{contact.fullName}</h3>
-              <p className="text-[11px] font-semibold" style={{ color: primaryColor }}>{contact.jobTitle}</p>
+              <h3 className="text-base font-extrabold text-slate-900">
+                {contact.fullName}
+              </h3>
+              <p
+                className="text-[11px] font-semibold"
+                style={{ color: primaryColor }}
+              >
+                {contact.jobTitle}
+              </p>
             </div>
           )}
 
@@ -71,39 +96,58 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
           <div>
             <h3
               className="text-[11px] font-bold uppercase tracking-wider mb-2 pb-1 border-b"
-              style={{ color: primaryColor, borderColor: '#E2E8F0' }}
+              style={{ color: primaryColor, borderColor: "#E2E8F0" }}
             >
               Contact
             </h3>
             <div className="space-y-2 text-xs text-slate-600">
               {contact.email && (
                 <div className="flex items-center gap-2 break-all">
-                  <Mail className="w-3.5 h-3.5 shrink-0" style={{ color: primaryColor }} />
+                  <Mail
+                    className="w-3.5 h-3.5 shrink-0"
+                    style={{ color: primaryColor }}
+                  />
                   <span>{contact.email}</span>
                 </div>
               )}
               {contact.phone && (
                 <div className="flex items-center gap-2">
-                  <Phone className="w-3.5 h-3.5 shrink-0" style={{ color: primaryColor }} />
+                  <Phone
+                    className="w-3.5 h-3.5 shrink-0"
+                    style={{ color: primaryColor }}
+                  />
                   <span>{contact.phone}</span>
                 </div>
               )}
               {contact.location && (
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: primaryColor }} />
+                  <MapPin
+                    className="w-3.5 h-3.5 shrink-0"
+                    style={{ color: primaryColor }}
+                  />
                   <span>{contact.location}</span>
                 </div>
               )}
               {contact.linkedin && (
                 <div className="flex items-center gap-2">
-                  <Linkedin className="w-3.5 h-3.5 shrink-0" style={{ color: primaryColor }} />
-                  <span className="truncate">{contact.linkedin.replace(/^https?:\/\//, '')}</span>
+                  <Linkedin
+                    className="w-3.5 h-3.5 shrink-0"
+                    style={{ color: primaryColor }}
+                  />
+                  <span className="truncate">
+                    {contact.linkedin.replace(/^https?:\/\//, "")}
+                  </span>
                 </div>
               )}
               {contact.github && (
                 <div className="flex items-center gap-2">
-                  <Github className="w-3.5 h-3.5 shrink-0" style={{ color: primaryColor }} />
-                  <span className="truncate">{contact.github.replace(/^https?:\/\//, '')}</span>
+                  <Github
+                    className="w-3.5 h-3.5 shrink-0"
+                    style={{ color: primaryColor }}
+                  />
+                  <span className="truncate">
+                    {contact.github.replace(/^https?:\/\//, "")}
+                  </span>
                 </div>
               )}
             </div>
@@ -114,14 +158,16 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
             <div>
               <h3
                 className="text-[11px] font-bold uppercase tracking-wider mb-2 pb-1 border-b"
-                style={{ color: primaryColor, borderColor: '#E2E8F0' }}
+                style={{ color: primaryColor, borderColor: "#E2E8F0" }}
               >
                 Skills & Tools
               </h3>
               <div className="space-y-2.5">
                 {skillCategories.map((cat) => (
                   <div key={cat.id}>
-                    <p className="text-[11px] font-bold text-slate-800 mb-1">{cat.categoryName}</p>
+                    <p className="text-[11px] font-bold text-slate-800 mb-1">
+                      {cat.categoryName}
+                    </p>
                     <div className="flex flex-wrap gap-1">
                       {cat.skills.map((s, idx) => (
                         <span
@@ -143,15 +189,19 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
             <div>
               <h3
                 className="text-[11px] font-bold uppercase tracking-wider mb-2 pb-1 border-b"
-                style={{ color: primaryColor, borderColor: '#E2E8F0' }}
+                style={{ color: primaryColor, borderColor: "#E2E8F0" }}
               >
                 Certifications
               </h3>
               <div className="space-y-1.5 text-xs">
                 {certifications.map((c) => (
                   <div key={c.id}>
-                    <p className="font-bold text-slate-800 leading-tight">{c.name}</p>
-                    <p className="text-[11px] text-slate-500">{c.issuer} {c.issueDate ? `(${c.issueDate})` : ''}</p>
+                    <p className="font-bold text-slate-800 leading-tight">
+                      {c.name}
+                    </p>
+                    <p className="text-[11px] text-slate-500">
+                      {c.issuer} {c.issueDate ? `(${c.issueDate})` : ""}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -172,9 +222,16 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
     if (isPage2) {
       if (!styling.showPage2Header) return null;
       return (
-        <div className="border-b pb-2 mb-3 flex flex-row items-center justify-between text-xs" style={{ borderColor: primaryColor }}>
-          <span className="font-bold text-slate-900 text-sm">{contact.fullName} — Professional Resume</span>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Page 2 of 2</span>
+        <div
+          className="border-b pb-2 mb-3 flex flex-row items-center justify-between text-xs"
+          style={{ borderColor: primaryColor }}
+        >
+          <span className="font-bold text-slate-900 text-sm">
+            {contact.fullName} — Professional Resume
+          </span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+            Page 2 of 2
+          </span>
         </div>
       );
     }
@@ -187,11 +244,13 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
       <section>
         <h2
           className="text-xs font-bold uppercase tracking-wider mb-1.5 pb-1 border-b"
-          style={{ color: primaryColor, borderColor: '#E2E8F0' }}
+          style={{ color: primaryColor, borderColor: "#E2E8F0" }}
         >
           About Me
         </h2>
-        <p className={`text-slate-700 leading-relaxed ${isCompact ? 'text-xs' : 'text-sm'}`}>
+        <p
+          className={`text-slate-700 leading-relaxed ${isCompact ? "text-xs" : "text-sm"}`}
+        >
           {summary}
         </p>
       </section>
@@ -204,7 +263,7 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
       <section>
         <h2
           className="text-xs font-bold uppercase tracking-wider mb-2.5 pb-1 border-b"
-          style={{ color: primaryColor, borderColor: '#E2E8F0' }}
+          style={{ color: primaryColor, borderColor: "#E2E8F0" }}
         >
           Professional Experience
         </h2>
@@ -213,17 +272,24 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
             <div key={exp.id}>
               <div className="flex flex-row items-baseline justify-between gap-2">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">{exp.position}</h4>
-                  <p className="text-xs font-semibold" style={{ color: primaryColor }}>
-                    {exp.company} {exp.location ? `• ${exp.location}` : ''}
+                  <h4 className="text-sm font-bold text-slate-900">
+                    {exp.position}
+                  </h4>
+                  <p
+                    className="text-xs font-semibold"
+                    style={{ color: primaryColor }}
+                  >
+                    {exp.company} {exp.location ? `• ${exp.location}` : ""}
                   </p>
                 </div>
                 <span className="text-xs font-medium text-slate-400 shrink-0">
-                  {exp.startDate} - {exp.isCurrent ? 'Present' : exp.endDate}
+                  {exp.startDate} - {exp.isCurrent ? "Present" : exp.endDate}
                 </span>
               </div>
               {exp.bullets.length > 0 && (
-                <ul className={`mt-1.5 space-y-1 list-disc list-outside ml-4 text-slate-700 ${isCompact ? 'text-[11px]' : 'text-xs'}`}>
+                <ul
+                  className={`mt-1.5 space-y-1 list-disc list-outside ml-4 text-slate-700 ${isCompact ? "text-[11px]" : "text-xs"}`}
+                >
                   {exp.bullets.map((b, idx) => (
                     <li key={idx} className="leading-relaxed">
                       {b}
@@ -244,7 +310,7 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
       <section>
         <h2
           className="text-xs font-bold uppercase tracking-wider mb-2.5 pb-1 border-b"
-          style={{ color: primaryColor, borderColor: '#E2E8F0' }}
+          style={{ color: primaryColor, borderColor: "#E2E8F0" }}
         >
           Featured Projects
         </h2>
@@ -253,7 +319,9 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
             <div key={proj.id}>
               <div className="flex flex-row items-baseline justify-between gap-2">
                 <div>
-                  <span className="text-sm font-bold text-slate-900">{proj.name}</span>
+                  <span className="text-sm font-bold text-slate-900">
+                    {proj.name}
+                  </span>
                   {proj.roleOrSubtitle && (
                     <span className="text-xs text-slate-500 italic ml-1.5">
                       — {proj.roleOrSubtitle}
@@ -274,11 +342,13 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
               </div>
               {proj.techStack && proj.techStack.length > 0 && (
                 <p className="text-[11px] text-slate-500 mt-0.5">
-                  Stack: {proj.techStack.join(', ')}
+                  Stack: {proj.techStack.join(", ")}
                 </p>
               )}
               {proj.bullets.length > 0 && (
-                <ul className={`mt-1 space-y-1 list-disc list-outside ml-4 text-slate-700 ${isCompact ? 'text-[11px]' : 'text-xs'}`}>
+                <ul
+                  className={`mt-1 space-y-1 list-disc list-outside ml-4 text-slate-700 ${isCompact ? "text-[11px]" : "text-xs"}`}
+                >
                   {proj.bullets.map((b, idx) => (
                     <li key={idx}>{b}</li>
                   ))}
@@ -297,7 +367,7 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
       <section>
         <h2
           className="text-xs font-bold uppercase tracking-wider mb-2.5 pb-1 border-b"
-          style={{ color: primaryColor, borderColor: '#E2E8F0' }}
+          style={{ color: primaryColor, borderColor: "#E2E8F0" }}
         >
           Education
         </h2>
@@ -306,15 +376,18 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
             <div key={edu.id}>
               <div className="flex flex-row items-baseline justify-between gap-2">
                 <span className="font-bold text-slate-800">
-                  {edu.degree} {edu.fieldOfStudy ? `in ${edu.fieldOfStudy}` : ''}
+                  {edu.degree}{" "}
+                  {edu.fieldOfStudy ? `in ${edu.fieldOfStudy}` : ""}
                 </span>
                 <span className="text-[10px] text-slate-400">
-                  {edu.startDate} - {edu.isCurrent ? 'Present' : edu.endDate}
+                  {edu.startDate} - {edu.isCurrent ? "Present" : edu.endDate}
                 </span>
               </div>
               <p className="text-[11px] text-slate-600">{edu.institution}</p>
               {edu.gradeOrGpa && (
-                <p className="text-[10px] italic text-indigo-700 mt-0.5">{edu.gradeOrGpa}</p>
+                <p className="text-[10px] italic text-indigo-700 mt-0.5">
+                  {edu.gradeOrGpa}
+                </p>
               )}
             </div>
           ))}
@@ -332,7 +405,7 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
           <section key={cs.id}>
             <h2
               className="text-xs font-bold uppercase tracking-wider mb-2 pb-1 border-b"
-              style={{ color: primaryColor, borderColor: '#E2E8F0' }}
+              style={{ color: primaryColor, borderColor: "#E2E8F0" }}
             >
               {cs.title}
             </h2>
@@ -341,7 +414,9 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({ resume }) =
                 <div key={it.id}>
                   <strong>{it.title}</strong>
                   {it.subtitle && <span> — {it.subtitle}</span>}
-                  {it.description && <p className="text-slate-600 mt-0.5">{it.description}</p>}
+                  {it.description && (
+                    <p className="text-slate-600 mt-0.5">{it.description}</p>
+                  )}
                 </div>
               ))}
             </div>

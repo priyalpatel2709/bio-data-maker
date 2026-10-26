@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
-import { useResume } from '../../../context/ResumeContext';
-import { useAuth } from '../../../context/AuthContext';
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { useResume } from "../../../context/ResumeContext";
+import { useAuth } from "../../../context/AuthContext";
 import {
   tailorResumeAndCoverLetter,
   isAIConfigured,
-} from '../../../services/aiService';
-import { JobTailoredResult, CoverLetterDocument } from '../../../types/coverLetter';
+} from "../../../services/aiService";
+import {
+  JobTailoredResult,
+  CoverLetterDocument,
+} from "../../../types/coverLetter";
 import {
   X,
   Sparkles,
@@ -26,7 +29,7 @@ import {
   Layers,
   ChevronRight,
   TrendingUp,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface AIJobTailorModalProps {
   isOpen: boolean;
@@ -59,44 +62,52 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
   onClose,
   onOpenSettings,
 }) => {
-  const { document: activeResume, addSavedResume, loadResume, setViewMode } = useResume();
+  const {
+    document: activeResume,
+    addSavedResume,
+    loadResume,
+    setViewMode,
+  } = useResume();
   const { user } = useAuth();
 
-  const [activeTab, setActiveTab] = useState<'input' | 'results'>('input');
-  const [resultTab, setResultTab] = useState<'resume' | 'coverletter'>('resume');
-  const [jobDescription, setJobDescription] = useState('');
+  const [activeTab, setActiveTab] = useState<"input" | "results">("input");
+  const [resultTab, setResultTab] = useState<"resume" | "coverletter">(
+    "resume",
+  );
+  const [jobDescription, setJobDescription] = useState("");
   const [saveAsNew, setSaveAsNew] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<JobTailoredResult | null>(null);
   const [copiedCoverLetter, setCopiedCoverLetter] = useState(false);
   const [copiedResumeText, setCopiedResumeText] = useState(false);
-  const [editableCoverLetter, setEditableCoverLetter] = useState<CoverLetterDocument | null>(null);
+  const [editableCoverLetter, setEditableCoverLetter] =
+    useState<CoverLetterDocument | null>(null);
 
   const configured = isAIConfigured();
 
   // Reset or initialize on open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
       setError(null);
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
   // Handle escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
@@ -109,7 +120,7 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
     const reader = new FileReader();
     reader.onload = (event) => {
       const text = event.target?.result;
-      if (typeof text === 'string') {
+      if (typeof text === "string") {
         setJobDescription(text);
       }
     };
@@ -118,7 +129,7 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
 
   const handleTailor = async () => {
     if (!jobDescription.trim()) {
-      setError('Please paste or upload a Job Description to proceed.');
+      setError("Please paste or upload a Job Description to proceed.");
       return;
     }
 
@@ -131,7 +142,10 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
     setError(null);
 
     try {
-      const tailored = await tailorResumeAndCoverLetter(activeResume, jobDescription.trim());
+      const tailored = await tailorResumeAndCoverLetter(
+        activeResume,
+        jobDescription.trim(),
+      );
       setResult(tailored);
       setEditableCoverLetter(tailored.coverLetter);
 
@@ -140,10 +154,12 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
         addSavedResume(tailored.tailoredResume);
       }
 
-      setActiveTab('results');
+      setActiveTab("results");
     } catch (err: any) {
-      console.error('Job tailoring error:', err);
-      setError(err.message || 'Failed to tailor resume and generate cover letter.');
+      console.error("Job tailoring error:", err);
+      setError(
+        err.message || "Failed to tailor resume and generate cover letter.",
+      );
     } finally {
       setLoading(false);
     }
@@ -152,7 +168,7 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
   const handleApplyToStudio = () => {
     if (!result) return;
     loadResume(result.tailoredResume);
-    setViewMode('studio');
+    setViewMode("studio");
     onClose();
   };
 
@@ -165,11 +181,13 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
 
   const handleDownloadCoverLetterTxt = () => {
     if (!editableCoverLetter) return;
-    const blob = new Blob([editableCoverLetter.fullContentText], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([editableCoverLetter.fullContentText], {
+      type: "text/plain;charset=utf-8",
+    });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = `Cover_Letter_${editableCoverLetter.targetCompany.replace(/\s+/g, '_')}.txt`;
+    link.download = `Cover_Letter_${editableCoverLetter.targetCompany.replace(/\s+/g, "_")}.txt`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -199,7 +217,8 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
                 </span>
               </div>
               <p className="text-xs text-teal-100/80">
-                Tailor your resume details & generate a matched cover letter in one click
+                Tailor your resume details & generate a matched cover letter in
+                one click
               </p>
             </div>
           </div>
@@ -215,22 +234,22 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
         {result && (
           <div className="flex border-b border-slate-200 bg-slate-50 px-6 pt-2 gap-4 shrink-0">
             <button
-              onClick={() => setActiveTab('input')}
+              onClick={() => setActiveTab("input")}
               className={`pb-2.5 text-xs font-bold transition-all border-b-2 flex items-center gap-1.5 ${
-                activeTab === 'input'
-                  ? 'border-teal-700 text-teal-800'
-                  : 'border-transparent text-slate-500 hover:text-slate-900'
+                activeTab === "input"
+                  ? "border-teal-700 text-teal-800"
+                  : "border-transparent text-slate-500 hover:text-slate-900"
               }`}
             >
               <Upload className="w-3.5 h-3.5" />
               <span>Job Description Input</span>
             </button>
             <button
-              onClick={() => setActiveTab('results')}
+              onClick={() => setActiveTab("results")}
               className={`pb-2.5 text-xs font-bold transition-all border-b-2 flex items-center gap-1.5 ${
-                activeTab === 'results'
-                  ? 'border-teal-700 text-teal-800'
-                  : 'border-transparent text-slate-500 hover:text-slate-900'
+                activeTab === "results"
+                  ? "border-teal-700 text-teal-800"
+                  : "border-transparent text-slate-500 hover:text-slate-900"
               }`}
             >
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
@@ -251,7 +270,8 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
                 <div>
                   <p className="font-bold">AI Router API Key Required</p>
                   <p className="text-[11px] text-amber-800 mt-0.5">
-                    Configure your free Nara, OpenRouter, or AgentRouter key to tailor resumes and generate cover letters.
+                    Configure your free Nara, OpenRouter, or AgentRouter key to
+                    tailor resumes and generate cover letters.
                   </p>
                 </div>
               </div>
@@ -272,20 +292,23 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
             </div>
           )}
 
-          {activeTab === 'input' ? (
+          {activeTab === "input" ? (
             <div className="space-y-4">
               {/* User Context Preview Card */}
               <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-xs">
-                    {activeResume.contact.fullName.charAt(0) || 'U'}
+                    {activeResume.contact.fullName.charAt(0) || "U"}
                   </div>
                   <div>
                     <p className="text-xs font-bold text-slate-900">
-                      Active Profile: {activeResume.contact.fullName || 'Untitled Profile'}
+                      Active Profile:{" "}
+                      {activeResume.contact.fullName || "Untitled Profile"}
                     </p>
                     <p className="text-[11px] text-slate-500">
-                      {activeResume.contact.jobTitle} • {activeResume.experience.length} experiences • {activeResume.skillCategories.length} skill groups
+                      {activeResume.contact.jobTitle} •{" "}
+                      {activeResume.experience.length} experiences •{" "}
+                      {activeResume.skillCategories.length} skill groups
                     </p>
                   </div>
                 </div>
@@ -353,7 +376,10 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
                     onChange={(e) => setSaveAsNew(e.target.checked)}
                     className="rounded text-teal-700 focus:ring-teal-700"
                   />
-                  <span>Create as a new tailored resume (keeps your original resume intact)</span>
+                  <span>
+                    Create as a new tailored resume (keeps your original resume
+                    intact)
+                  </span>
                 </label>
               </div>
 
@@ -367,7 +393,10 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin text-white" />
-                    <span>Analyzing JD, tailoring resume & generating cover letter...</span>
+                    <span>
+                      Analyzing JD, tailoring resume & generating cover
+                      letter...
+                    </span>
                   </>
                 ) : (
                   <>
@@ -385,8 +414,12 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
                 <div className="p-4 bg-gradient-to-br from-slate-50 to-teal-50/40 border border-teal-200/70 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3.5">
                     <div className="w-12 h-12 rounded-xl bg-teal-700 text-white flex flex-col items-center justify-center font-black shadow-sm">
-                      <span className="text-base leading-none">{result.atsScore}%</span>
-                      <span className="text-[9px] uppercase font-bold text-teal-200">ATS</span>
+                      <span className="text-base leading-none">
+                        {result.atsScore}%
+                      </span>
+                      <span className="text-[9px] uppercase font-bold text-teal-200">
+                        ATS
+                      </span>
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-slate-900">
@@ -414,11 +447,11 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
                 <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200/80">
                   <button
                     type="button"
-                    onClick={() => setResultTab('resume')}
+                    onClick={() => setResultTab("resume")}
                     className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-2 transition-all ${
-                      resultTab === 'resume'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
+                      resultTab === "resume"
+                        ? "bg-white text-slate-900 shadow-xs"
+                        : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
                     <FileText className="w-3.5 h-3.5 text-teal-700" />
@@ -426,11 +459,11 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setResultTab('coverletter')}
+                    onClick={() => setResultTab("coverletter")}
                     className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-2 transition-all ${
-                      resultTab === 'coverletter'
-                        ? 'bg-white text-slate-900 shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
+                      resultTab === "coverletter"
+                        ? "bg-white text-slate-900 shadow-xs"
+                        : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
                     <Mail className="w-3.5 h-3.5 text-rose-600" />
@@ -439,7 +472,7 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
                 </div>
 
                 {/* Tab: Tailored Resume Details */}
-                {resultTab === 'resume' && (
+                {resultTab === "resume" && (
                   <div className="space-y-4">
                     {/* Tailored Professional Summary */}
                     <div className="p-4 bg-slate-50 border border-slate-200/80 rounded-xl space-y-1.5">
@@ -500,7 +533,8 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
                           Tailored Resume is ready in your saved list!
                         </p>
                         <p className="text-[11px] text-slate-400 mt-0.5">
-                          Titled: "{result.tailoredResume.title}". All styling, contact info, and PDF export features are ready.
+                          Titled: "{result.tailoredResume.title}". All styling,
+                          contact info, and PDF export features are ready.
                         </p>
                       </div>
                       <button
@@ -516,7 +550,7 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
                 )}
 
                 {/* Tab: Tailored Cover Letter */}
-                {resultTab === 'coverletter' && editableCoverLetter && (
+                {resultTab === "coverletter" && editableCoverLetter && (
                   <div className="space-y-4">
                     {/* Cover Letter Actions Toolbar */}
                     <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80">
@@ -567,15 +601,19 @@ export const AIJobTailorModal: React.FC<AIJobTailorModalProps> = ({
                             editableCoverLetter.sender.location,
                           ]
                             .filter(Boolean)
-                            .join(' • ')}
+                            .join(" • ")}
                         </p>
                       </div>
 
                       {/* Date & Recipient */}
                       <div className="font-sans text-[11px] text-slate-600 space-y-0.5">
                         <p>{editableCoverLetter.date}</p>
-                        <p className="font-bold text-slate-900 pt-1">{editableCoverLetter.recipient.name}</p>
-                        {editableCoverLetter.recipient.title && <p>{editableCoverLetter.recipient.title}</p>}
+                        <p className="font-bold text-slate-900 pt-1">
+                          {editableCoverLetter.recipient.name}
+                        </p>
+                        {editableCoverLetter.recipient.title && (
+                          <p>{editableCoverLetter.recipient.title}</p>
+                        )}
                         <p>{editableCoverLetter.recipient.company}</p>
                         <p>{editableCoverLetter.recipient.location}</p>
                       </div>

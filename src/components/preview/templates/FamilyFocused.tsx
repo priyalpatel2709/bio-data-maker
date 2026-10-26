@@ -1,8 +1,8 @@
-import React from 'react';
-import { BiodataDocument } from '../../../types/biodata';
-import { DocumentPhoto } from '../DocumentPhoto';
-import { calculateAge, formatDate } from '../../../utils/calculateAge';
-import { Users } from 'lucide-react';
+import React from "react";
+import { BiodataDocument } from "../../../types/biodata";
+import { DocumentPhoto } from "../DocumentPhoto";
+import { calculateAge, formatDate } from "../../../utils/calculateAge";
+import { Users } from "lucide-react";
 
 interface TemplateProps {
   document: BiodataDocument;
@@ -12,8 +12,8 @@ export const FamilyFocused: React.FC<TemplateProps> = ({ document }) => {
   const { styling, sections, photoUrl } = document;
 
   // Separate family section from other sections
-  const familySection = sections.find((s) => s.key === 'family');
-  const otherSections = sections.filter((s) => s.key !== 'family' && s.visible);
+  const familySection = sections.find((s) => s.key === "family");
+  const otherSections = sections.filter((s) => s.key !== "family" && s.visible);
 
   return (
     <div className="w-full h-full p-8 sm:p-10 relative flex flex-col justify-between">
@@ -42,7 +42,11 @@ export const FamilyFocused: React.FC<TemplateProps> = ({ document }) => {
           </div>
 
           {styling.showPhoto && (
-            <DocumentPhoto photoUrl={photoUrl} styling={styling} className="shadow-sm" />
+            <DocumentPhoto
+              photoUrl={photoUrl}
+              styling={styling}
+              className="shadow-sm"
+            />
           )}
         </div>
 
@@ -81,7 +85,9 @@ export const FamilyFocused: React.FC<TemplateProps> = ({ document }) => {
                     <span className="font-bold text-slate-700 block text-[11px] uppercase tracking-wider mb-0.5">
                       {field.label}
                     </span>
-                    <span className="text-slate-900 font-medium">{field.value || '—'}</span>
+                    <span className="text-slate-900 font-medium">
+                      {field.value || "—"}
+                    </span>
                   </div>
                 ))}
             </div>
@@ -113,27 +119,35 @@ export const FamilyFocused: React.FC<TemplateProps> = ({ document }) => {
 
                 <div
                   className={`grid ${
-                    styling.columns === 2 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'
+                    styling.columns === 2
+                      ? "grid-cols-1 sm:grid-cols-2"
+                      : "grid-cols-1"
                   } gap-x-6 gap-y-2`}
                 >
                   {visibleFields.map((field) => {
                     const isDob =
-                      field.id.includes('dob') || field.label.toLowerCase().includes('date of birth');
-                    const calculatedAge = isDob ? calculateAge(field.value) : null;
-                    const displayValue = field.type === 'date' ? formatDate(field.value) : field.value;
+                      field.id.includes("dob") ||
+                      field.label.toLowerCase().includes("date of birth");
+                    const calculatedAge = isDob
+                      ? calculateAge(field.value)
+                      : null;
+                    const displayValue =
+                      field.type === "date"
+                        ? formatDate(field.value)
+                        : field.value;
 
                     return (
                       <div
                         key={field.id}
                         className={`flex items-baseline py-1 text-xs sm:text-sm border-b border-dashed border-slate-200/80 ${
-                          field.type === 'textarea' ? 'sm:col-span-2' : ''
+                          field.type === "textarea" ? "sm:col-span-2" : ""
                         }`}
                       >
                         <span className="font-semibold w-2/5 shrink-0 pr-2 text-slate-700">
                           {field.label}:
                         </span>
                         <span className="text-slate-900 flex-1">
-                          {displayValue || '—'}
+                          {displayValue || "—"}
                           {calculatedAge !== null && (
                             <span className="ml-1 text-slate-500 font-normal">
                               ({calculatedAge} yrs)

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   getSupabaseCredentials,
   saveSupabaseCredentials,
   isSupabaseConfigured,
-} from '../../services/supabaseClient';
-import { useAuth } from '../../context/AuthContext';
+} from "../../services/supabaseClient";
+import { useAuth } from "../../context/AuthContext";
 import {
   X,
   Database,
@@ -16,8 +16,8 @@ import {
   HelpCircle,
   Copy,
   Check,
-} from 'lucide-react';
-import { SUPABASE_SCHEMA_SQL } from '../../services/schemaSql';
+} from "lucide-react";
+import { SUPABASE_SCHEMA_SQL } from "../../services/schemaSql";
 
 interface SupabaseConfigModalProps {
   isOpen: boolean;
@@ -44,23 +44,23 @@ export const SupabaseConfigModal: React.FC<SupabaseConfigModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [isOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (e.key === "Escape" && isOpen) {
         onClose();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
@@ -72,8 +72,10 @@ export const SupabaseConfigModal: React.FC<SupabaseConfigModalProps> = ({
     const cleanUrl = url.trim();
     const cleanKey = anonKey.trim();
 
-    if (cleanUrl && !cleanUrl.startsWith('https://')) {
-      setErrorMsg('Project URL must begin with https:// (e.g. https://xyzcompany.supabase.co)');
+    if (cleanUrl && !cleanUrl.startsWith("https://")) {
+      setErrorMsg(
+        "Project URL must begin with https:// (e.g. https://xyzcompany.supabase.co)",
+      );
       return;
     }
 
@@ -104,8 +106,12 @@ export const SupabaseConfigModal: React.FC<SupabaseConfigModalProps> = ({
               <Database className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900">Cloud Sync & Database Setup</h3>
-              <p className="text-xs text-slate-500">Connect to your Supabase project for multi-device sync</p>
+              <h3 className="text-base font-bold text-slate-900">
+                Cloud Sync & Database Setup
+              </h3>
+              <p className="text-xs text-slate-500">
+                Connect to your Supabase project for multi-device sync
+              </p>
             </div>
           </div>
           <button
@@ -121,13 +127,20 @@ export const SupabaseConfigModal: React.FC<SupabaseConfigModalProps> = ({
           {configured ? (
             <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-2 text-xs text-emerald-800">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>Supabase credentials are active. You can sign up, log in, and sync across devices!</span>
+              <span>
+                Supabase credentials are active. You can sign up, log in, and
+                sync across devices!
+              </span>
             </div>
           ) : (
             <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2 text-xs text-amber-800">
               <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               <div>
-                <span className="font-semibold">Cloud sync is currently optional.</span> The app continues to work 100% locally in guest mode. Connect Supabase whenever you want cross-device backup.
+                <span className="font-semibold">
+                  Cloud sync is currently optional.
+                </span>{" "}
+                The app continues to work 100% locally in guest mode. Connect
+                Supabase whenever you want cross-device backup.
               </div>
             </div>
           )}
@@ -172,11 +185,26 @@ export const SupabaseConfigModal: React.FC<SupabaseConfigModalProps> = ({
               <span>Where to find these in Supabase:</span>
             </div>
             <ol className="list-decimal pl-4 space-y-1 text-slate-600">
-              <li>Create a free project at <a href="https://supabase.com" target="_blank" rel="noreferrer" className="text-emerald-600 hover:underline inline-flex items-center gap-0.5">supabase.com <ExternalLink className="w-2.5 h-2.5" /></a></li>
-              <li>Go to <strong>Project Settings &gt; API</strong> to copy URL and Anon key.</li>
+              <li>
+                Create a free project at{" "}
+                <a
+                  href="https://supabase.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-emerald-600 hover:underline inline-flex items-center gap-0.5"
+                >
+                  supabase.com <ExternalLink className="w-2.5 h-2.5" />
+                </a>
+              </li>
+              <li>
+                Go to <strong>Project Settings &gt; API</strong> to copy URL and
+                Anon key.
+              </li>
               <li>
                 <div className="flex flex-wrap items-center justify-between gap-1.5 pt-0.5">
-                  <span>In the <strong>SQL Editor</strong>, run the setup script:</span>
+                  <span>
+                    In the <strong>SQL Editor</strong>, run the setup script:
+                  </span>
                   <button
                     type="button"
                     onClick={handleCopySql}
@@ -211,10 +239,12 @@ export const SupabaseConfigModal: React.FC<SupabaseConfigModalProps> = ({
             <button
               type="submit"
               className={`px-5 py-2 text-xs font-semibold text-white rounded-xl shadow-sm transition-all active:scale-95 ${
-                savedSuccess ? 'bg-emerald-600' : 'bg-slate-900 hover:bg-slate-800'
+                savedSuccess
+                  ? "bg-emerald-600"
+                  : "bg-slate-900 hover:bg-slate-800"
               }`}
             >
-              {savedSuccess ? 'Saved & Applied!' : 'Save Credentials'}
+              {savedSuccess ? "Saved & Applied!" : "Save Credentials"}
             </button>
           </div>
         </form>

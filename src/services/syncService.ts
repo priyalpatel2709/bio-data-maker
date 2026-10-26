@@ -1,29 +1,25 @@
-import { getSupabaseClient } from './supabaseClient';
-import { BiodataDocument } from '../types/biodata';
-import { ResumeDocument } from '../types/resume';
+import { getSupabaseClient } from "./supabaseClient";
+import { BiodataDocument } from "../types/biodata";
+import { ResumeDocument } from "../types/resume";
 import {
   getSavedDocuments,
   saveNewDocument,
   loadCurrentBiodata,
   saveCurrentBiodata,
-} from '../utils/storage';
+} from "../utils/storage";
 import {
   getSavedResumes,
   saveNewResume,
   loadCurrentResume,
   saveCurrentResume,
-} from '../utils/resumeStorage';
-import {
-  getAISettings,
-  saveAISettings,
-  AISettings,
-} from './aiService';
+} from "../utils/resumeStorage";
+import { getAISettings, saveAISettings, AISettings } from "./aiService";
 
-export type SyncStatus = 'idle' | 'syncing' | 'synced' | 'error' | 'offline';
+export type SyncStatus = "idle" | "syncing" | "synced" | "error" | "offline";
 
 type SyncListener = (status: SyncStatus) => void;
 const listeners = new Set<SyncListener>();
-let currentStatus: SyncStatus = 'idle';
+let currentStatus: SyncStatus = "idle";
 
 export function getSyncStatus(): SyncStatus {
   return currentStatus;
@@ -35,7 +31,7 @@ export function setSyncStatus(status: SyncStatus): void {
     try {
       listener(status);
     } catch (e) {
-      console.error('Sync listener error:', e);
+      console.error("Sync listener error:", e);
     }
   });
 }
@@ -73,8 +69,8 @@ export function flushPendingSaves(): void {
 }
 
 // Automatically flush pending changes if the user closes or navigates away
-if (typeof window !== 'undefined') {
-  window.addEventListener('beforeunload', () => {
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeunload", () => {
     flushPendingSaves();
   });
 }
@@ -84,16 +80,16 @@ if (typeof window !== 'undefined') {
  * Debounced by default (1200ms) with content-hash diffing to eliminate unnecessary network traffic.
  */
 export function queueCloudSave(
-  type: 'biodata' | 'resume',
+  type: "biodata" | "resume",
   doc: BiodataDocument | ResumeDocument,
   userId: string,
-  immediate = false
+  immediate = false,
 ): void {
   const client = getSupabaseClient();
   if (!client || !userId) return;
 
   const key = `${type}_${doc.id}`;
-  let currentJson = '';
+  let currentJson = "";
   try {
     currentJson = JSON.stringify(doc);
   } catch {
@@ -113,30 +109,32 @@ export function queueCloudSave(
   const performSave = async () => {
     try {
       delete pendingSaveActions[key];
-      setSyncStatus('syncing');
+      setSyncStatus("syncing");
       const now = new Date().toISOString();
       const payload = {
         id: doc.id,
         user_id: userId,
         type,
-        title: doc.title || (type === 'biodata' ? 'Untitled Biodata' : 'Untitled Resume'),
+        title:
+          doc.title ||
+          (type === "biodata" ? "Untitled Biodata" : "Untitled Resume"),
         data: doc,
         updated_at: now,
       };
 
       const { error } = await client
-        .from('documents')
-        .upsert(payload, { onConflict: 'id,user_id' });
+        .from("documents")
+        .upsert(payload, { onConflict: "id,user_id" });
 
       if (error) {
-        if (error.code === 'PGRST205') {
+        if (error.code === "PGRST205") {
           console.warn(
-            'Supabase table "public.documents" not found. Please run the SQL script in "supabase/schema.sql" in your Supabase SQL Editor.'
+            'Supabase table "public.documents" not found. Please run the SQL script in "supabase/schema.sql" in your Supabase SQL Editor.',
           );
         } else {
           console.error(`Failed to save ${type} document to cloud:`, error);
         }
-        setSyncStatus('error');
+        setSyncStatus("error");
       } else {
         // Record successfully saved payload hash
         if (currentJson) {
@@ -145,20 +143,25 @@ export function queueCloudSave(
 
         // Also update shared_documents if this document was shared
         try {
-          const shareSlug = (doc.id || 'doc').replace(/[^a-zA-Z0-9_-]/g, '_');
-          await client.from('shared_documents').update({
-            title: doc.title || (type === 'biodata' ? 'Untitled Biodata' : 'Untitled Resume'),
-            data: doc,
-          }).eq('share_id', shareSlug);
+          const shareSlug = (doc.id || "doc").replace(/[^a-zA-Z0-9_-]/g, "_");
+          await client
+            .from("shared_documents")
+            .update({
+              title:
+                doc.title ||
+                (type === "biodata" ? "Untitled Biodata" : "Untitled Resume"),
+              data: doc,
+            })
+            .eq("share_id", shareSlug);
         } catch {
           // silent fallback
         }
 
-        setSyncStatus('synced');
+        setSyncStatus("synced");
       }
     } catch (err) {
       console.error(`Network or unexpected error saving ${type}:`, err);
-      setSyncStatus('error');
+      setSyncStatus("error");
     }
   };
 
@@ -178,28 +181,28 @@ export function queueCloudSave(
  */
 export async function deleteCloudDocument(
   docId: string,
-  userId: string
+  userId: string,
 ): Promise<boolean> {
   const client = getSupabaseClient();
   if (!client || !userId) return false;
 
   try {
-    setSyncStatus('syncing');
+    setSyncStatus("syncing");
     const { error } = await client
-      .from('documents')
+      .from("documents")
       .delete()
       .match({ id: docId, user_id: userId });
 
     if (error) {
-      console.error('Failed to delete cloud document:', error);
-      setSyncStatus('error');
+      console.error("Failed to delete cloud document:", error);
+      setSyncStatus("error");
       return false;
     }
-    setSyncStatus('synced');
+    setSyncStatus("synced");
     return true;
   } catch (err) {
-    console.error('Error deleting cloud document:', err);
-    setSyncStatus('error');
+    console.error("Error deleting cloud document:", err);
+    setSyncStatus("error");
     return false;
   }
 }
@@ -209,47 +212,47 @@ export async function deleteCloudDocument(
  */
 export async function saveCloudAISettings(
   settings: AISettings,
-  userId: string
+  userId: string,
 ): Promise<void> {
   const client = getSupabaseClient();
   if (!client || !userId) return;
 
   try {
-    const { error } = await client
-      .from('user_settings')
-      .upsert(
-        {
-          user_id: userId,
-          ai_settings: settings,
-          updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'user_id' }
-      );
+    const { error } = await client.from("user_settings").upsert(
+      {
+        user_id: userId,
+        ai_settings: settings,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    );
 
     if (error) {
-      console.warn('Failed to save AI settings to cloud:', error);
+      console.warn("Failed to save AI settings to cloud:", error);
     }
   } catch (err) {
-    console.warn('Network error saving AI settings to cloud:', err);
+    console.warn("Network error saving AI settings to cloud:", err);
   }
 }
 
 /**
  * Fetches user AI settings from cloud and populates localStorage if valid
  */
-export async function fetchCloudAISettings(userId: string): Promise<AISettings | null> {
+export async function fetchCloudAISettings(
+  userId: string,
+): Promise<AISettings | null> {
   const client = getSupabaseClient();
   if (!client || !userId) return null;
 
   try {
     const { data, error } = await client
-      .from('user_settings')
-      .select('ai_settings')
-      .eq('user_id', userId)
+      .from("user_settings")
+      .select("ai_settings")
+      .eq("user_id", userId)
       .maybeSingle();
 
     if (error) {
-      console.warn('Failed to fetch cloud AI settings:', error);
+      console.warn("Failed to fetch cloud AI settings:", error);
       return null;
     }
 
@@ -261,7 +264,7 @@ export async function fetchCloudAISettings(userId: string): Promise<AISettings |
       }
     }
   } catch (err) {
-    console.warn('Error fetching cloud AI settings:', err);
+    console.warn("Error fetching cloud AI settings:", err);
   }
   return null;
 }
@@ -276,37 +279,39 @@ export interface SyncResult {
  * Full bidirectional synchronization triggered on Login or manual "Sync Now".
  * Pulls remote documents, compares timestamps, resolves conflicts, and pushes missing local docs.
  */
-export async function syncAllUserData(userId: string): Promise<SyncResult | null> {
+export async function syncAllUserData(
+  userId: string,
+): Promise<SyncResult | null> {
   const client = getSupabaseClient();
   if (!client || !userId) return null;
 
-  setSyncStatus('syncing');
+  setSyncStatus("syncing");
 
   try {
     // 1. Fetch cloud documents
     const { data: cloudDocs, error: docsError } = await client
-      .from('documents')
-      .select('*')
-      .eq('user_id', userId);
+      .from("documents")
+      .select("*")
+      .eq("user_id", userId);
 
     if (docsError) {
-      if (docsError.code === 'PGRST205') {
+      if (docsError.code === "PGRST205") {
         console.warn(
-          'Supabase table "public.documents" not found. Please run the SQL script in "supabase/schema.sql" in your Supabase SQL Editor.'
+          'Supabase table "public.documents" not found. Please run the SQL script in "supabase/schema.sql" in your Supabase SQL Editor.',
         );
       } else {
-        console.error('Error fetching cloud documents:', docsError);
+        console.error("Error fetching cloud documents:", docsError);
       }
-      setSyncStatus('error');
+      setSyncStatus("error");
       return null;
     }
 
     const remoteBiodatas = (cloudDocs || [])
-      .filter((d) => d.type === 'biodata')
+      .filter((d) => d.type === "biodata")
       .map((d) => d.data as BiodataDocument);
 
     const remoteResumes = (cloudDocs || [])
-      .filter((d) => d.type === 'resume')
+      .filter((d) => d.type === "resume")
       .map((d) => d.data as ResumeDocument);
 
     // 2. Synchronize Biodatas
@@ -324,7 +329,7 @@ export async function syncAllUserData(userId: string): Promise<SyncResult | null
       if (!remoteDoc) {
         // Exists locally but not remotely -> upload it to remote
         mergedBiodatasMap.set(localDoc.id, localDoc);
-        queueCloudSave('biodata', localDoc, userId, true);
+        queueCloudSave("biodata", localDoc, userId, true);
       } else {
         // Exists in both -> compare updatedAt
         const localTime = new Date(localDoc.updatedAt || 0).getTime();
@@ -332,7 +337,7 @@ export async function syncAllUserData(userId: string): Promise<SyncResult | null
         if (localTime > remoteTime) {
           // Local is newer -> keep local and update remote
           mergedBiodatasMap.set(localDoc.id, localDoc);
-          queueCloudSave('biodata', localDoc, userId, true);
+          queueCloudSave("biodata", localDoc, userId, true);
         } else {
           // Remote is newer -> keep remote
           mergedBiodatasMap.set(localDoc.id, remoteDoc);
@@ -342,7 +347,7 @@ export async function syncAllUserData(userId: string): Promise<SyncResult | null
 
     const finalBiodatas = Array.from(mergedBiodatasMap.values());
     // Update local storage with full merged list
-    localStorage.setItem('biodata_saved_list', JSON.stringify(finalBiodatas));
+    localStorage.setItem("biodata_saved_list", JSON.stringify(finalBiodatas));
 
     // Update current open biodata if matching
     const currentBiodata = loadCurrentBiodata();
@@ -363,13 +368,13 @@ export async function syncAllUserData(userId: string): Promise<SyncResult | null
       const remoteDoc = mergedResumesMap.get(localDoc.id);
       if (!remoteDoc) {
         mergedResumesMap.set(localDoc.id, localDoc);
-        queueCloudSave('resume', localDoc, userId, true);
+        queueCloudSave("resume", localDoc, userId, true);
       } else {
         const localTime = new Date(localDoc.updatedAt || 0).getTime();
         const remoteTime = new Date(remoteDoc.updatedAt || 0).getTime();
         if (localTime > remoteTime) {
           mergedResumesMap.set(localDoc.id, localDoc);
-          queueCloudSave('resume', localDoc, userId, true);
+          queueCloudSave("resume", localDoc, userId, true);
         } else {
           mergedResumesMap.set(localDoc.id, remoteDoc);
         }
@@ -377,7 +382,7 @@ export async function syncAllUserData(userId: string): Promise<SyncResult | null
     }
 
     const finalResumes = Array.from(mergedResumesMap.values());
-    localStorage.setItem('resume_saved_list', JSON.stringify(finalResumes));
+    localStorage.setItem("resume_saved_list", JSON.stringify(finalResumes));
 
     const currentResume = loadCurrentResume();
     const updatedCurrentResume = mergedResumesMap.get(currentResume.id);
@@ -396,15 +401,15 @@ export async function syncAllUserData(userId: string): Promise<SyncResult | null
       finalAi = localAi;
     }
 
-    setSyncStatus('synced');
+    setSyncStatus("synced");
     return {
       biodatas: finalBiodatas,
       resumes: finalResumes,
       aiSettings: finalAi,
     };
   } catch (err) {
-    console.error('Failed to sync all user data:', err);
-    setSyncStatus('error');
+    console.error("Failed to sync all user data:", err);
+    setSyncStatus("error");
     return null;
   }
 }

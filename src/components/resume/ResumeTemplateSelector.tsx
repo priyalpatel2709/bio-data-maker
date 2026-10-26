@@ -1,8 +1,8 @@
-import React from 'react';
-import { useResume } from '../../context/ResumeContext';
-import { RESUME_TEMPLATES } from '../../data/defaultResume';
-import { ResumeTemplateThumbnail } from './ResumeTemplateThumbnail';
-import { Check, Sparkles } from 'lucide-react';
+import React from "react";
+import { useResume } from "../../context/ResumeContext";
+import { RESUME_TEMPLATES } from "../../data/defaultResume";
+import { ResumeTemplateThumbnail } from "./ResumeTemplateThumbnail";
+import { Check, Sparkles } from "lucide-react";
 
 export const ResumeTemplateSelector: React.FC = () => {
   const { document, setTemplate } = useResume();
@@ -16,7 +16,8 @@ export const ResumeTemplateSelector: React.FC = () => {
           <span>Curated Professional Templates</span>
         </div>
         <p className="text-xs text-teal-700 leading-relaxed">
-          Switch templates anytime. Your content, experiences, skills, and projects adapt to the new design instantly without losing data.
+          Switch templates anytime. Your content, experiences, skills, and
+          projects adapt to the new design instantly without losing data.
         </p>
       </div>
 
@@ -30,8 +31,8 @@ export const ResumeTemplateSelector: React.FC = () => {
               onClick={() => setTemplate(tpl.id)}
               className={`group cursor-pointer rounded-xl border-2 overflow-hidden transition-all relative flex flex-col justify-between ${
                 isSelected
-                  ? 'border-teal-600 bg-teal-50/20 shadow-md ring-2 ring-teal-600/20'
-                  : 'border-slate-200 hover:border-slate-300 bg-white hover:shadow-sm'
+                  ? "border-teal-600 bg-teal-50/20 shadow-md ring-2 ring-teal-600/20"
+                  : "border-slate-200 hover:border-slate-300 bg-white hover:shadow-sm"
               }`}
             >
               {/* Visual Miniature Template Thumbnail */}
@@ -39,7 +40,7 @@ export const ResumeTemplateSelector: React.FC = () => {
                 <ResumeTemplateThumbnail
                   templateId={tpl.id}
                   docOverride={document}
-                  scale={0.20}
+                  scale={0.2}
                   height={144}
                   className="transition-transform group-hover:scale-105 duration-200"
                 />
@@ -63,7 +64,9 @@ export const ResumeTemplateSelector: React.FC = () => {
                         className="w-2.5 h-2.5 rounded-full shadow-xs shrink-0"
                         style={{ backgroundColor: tpl.previewColor }}
                       />
-                      <h4 className="font-bold text-slate-900 text-xs sm:text-sm">{tpl.name}</h4>
+                      <h4 className="font-bold text-slate-900 text-xs sm:text-sm">
+                        {tpl.name}
+                      </h4>
                     </div>
                   </div>
 
@@ -74,12 +77,14 @@ export const ResumeTemplateSelector: React.FC = () => {
 
                 <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
                   <span className="text-slate-400 text-[10px]">
-                    {tpl.bestFor.split(',')[0]}
+                    {tpl.bestFor.split(",")[0]}
                   </span>
 
                   <div
                     className={`flex items-center gap-1 font-semibold text-xs transition ${
-                      isSelected ? 'text-teal-700' : 'text-slate-400 group-hover:text-slate-700'
+                      isSelected
+                        ? "text-teal-700"
+                        : "text-slate-400 group-hover:text-slate-700"
                     }`}
                   >
                     {isSelected ? (
@@ -88,7 +93,7 @@ export const ResumeTemplateSelector: React.FC = () => {
                         <span>Active</span>
                       </>
                     ) : (
-                      'Apply'
+                      "Apply"
                     )}
                   </div>
                 </div>

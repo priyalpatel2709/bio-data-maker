@@ -1,4 +1,4 @@
-import { HeaderSymbol, Language } from '../../types/biodata';
+import { HeaderSymbol, Language } from "../../types/biodata";
 
 interface HeaderEmblemProps {
   symbol?: HeaderSymbol;
@@ -11,20 +11,23 @@ interface HeaderEmblemProps {
 }
 
 export const HeaderEmblem: React.FC<HeaderEmblemProps> = ({
-  symbol = 'ganesha',
-  customSymbol = '',
-  customText = '',
+  symbol = "ganesha",
+  customSymbol = "",
+  customText = "",
   showEmblem = true,
-  language = 'en',
+  language = "en",
   primaryColor,
   accentColor,
 }) => {
-  if (!showEmblem || (symbol === 'none' && !customText.trim() && !customSymbol.trim())) {
+  if (
+    !showEmblem ||
+    (symbol === "none" && !customText.trim() && !customSymbol.trim())
+  ) {
     return null;
   }
 
   // If user entered a custom symbol or selected 'custom'
-  if (symbol === 'custom' || customSymbol.trim()) {
+  if (symbol === "custom" || customSymbol.trim()) {
     return (
       <div className="text-center mb-3">
         {customSymbol.trim() && (
@@ -52,25 +55,27 @@ export const HeaderEmblem: React.FC<HeaderEmblemProps> = ({
   };
 
   switch (symbol) {
-    case 'om':
+    case "om":
       return (
         <div className="text-center mb-3">
           <div
             className="text-2xl font-bold mb-0.5 select-none"
             style={{ color: primaryColor }}
           >
-            {language === 'gu' ? 'ૐ' : 'ॐ'}
+            {language === "gu" ? "ૐ" : "ॐ"}
           </div>
           <div
             className="text-xs font-semibold tracking-widest uppercase"
             style={{ color: accentColor }}
           >
-            {getMantra(language === 'gu' ? '॥ ૐ નમઃ શિવાય ॥' : '॥ ॐ नमः शिवाय ॥')}
+            {getMantra(
+              language === "gu" ? "॥ ૐ નમઃ શિવાય ॥" : "॥ ॐ नमः शिवाय ॥",
+            )}
           </div>
         </div>
       );
 
-    case 'swastik':
+    case "swastik":
       return (
         <div className="text-center mb-3">
           <div
@@ -83,12 +88,12 @@ export const HeaderEmblem: React.FC<HeaderEmblemProps> = ({
             className="text-xs font-semibold tracking-widest uppercase"
             style={{ color: accentColor }}
           >
-            {getMantra(language === 'gu' ? '॥ શુભ વિવાહ ॥' : '॥ शुभ विवाह ॥')}
+            {getMantra(language === "gu" ? "॥ શુભ વિવાહ ॥" : "॥ शुभ विवाह ॥")}
           </div>
         </div>
       );
 
-    case 'ek-onkar':
+    case "ek-onkar":
       return (
         <div className="text-center mb-3">
           <div
@@ -106,7 +111,7 @@ export const HeaderEmblem: React.FC<HeaderEmblemProps> = ({
         </div>
       );
 
-    case 'bismillah':
+    case "bismillah":
       return (
         <div className="text-center mb-3">
           <div
@@ -124,7 +129,7 @@ export const HeaderEmblem: React.FC<HeaderEmblemProps> = ({
         </div>
       );
 
-    case 'cross':
+    case "cross":
       return (
         <div className="text-center mb-3">
           <div
@@ -142,7 +147,7 @@ export const HeaderEmblem: React.FC<HeaderEmblemProps> = ({
         </div>
       );
 
-    case 'lotus':
+    case "lotus":
       return (
         <div className="text-center mb-3">
           <div
@@ -160,7 +165,7 @@ export const HeaderEmblem: React.FC<HeaderEmblemProps> = ({
         </div>
       );
 
-    case 'ganesha':
+    case "ganesha":
     default:
       return (
         <div className="text-center mb-3">
@@ -192,11 +197,11 @@ export const HeaderEmblem: React.FC<HeaderEmblemProps> = ({
             style={{ color: primaryColor }}
           >
             {getMantra(
-              language === 'gu'
-                ? '॥ શ્રી ગણેશાય નમઃ ॥'
-                : language === 'en'
-                ? '|| Shree Ganeshay Namah ||'
-                : '॥ श्री गणेशाय नमः ॥'
+              language === "gu"
+                ? "॥ શ્રી ગણેશાય નમઃ ॥"
+                : language === "en"
+                  ? "|| Shree Ganeshay Namah ||"
+                  : "॥ श्री गणेशाय नमः ॥",
             )}
           </div>
         </div>

@@ -1,9 +1,9 @@
-import React from 'react';
-import { ResumeTemplateDefinition, ResumeTemplateId } from '../../types/resume';
-import { ResumeTemplateThumbnail } from './ResumeTemplateThumbnail';
-import { Modal } from '../common/Modal';
-import { Button } from '../common/Button';
-import { Sparkles, ShieldCheck, FileCheck, CheckCircle2 } from 'lucide-react';
+import React from "react";
+import { ResumeTemplateDefinition, ResumeTemplateId } from "../../types/resume";
+import { ResumeTemplateThumbnail } from "./ResumeTemplateThumbnail";
+import { Modal } from "../common/Modal";
+import { Button } from "../common/Button";
+import { Sparkles, ShieldCheck, FileCheck, CheckCircle2 } from "lucide-react";
 
 interface ResumeTemplatePreviewModalProps {
   template: ResumeTemplateDefinition | null;
@@ -12,12 +12,9 @@ interface ResumeTemplatePreviewModalProps {
   onSelect: (templateId: ResumeTemplateId) => void;
 }
 
-export const ResumeTemplatePreviewModal: React.FC<ResumeTemplatePreviewModalProps> = ({
-  template,
-  isOpen,
-  onClose,
-  onSelect,
-}) => {
+export const ResumeTemplatePreviewModal: React.FC<
+  ResumeTemplatePreviewModalProps
+> = ({ template, isOpen, onClose, onSelect }) => {
   if (!template) return null;
 
   return (
@@ -51,14 +48,18 @@ export const ResumeTemplatePreviewModal: React.FC<ResumeTemplatePreviewModalProp
                   {template.badge}
                 </span>
               )}
-              <h4 className="text-xl font-extrabold text-slate-900">{template.name}</h4>
+              <h4 className="text-xl font-extrabold text-slate-900">
+                {template.name}
+              </h4>
               <p className="text-xs text-slate-600 mt-2 leading-relaxed">
                 {template.description}
               </p>
             </div>
 
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80 text-xs text-slate-700">
-              <strong className="block text-slate-900 mb-1">Recommended for:</strong>
+              <strong className="block text-slate-900 mb-1">
+                Recommended for:
+              </strong>
               {template.bestFor}
             </div>
 

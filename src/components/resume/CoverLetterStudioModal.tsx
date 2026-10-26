@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { createPortal } from 'react-dom';
-import { ResumeDocument } from '../../types/resume';
-import { CoverLetterDocument } from '../../types/coverLetter';
-import { COVER_LETTER_TEMPLATES, CoverLetterTemplateDef } from '../../data/coverLetterTemplates';
+import React, { useState, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
+import { ResumeDocument } from "../../types/resume";
+import { CoverLetterDocument } from "../../types/coverLetter";
+import {
+  COVER_LETTER_TEMPLATES,
+  CoverLetterTemplateDef,
+} from "../../data/coverLetterTemplates";
 import {
   X,
   Mail,
@@ -19,7 +22,7 @@ import {
   Calendar,
   CheckCircle2,
   FileText,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface CoverLetterStudioModalProps {
   isOpen: boolean;
@@ -37,30 +40,39 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
   const { contact, styling } = resume;
 
   // Selected template
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('modern-tech');
+  const [selectedTemplateId, setSelectedTemplateId] =
+    useState<string>("modern-tech");
 
   // Fill-in-the-blank tokens
-  const [targetCompany, setTargetCompany] = useState('Acme Corporation');
-  const [targetRole, setTargetRole] = useState(contact.jobTitle || 'Software Engineer');
-  const [hiringManager, setHiringManager] = useState('Hiring Manager');
-  const [companyLocation, setCompanyLocation] = useState('San Francisco, CA');
+  const [targetCompany, setTargetCompany] = useState("Acme Corporation");
+  const [targetRole, setTargetRole] = useState(
+    contact.jobTitle || "Software Engineer",
+  );
+  const [hiringManager, setHiringManager] = useState("Hiring Manager");
+  const [companyLocation, setCompanyLocation] = useState("San Francisco, CA");
   const [dateStr, setDateStr] = useState(() =>
-    new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    new Date().toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    }),
   );
 
   // Default skills from resume
   const initialSkills = useMemo(() => {
     const list = resume.skillCategories.flatMap((sc) => sc.skills).slice(0, 4);
-    return list.length > 0 ? list.join(', ') : 'modern architecture, problem-solving, and cross-functional leadership';
+    return list.length > 0
+      ? list.join(", ")
+      : "modern architecture, problem-solving, and cross-functional leadership";
   }, [resume]);
 
   const [topSkills, setTopSkills] = useState(initialSkills);
   const [keyAchievement, setKeyAchievement] = useState(
-    resume.experience[0]?.bullets[0]?.replace(/^\W+/, '') ||
-      'architecting an automated CI/CD pipeline that reduced deployment cycles by 40%'
+    resume.experience[0]?.bullets[0]?.replace(/^\W+/, "") ||
+      "architecting an automated CI/CD pipeline that reduced deployment cycles by 40%",
   );
   const [companyMission, setCompanyMission] = useState(
-    'delivering high-quality, customer-centric products and pushing technology forward'
+    "delivering high-quality, customer-centric products and pushing technology forward",
   );
 
   // Copy & save feedback
@@ -69,34 +81,63 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
 
   // Active template definition
   const templateDef = useMemo(
-    () => COVER_LETTER_TEMPLATES.find((t) => t.id === selectedTemplateId) || COVER_LETTER_TEMPLATES[0],
-    [selectedTemplateId]
+    () =>
+      COVER_LETTER_TEMPLATES.find((t) => t.id === selectedTemplateId) ||
+      COVER_LETTER_TEMPLATES[0],
+    [selectedTemplateId],
   );
 
   // Perform dynamic token substitution
   const substituteTokens = (rawText: string) => {
     return rawText
-      .replace(/\[Target Company\]/g, targetCompany || 'Company')
-      .replace(/\[Target Role\]/g, targetRole || 'Position')
-      .replace(/\[Top Skills\]/g, topSkills || 'key domain competencies')
-      .replace(/\[Key Achievement\]/g, keyAchievement || 'delivering mission-critical solutions')
-      .replace(/\[Company Mission\]/g, companyMission || 'innovation and excellence')
-      .replace(/\[Industry \/ Market\]/g, 'the industry');
+      .replace(/\[Target Company\]/g, targetCompany || "Company")
+      .replace(/\[Target Role\]/g, targetRole || "Position")
+      .replace(/\[Top Skills\]/g, topSkills || "key domain competencies")
+      .replace(
+        /\[Key Achievement\]/g,
+        keyAchievement || "delivering mission-critical solutions",
+      )
+      .replace(
+        /\[Company Mission\]/g,
+        companyMission || "innovation and excellence",
+      )
+      .replace(/\[Industry \/ Market\]/g, "the industry");
   };
 
   const openingParagraph = useMemo(
     () => substituteTokens(templateDef.defaultOpening),
-    [templateDef, targetCompany, targetRole, topSkills, keyAchievement, companyMission]
+    [
+      templateDef,
+      targetCompany,
+      targetRole,
+      topSkills,
+      keyAchievement,
+      companyMission,
+    ],
   );
 
   const bodyParagraphs = useMemo(
     () => templateDef.defaultBody.map((p) => substituteTokens(p)),
-    [templateDef, targetCompany, targetRole, topSkills, keyAchievement, companyMission]
+    [
+      templateDef,
+      targetCompany,
+      targetRole,
+      topSkills,
+      keyAchievement,
+      companyMission,
+    ],
   );
 
   const closingParagraph = useMemo(
     () => substituteTokens(templateDef.defaultClosing),
-    [templateDef, targetCompany, targetRole, topSkills, keyAchievement, companyMission]
+    [
+      templateDef,
+      targetCompany,
+      targetRole,
+      topSkills,
+      keyAchievement,
+      companyMission,
+    ],
   );
 
   const fullLetterText = useMemo(() => {
@@ -106,24 +147,24 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
       contact.email,
       contact.phone,
       contact.location,
-      '',
+      "",
       dateStr,
-      '',
+      "",
       hiringManager,
       targetCompany,
       companyLocation,
-      '',
+      "",
       `Dear ${hiringManager},`,
-      '',
+      "",
       openingParagraph,
-      '',
-      bodyParagraphs.join('\n\n'),
-      '',
+      "",
+      bodyParagraphs.join("\n\n"),
+      "",
       closingParagraph,
-      '',
+      "",
       templateDef.defaultSignOff,
       contact.fullName,
-    ].join('\n');
+    ].join("\n");
   }, [
     contact,
     dateStr,
@@ -145,11 +186,13 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
   };
 
   const handleDownloadTxt = () => {
-    const blob = new Blob([fullLetterText], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([fullLetterText], {
+      type: "text/plain;charset=utf-8",
+    });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = `Cover_Letter_${targetCompany.replace(/[^a-zA-Z0-9]/g, '_')}.txt`;
+    link.download = `Cover_Letter_${targetCompany.replace(/[^a-zA-Z0-9]/g, "_")}.txt`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -191,7 +234,7 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
     setTimeout(() => setSavedSuccess(false), 2500);
   };
 
-  const primaryColor = styling.primaryColor || '#0F766E';
+  const primaryColor = styling.primaryColor || "#0F766E";
 
   const modalContent = (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
@@ -223,8 +266,12 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
               onClick={handleSave}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold shadow-xs transition active:scale-95"
             >
-              {savedSuccess ? <Check className="w-3.5 h-3.5" /> : <Save className="w-3.5 h-3.5" />}
-              <span>{savedSuccess ? 'Saved to Resume' : 'Save'}</span>
+              {savedSuccess ? (
+                <Check className="w-3.5 h-3.5" />
+              ) : (
+                <Save className="w-3.5 h-3.5" />
+              )}
+              <span>{savedSuccess ? "Saved to Resume" : "Save"}</span>
             </button>
             <button
               onClick={onClose}
@@ -255,7 +302,9 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
                   </option>
                 ))}
               </select>
-              <p className="text-[11px] text-slate-500 mt-1">{templateDef.description}</p>
+              <p className="text-[11px] text-slate-500 mt-1">
+                {templateDef.description}
+              </p>
             </div>
 
             {/* Target Job & Company */}
@@ -265,7 +314,9 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
               </span>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-[11px] font-medium text-slate-600 mb-1">Target Company</label>
+                  <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                    Target Company
+                  </label>
                   <input
                     type="text"
                     value={targetCompany}
@@ -274,7 +325,9 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-medium text-slate-600 mb-1">Target Role</label>
+                  <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                    Target Role
+                  </label>
                   <input
                     type="text"
                     value={targetRole}
@@ -286,7 +339,9 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-[11px] font-medium text-slate-600 mb-1">Hiring Manager</label>
+                  <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                    Hiring Manager
+                  </label>
                   <input
                     type="text"
                     value={hiringManager}
@@ -296,7 +351,9 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-medium text-slate-600 mb-1">Location</label>
+                  <label className="block text-[11px] font-medium text-slate-600 mb-1">
+                    Location
+                  </label>
                   <input
                     type="text"
                     value={companyLocation}
@@ -370,8 +427,12 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
                   className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
                   title="Copy full text to clipboard"
                 >
-                  {copiedText ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copiedText ? 'Copied' : 'Copy'}</span>
+                  {copiedText ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
+                  <span>{copiedText ? "Copied" : "Copy"}</span>
                 </button>
 
                 <button
@@ -399,21 +460,32 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
               <div
                 id="printable-cover-letter"
                 style={{
-                  fontFamily: `${styling.fontFamily || 'Inter'}, sans-serif`,
+                  fontFamily: `${styling.fontFamily || "Inter"}, sans-serif`,
                 }}
                 className="bg-white w-full max-w-xl p-8 sm:p-10 shadow-sm border border-slate-200/80 text-slate-800 text-xs leading-relaxed space-y-4 rounded"
               >
                 {/* Header (Coordinated with Resume branding) */}
-                <header className="border-b-2 pb-4 mb-5" style={{ borderColor: primaryColor }}>
-                  <h1 className="text-xl font-bold tracking-tight text-slate-900">{contact.fullName}</h1>
+                <header
+                  className="border-b-2 pb-4 mb-5"
+                  style={{ borderColor: primaryColor }}
+                >
+                  <h1 className="text-xl font-bold tracking-tight text-slate-900">
+                    {contact.fullName}
+                  </h1>
                   {contact.jobTitle && (
-                    <p className="text-xs font-semibold text-slate-600 mt-0.5">{contact.jobTitle}</p>
+                    <p className="text-xs font-semibold text-slate-600 mt-0.5">
+                      {contact.jobTitle}
+                    </p>
                   )}
                   <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 mt-2">
                     {contact.email && <span>{contact.email}</span>}
                     {contact.phone && <span>• {contact.phone}</span>}
                     {contact.location && <span>• {contact.location}</span>}
-                    {contact.linkedin && <span>• {contact.linkedin.replace(/^https?:\/\//, '')}</span>}
+                    {contact.linkedin && (
+                      <span>
+                        • {contact.linkedin.replace(/^https?:\/\//, "")}
+                      </span>
+                    )}
                   </div>
                 </header>
 
@@ -422,16 +494,22 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
                   <p className="font-medium text-slate-700">{dateStr}</p>
                   <div className="pt-2">
                     <p className="font-bold text-slate-900">{hiringManager}</p>
-                    <p className="font-semibold text-slate-700">{targetCompany}</p>
+                    <p className="font-semibold text-slate-700">
+                      {targetCompany}
+                    </p>
                     {companyLocation && <p>{companyLocation}</p>}
                   </div>
                 </div>
 
                 {/* Salutation */}
-                <p className="font-bold text-slate-800 pt-2">Dear {hiringManager},</p>
+                <p className="font-bold text-slate-800 pt-2">
+                  Dear {hiringManager},
+                </p>
 
                 {/* Opening Paragraph */}
-                <p className="text-slate-700 text-justify">{openingParagraph}</p>
+                <p className="text-slate-700 text-justify">
+                  {openingParagraph}
+                </p>
 
                 {/* Body Paragraphs */}
                 {bodyParagraphs.map((para, i) => (
@@ -441,12 +519,16 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
                 ))}
 
                 {/* Closing Paragraph */}
-                <p className="text-slate-700 text-justify">{closingParagraph}</p>
+                <p className="text-slate-700 text-justify">
+                  {closingParagraph}
+                </p>
 
                 {/* Sign-off */}
                 <div className="pt-4 space-y-1">
                   <p className="text-slate-700">{templateDef.defaultSignOff}</p>
-                  <p className="font-bold text-slate-900 text-sm pt-2">{contact.fullName}</p>
+                  <p className="font-bold text-slate-900 text-sm pt-2">
+                    {contact.fullName}
+                  </p>
                 </div>
               </div>
             </div>

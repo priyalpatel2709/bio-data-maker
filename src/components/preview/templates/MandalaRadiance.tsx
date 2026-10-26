@@ -1,10 +1,10 @@
-import React from 'react';
-import { BiodataDocument } from '../../../types/biodata';
-import { DocumentPhoto } from '../DocumentPhoto';
-import { HeaderEmblem } from '../HeaderEmblem';
-import { calculateAge, formatDate } from '../../../utils/calculateAge';
-import { getLocalizedDocText } from '../../../i18n/translations';
-import mandalaBg from '../../../assets/templates/mandala-radiance-bg.png';
+import React from "react";
+import { BiodataDocument } from "../../../types/biodata";
+import { DocumentPhoto } from "../DocumentPhoto";
+import { HeaderEmblem } from "../HeaderEmblem";
+import { calculateAge, formatDate } from "../../../utils/calculateAge";
+import { getLocalizedDocText } from "../../../i18n/translations";
+import mandalaBg from "../../../assets/templates/mandala-radiance-bg.png";
 
 interface TemplateProps {
   document: BiodataDocument;
@@ -14,18 +14,18 @@ export const MandalaRadiance: React.FC<TemplateProps> = ({ document }) => {
   const { styling, sections, photoUrl } = document;
   const visibleSections = sections.filter((s) => s.visible);
 
-  const primary = styling.primaryColor || '#74111D';
-  const accent = styling.accentColor || '#C99700';
-  const docLang = styling.language || document.language || 'en';
-  const titleText = getLocalizedDocText('documentTitle', docLang);
-  const yearsText = getLocalizedDocText('years', docLang);
-  const blessingsText = getLocalizedDocText('blessings', docLang);
+  const primary = styling.primaryColor || "#74111D";
+  const accent = styling.accentColor || "#C99700";
+  const docLang = styling.language || document.language || "en";
+  const titleText = getLocalizedDocText("documentTitle", docLang);
+  const yearsText = getLocalizedDocText("years", docLang);
+  const blessingsText = getLocalizedDocText("blessings", docLang);
 
   const personalSection = sections.find(
-    (s) => s.key === 'personal' || s.title.toLowerCase().includes('personal')
+    (s) => s.key === "personal" || s.title.toLowerCase().includes("personal"),
   );
   const fullNameField = personalSection?.fields.find(
-    (f) => f.id === 'fullName' || f.label.toLowerCase().includes('name')
+    (f) => f.id === "fullName" || f.label.toLowerCase().includes("name"),
   );
   const candidateName = fullNameField?.value;
 
@@ -42,7 +42,7 @@ export const MandalaRadiance: React.FC<TemplateProps> = ({ document }) => {
         {/* Clean, unboxed header directly on authentic mandala artwork */}
         <div className="max-w-md mx-auto text-center pt-1 pb-2 px-4 mb-4">
           <HeaderEmblem
-            symbol={styling.headerSymbol || 'ganesha'}
+            symbol={styling.headerSymbol || "ganesha"}
             customSymbol={styling.customHeaderSymbol}
             customText={styling.customHeaderText}
             showEmblem={styling.showEmblem !== false}
@@ -51,19 +51,21 @@ export const MandalaRadiance: React.FC<TemplateProps> = ({ document }) => {
             accentColor={accent}
           />
 
-          {styling.showDocumentTitle !== false && (styling.customDocumentTitle || titleText) && (
-            <h1
-              className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest mt-1"
-              style={{
-                color: primary,
-                fontFamily: styling.fontFamilyHeading,
-              }}
-            >
-              {styling.customDocumentTitle !== undefined && styling.customDocumentTitle !== ''
-                ? styling.customDocumentTitle
-                : titleText}
-            </h1>
-          )}
+          {styling.showDocumentTitle !== false &&
+            (styling.customDocumentTitle || titleText) && (
+              <h1
+                className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest mt-1"
+                style={{
+                  color: primary,
+                  fontFamily: styling.fontFamilyHeading,
+                }}
+              >
+                {styling.customDocumentTitle !== undefined &&
+                styling.customDocumentTitle !== ""
+                  ? styling.customDocumentTitle
+                  : titleText}
+              </h1>
+            )}
 
           {candidateName && (
             <div
@@ -74,7 +76,9 @@ export const MandalaRadiance: React.FC<TemplateProps> = ({ document }) => {
             </div>
           )}
 
-          {(styling.showDocumentTitle !== false || styling.showEmblem !== false || candidateName) && (
+          {(styling.showDocumentTitle !== false ||
+            styling.showEmblem !== false ||
+            candidateName) && (
             <div className="flex items-center justify-center gap-2 mt-1.5">
               <div
                 className="h-[1.5px] w-20 bg-gradient-to-r from-transparent to-amber-600"
@@ -99,21 +103,32 @@ export const MandalaRadiance: React.FC<TemplateProps> = ({ document }) => {
 
             // Determine if this section houses the photo
             const personalIdx = visibleSections.findIndex(
-              (s) => s.key === 'personal' || s.title.toLowerCase().includes('personal')
+              (s) =>
+                s.key === "personal" ||
+                s.title.toLowerCase().includes("personal"),
             );
-            const isPhotoSection = styling.showPhoto && sectionIdx === (personalIdx !== -1 ? personalIdx : 0);
+            const isPhotoSection =
+              styling.showPhoto &&
+              sectionIdx === (personalIdx !== -1 ? personalIdx : 0);
 
-            const renderFieldRow = (field: typeof visibleFields[0], isSpanFull = false) => {
+            const renderFieldRow = (
+              field: (typeof visibleFields)[0],
+              isSpanFull = false,
+            ) => {
               const isDob =
-                field.id.includes('dob') || field.label.toLowerCase().includes('date of birth');
+                field.id.includes("dob") ||
+                field.label.toLowerCase().includes("date of birth");
               const calculatedAge = isDob ? calculateAge(field.value) : null;
-              const displayValue = field.type === 'date' ? formatDate(field.value) : field.value;
+              const displayValue =
+                field.type === "date" ? formatDate(field.value) : field.value;
 
               return (
                 <div
                   key={field.id}
                   className={`flex items-baseline py-1 text-xs sm:text-sm border-b border-dashed border-amber-900/15 ${
-                    isSpanFull || field.type === 'textarea' ? 'sm:col-span-2' : ''
+                    isSpanFull || field.type === "textarea"
+                      ? "sm:col-span-2"
+                      : ""
                   }`}
                 >
                   <span
@@ -127,7 +142,7 @@ export const MandalaRadiance: React.FC<TemplateProps> = ({ document }) => {
                     className="text-slate-900 font-medium pl-2 flex-1 leading-relaxed"
                     style={{ fontFamily: styling.fontFamilyBody }}
                   >
-                    {displayValue || '—'}
+                    {displayValue || "—"}
                     {calculatedAge !== null && (
                       <span className="ml-1.5 text-xs font-bold text-amber-800">
                         ({calculatedAge} {yearsText})
@@ -163,19 +178,25 @@ export const MandalaRadiance: React.FC<TemplateProps> = ({ document }) => {
 
                 {/* Section Content: Side-by-side if photo section, otherwise full width */}
                 {isPhotoSection ? (
-                  styling.photoPosition === 'top-center' ? (
+                  styling.photoPosition === "top-center" ? (
                     <div className="space-y-4">
                       <div className="flex justify-center">
                         <div
                           className="p-1 rounded-xl shadow-md bg-white shrink-0"
                           style={{ border: `2px solid ${accent}` }}
                         >
-                          <DocumentPhoto photoUrl={photoUrl} styling={styling} className="shadow-xs" />
+                          <DocumentPhoto
+                            photoUrl={photoUrl}
+                            styling={styling}
+                            className="shadow-xs"
+                          />
                         </div>
                       </div>
                       <div
                         className={`grid ${
-                          styling.columns === 2 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'
+                          styling.columns === 2
+                            ? "grid-cols-1 sm:grid-cols-2"
+                            : "grid-cols-1"
                         } gap-x-8 gap-y-1 px-1 w-full`}
                       >
                         {visibleFields.map((field) => renderFieldRow(field))}
@@ -184,7 +205,9 @@ export const MandalaRadiance: React.FC<TemplateProps> = ({ document }) => {
                   ) : (
                     <div
                       className={`flex flex-col ${
-                        styling.photoPosition === 'top-left' ? 'sm:flex-row-reverse' : 'sm:flex-row'
+                        styling.photoPosition === "top-left"
+                          ? "sm:flex-row-reverse"
+                          : "sm:flex-row"
                       } gap-4 sm:gap-6 items-start`}
                     >
                       {/* Fields taking up the remaining space */}
@@ -198,7 +221,11 @@ export const MandalaRadiance: React.FC<TemplateProps> = ({ document }) => {
                           className="p-1 rounded-xl shadow-md bg-white"
                           style={{ border: `2px solid ${accent}` }}
                         >
-                          <DocumentPhoto photoUrl={photoUrl} styling={styling} className="shadow-xs" />
+                          <DocumentPhoto
+                            photoUrl={photoUrl}
+                            styling={styling}
+                            className="shadow-xs"
+                          />
                         </div>
                       </div>
                     </div>
@@ -207,7 +234,9 @@ export const MandalaRadiance: React.FC<TemplateProps> = ({ document }) => {
                   /* Subsequent sections expand to 100% full width */
                   <div
                     className={`grid ${
-                      styling.columns === 2 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'
+                      styling.columns === 2
+                        ? "grid-cols-1 sm:grid-cols-2"
+                        : "grid-cols-1"
                     } gap-x-8 gap-y-1 px-1 w-full`}
                   >
                     {visibleFields.map((field) => renderFieldRow(field))}

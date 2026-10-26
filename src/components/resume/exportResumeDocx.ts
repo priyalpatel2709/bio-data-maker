@@ -6,22 +6,32 @@ import {
   HeadingLevel,
   AlignmentType,
   BorderStyle,
-} from 'docx';
-import { saveAs } from 'file-saver';
-import { ResumeDocument } from '../../types/resume';
+} from "docx";
+import { saveAs } from "file-saver";
+import { ResumeDocument } from "../../types/resume";
 
 export async function exportResumeToDocx(
   resume: ResumeDocument,
-  filename: string = 'Resume.docx',
-  onProgress?: (progress: number, stage: string) => void
+  filename: string = "Resume.docx",
+  onProgress?: (progress: number, stage: string) => void,
 ): Promise<void> {
-  onProgress?.(10, 'Compiling resume structure...');
+  onProgress?.(10, "Compiling resume structure...");
 
-  const { contact, summary, experience, education, skillCategories, projects, certifications, customSections, styling } = resume;
+  const {
+    contact,
+    summary,
+    experience,
+    education,
+    skillCategories,
+    projects,
+    certifications,
+    customSections,
+    styling,
+  } = resume;
 
-  const primaryHex = (styling.primaryColor || '#0F766E').replace('#', '');
-  const textHex = '1E293B';
-  const mutedHex = '64748B';
+  const primaryHex = (styling.primaryColor || "#0F766E").replace("#", "");
+  const textHex = "1E293B";
+  const mutedHex = "64748B";
 
   const docChildren: any[] = [];
 
@@ -36,10 +46,10 @@ export async function exportResumeToDocx(
           bold: true,
           size: 40, // 20pt
           color: primaryHex,
-          font: 'Calibri',
+          font: "Calibri",
         }),
       ],
-    })
+    }),
   );
 
   // Job Title
@@ -54,10 +64,10 @@ export async function exportResumeToDocx(
             bold: true,
             size: 24, // 12pt
             color: mutedHex,
-            font: 'Calibri',
+            font: "Calibri",
           }),
         ],
-      })
+      }),
     );
   }
 
@@ -77,13 +87,13 @@ export async function exportResumeToDocx(
         spacing: { after: 240 },
         children: [
           new TextRun({
-            text: contacts.join('   |   '),
+            text: contacts.join("   |   "),
             size: 18,
             color: mutedHex,
-            font: 'Calibri',
+            font: "Calibri",
           }),
         ],
-      })
+      }),
     );
   }
 
@@ -107,18 +117,18 @@ export async function exportResumeToDocx(
             bold: true,
             size: 22,
             color: primaryHex,
-            font: 'Calibri',
+            font: "Calibri",
           }),
         ],
-      })
+      }),
     );
   };
 
-  onProgress?.(30, 'Formatting professional summary & experience...');
+  onProgress?.(30, "Formatting professional summary & experience...");
 
   // Professional Summary
   if (summary.trim()) {
-    addSectionHeading('Professional Summary');
+    addSectionHeading("Professional Summary");
     docChildren.push(
       new Paragraph({
         spacing: { after: 160 },
@@ -127,16 +137,16 @@ export async function exportResumeToDocx(
             text: summary,
             size: 20,
             color: textHex,
-            font: 'Calibri',
+            font: "Calibri",
           }),
         ],
-      })
+      }),
     );
   }
 
   // Experience
   if (experience.length > 0) {
-    addSectionHeading('Work Experience');
+    addSectionHeading("Work Experience");
     experience.forEach((exp) => {
       // Role & Company Header
       docChildren.push(
@@ -148,24 +158,24 @@ export async function exportResumeToDocx(
               bold: true,
               size: 22,
               color: textHex,
-              font: 'Calibri',
+              font: "Calibri",
             }),
             new TextRun({
               text: ` — ${exp.company}`,
               bold: true,
               size: 22,
               color: primaryHex,
-              font: 'Calibri',
+              font: "Calibri",
             }),
             new TextRun({
-              text: `  (${exp.startDate} - ${exp.isCurrent ? 'Present' : exp.endDate}${exp.location ? `, ${exp.location}` : ''})`,
+              text: `  (${exp.startDate} - ${exp.isCurrent ? "Present" : exp.endDate}${exp.location ? `, ${exp.location}` : ""})`,
               italics: true,
               size: 18,
               color: mutedHex,
-              font: 'Calibri',
+              font: "Calibri",
             }),
           ],
-        })
+        }),
       );
 
       // Bullets
@@ -180,47 +190,49 @@ export async function exportResumeToDocx(
                 text: bullet.trim(),
                 size: 20,
                 color: textHex,
-                font: 'Calibri',
+                font: "Calibri",
               }),
             ],
-          })
+          }),
         );
       });
     });
   }
 
-  onProgress?.(60, 'Adding education, skills, and projects...');
+  onProgress?.(60, "Adding education, skills, and projects...");
 
   // Education
   if (education.length > 0) {
-    addSectionHeading('Education');
+    addSectionHeading("Education");
     education.forEach((edu) => {
       docChildren.push(
         new Paragraph({
           spacing: { before: 120, after: 40 },
           children: [
             new TextRun({
-              text: edu.degree + (edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''),
+              text:
+                edu.degree +
+                (edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ""),
               bold: true,
               size: 22,
               color: textHex,
-              font: 'Calibri',
+              font: "Calibri",
             }),
             new TextRun({
               text: ` — ${edu.institution}`,
               size: 20,
               color: primaryHex,
-              font: 'Calibri',
+              font: "Calibri",
             }),
             new TextRun({
-              text: ` (${edu.startDate} - ${edu.isCurrent ? 'Present' : edu.endDate})`,
+              text: ` (${edu.startDate} - ${edu.isCurrent ? "Present" : edu.endDate})`,
               italics: true,
               size: 18,
               color: mutedHex,
-              font: 'Calibri',
+              font: "Calibri",
             }),
           ],
-        })
+        }),
       );
       if (edu.gradeOrGpa) {
         docChildren.push(
@@ -232,10 +244,10 @@ export async function exportResumeToDocx(
                 italics: true,
                 size: 18,
                 color: mutedHex,
-                font: 'Calibri',
+                font: "Calibri",
               }),
             ],
-          })
+          }),
         );
       }
       edu.bullets?.forEach((b) => {
@@ -249,10 +261,10 @@ export async function exportResumeToDocx(
                 text: b.trim(),
                 size: 20,
                 color: textHex,
-                font: 'Calibri',
+                font: "Calibri",
               }),
             ],
-          })
+          }),
         );
       });
     });
@@ -260,7 +272,7 @@ export async function exportResumeToDocx(
 
   // Skills
   if (skillCategories.length > 0) {
-    addSectionHeading('Skills & Proficiencies');
+    addSectionHeading("Skills & Proficiencies");
     skillCategories.forEach((sc) => {
       docChildren.push(
         new Paragraph({
@@ -271,23 +283,23 @@ export async function exportResumeToDocx(
               bold: true,
               size: 20,
               color: textHex,
-              font: 'Calibri',
+              font: "Calibri",
             }),
             new TextRun({
-              text: sc.skills.join(', '),
+              text: sc.skills.join(", "),
               size: 20,
               color: textHex,
-              font: 'Calibri',
+              font: "Calibri",
             }),
           ],
-        })
+        }),
       );
     });
   }
 
   // Projects
   if (projects.length > 0) {
-    addSectionHeading('Projects');
+    addSectionHeading("Projects");
     projects.forEach((proj) => {
       docChildren.push(
         new Paragraph({
@@ -298,23 +310,23 @@ export async function exportResumeToDocx(
               bold: true,
               size: 22,
               color: textHex,
-              font: 'Calibri',
+              font: "Calibri",
             }),
             new TextRun({
-              text: proj.roleOrSubtitle ? ` (${proj.roleOrSubtitle})` : '',
+              text: proj.roleOrSubtitle ? ` (${proj.roleOrSubtitle})` : "",
               italics: true,
               size: 18,
               color: mutedHex,
-              font: 'Calibri',
+              font: "Calibri",
             }),
             new TextRun({
-              text: proj.link ? ` [${proj.link}]` : '',
+              text: proj.link ? ` [${proj.link}]` : "",
               size: 18,
               color: primaryHex,
-              font: 'Calibri',
+              font: "Calibri",
             }),
           ],
-        })
+        }),
       );
       if (proj.techStack && proj.techStack.length > 0) {
         docChildren.push(
@@ -322,14 +334,14 @@ export async function exportResumeToDocx(
             spacing: { after: 40 },
             children: [
               new TextRun({
-                text: `Tech Stack: ${proj.techStack.join(', ')}`,
+                text: `Tech Stack: ${proj.techStack.join(", ")}`,
                 italics: true,
                 size: 18,
                 color: mutedHex,
-                font: 'Calibri',
+                font: "Calibri",
               }),
             ],
-          })
+          }),
         );
       }
       proj.bullets.forEach((b) => {
@@ -343,10 +355,10 @@ export async function exportResumeToDocx(
                 text: b.trim(),
                 size: 20,
                 color: textHex,
-                font: 'Calibri',
+                font: "Calibri",
               }),
             ],
-          })
+          }),
         );
       });
     });
@@ -354,7 +366,7 @@ export async function exportResumeToDocx(
 
   // Certifications
   if (certifications.length > 0) {
-    addSectionHeading('Certifications');
+    addSectionHeading("Certifications");
     certifications.forEach((cert) => {
       docChildren.push(
         new Paragraph({
@@ -365,80 +377,82 @@ export async function exportResumeToDocx(
               bold: true,
               size: 20,
               color: textHex,
-              font: 'Calibri',
+              font: "Calibri",
             }),
             new TextRun({
-              text: ` — ${cert.issuer}${cert.issueDate ? ` (${cert.issueDate})` : ''}`,
+              text: ` — ${cert.issuer}${cert.issueDate ? ` (${cert.issueDate})` : ""}`,
               size: 20,
               color: mutedHex,
-              font: 'Calibri',
+              font: "Calibri",
             }),
           ],
-        })
+        }),
       );
     });
   }
 
   // Custom Sections
-  customSections.filter((cs) => cs.visible).forEach((cs) => {
-    addSectionHeading(cs.title);
-    cs.items.forEach((item) => {
-      docChildren.push(
-        new Paragraph({
-          spacing: { before: 80, after: 40 },
-          children: [
-            new TextRun({
-              text: item.title,
-              bold: true,
-              size: 20,
-              color: textHex,
-              font: 'Calibri',
-            }),
-            new TextRun({
-              text: item.subtitle ? ` — ${item.subtitle}` : '',
-              size: 18,
-              color: mutedHex,
-              font: 'Calibri',
-            }),
-          ],
-        })
-      );
-      if (item.description) {
+  customSections
+    .filter((cs) => cs.visible)
+    .forEach((cs) => {
+      addSectionHeading(cs.title);
+      cs.items.forEach((item) => {
         docChildren.push(
           new Paragraph({
-            spacing: { after: 40 },
+            spacing: { before: 80, after: 40 },
             children: [
               new TextRun({
-                text: item.description,
+                text: item.title,
+                bold: true,
                 size: 20,
                 color: textHex,
-                font: 'Calibri',
+                font: "Calibri",
               }),
-            ],
-          })
-        );
-      }
-      item.bullets?.forEach((b) => {
-        if (!b.trim()) return;
-        docChildren.push(
-          new Paragraph({
-            bullet: { level: 0 },
-            spacing: { after: 40 },
-            children: [
               new TextRun({
-                text: b.trim(),
-                size: 20,
-                color: textHex,
-                font: 'Calibri',
+                text: item.subtitle ? ` — ${item.subtitle}` : "",
+                size: 18,
+                color: mutedHex,
+                font: "Calibri",
               }),
             ],
-          })
+          }),
         );
+        if (item.description) {
+          docChildren.push(
+            new Paragraph({
+              spacing: { after: 40 },
+              children: [
+                new TextRun({
+                  text: item.description,
+                  size: 20,
+                  color: textHex,
+                  font: "Calibri",
+                }),
+              ],
+            }),
+          );
+        }
+        item.bullets?.forEach((b) => {
+          if (!b.trim()) return;
+          docChildren.push(
+            new Paragraph({
+              bullet: { level: 0 },
+              spacing: { after: 40 },
+              children: [
+                new TextRun({
+                  text: b.trim(),
+                  size: 20,
+                  color: textHex,
+                  font: "Calibri",
+                }),
+              ],
+            }),
+          );
+        });
       });
     });
-  });
 
-  onProgress?.(85, 'Packaging Word .docx binary...');
+  onProgress?.(85, "Packaging Word .docx binary...");
 
   const doc = new Document({
     sections: [
@@ -459,6 +473,6 @@ export async function exportResumeToDocx(
   });
 
   const blob = await Packer.toBlob(doc);
-  onProgress?.(100, 'Saving file...');
-  saveAs(blob, filename.endsWith('.docx') ? filename : `${filename}.docx`);
+  onProgress?.(100, "Saving file...");
+  saveAs(blob, filename.endsWith(".docx") ? filename : `${filename}.docx`);
 }

@@ -1,8 +1,8 @@
-import React, { useRef } from 'react';
-import { useBiodata } from '../../context/BiodataContext';
-import { PATTERNS } from '../../assets/patterns';
-import { Button } from '../common/Button';
-import { Upload, Trash2, RotateCcw } from 'lucide-react';
+import React, { useRef } from "react";
+import { useBiodata } from "../../context/BiodataContext";
+import { PATTERNS } from "../../assets/patterns";
+import { Button } from "../common/Button";
+import { Upload, Trash2, RotateCcw } from "lucide-react";
 
 export const BackgroundPicker: React.FC = () => {
   const { document, updateStyling } = useBiodata();
@@ -10,31 +10,31 @@ export const BackgroundPicker: React.FC = () => {
   const { styling } = document;
 
   const bgColors = [
-    { name: 'Warm Ivory', hex: '#FFFDF9' },
-    { name: 'Pure White', hex: '#FFFFFF' },
-    { name: 'Soft Cream', hex: '#FCFBF7' },
-    { name: 'Pearl Gray', hex: '#F8FAFC' },
-    { name: 'Blush Sand', hex: '#FFF5F5' },
-    { name: 'Champagne Linen', hex: '#FDFCF7' },
+    { name: "Warm Ivory", hex: "#FFFDF9" },
+    { name: "Pure White", hex: "#FFFFFF" },
+    { name: "Soft Cream", hex: "#FCFBF7" },
+    { name: "Pearl Gray", hex: "#F8FAFC" },
+    { name: "Blush Sand", hex: "#FFF5F5" },
+    { name: "Champagne Linen", hex: "#FDFCF7" },
   ];
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      alert('Please upload a valid image file (JPEG, PNG).');
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload a valid image file (JPEG, PNG).");
       return;
     }
 
     if (file.size > 8 * 1024 * 1024) {
-      alert('Background image size should be less than 8MB.');
+      alert("Background image size should be less than 8MB.");
       return;
     }
 
     const reader = new FileReader();
     reader.onload = () => {
-      if (typeof reader.result === 'string') {
+      if (typeof reader.result === "string") {
         updateStyling({ backgroundImageUrl: reader.result });
       }
     };
@@ -44,8 +44,12 @@ export const BackgroundPicker: React.FC = () => {
   return (
     <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-5">
       <div>
-        <h4 className="text-sm font-bold text-slate-900">Background & Texture</h4>
-        <p className="text-xs text-slate-500">Customize canvas paper tone and watermark texture</p>
+        <h4 className="text-sm font-bold text-slate-900">
+          Background & Texture
+        </h4>
+        <p className="text-xs text-slate-500">
+          Customize canvas paper tone and watermark texture
+        </p>
       </div>
 
       {/* Canvas Color Presets */}
@@ -55,7 +59,8 @@ export const BackgroundPicker: React.FC = () => {
         </label>
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
           {bgColors.map((color) => {
-            const isSelected = styling.backgroundColor.toLowerCase() === color.hex.toLowerCase();
+            const isSelected =
+              styling.backgroundColor.toLowerCase() === color.hex.toLowerCase();
             return (
               <button
                 key={color.hex}
@@ -63,8 +68,8 @@ export const BackgroundPicker: React.FC = () => {
                 onClick={() => updateStyling({ backgroundColor: color.hex })}
                 className={`p-2 rounded-xl border text-center transition-all ${
                   isSelected
-                    ? 'border-rose-500 ring-2 ring-rose-200 shadow-sm'
-                    : 'border-slate-200 hover:border-slate-300'
+                    ? "border-rose-500 ring-2 ring-rose-200 shadow-sm"
+                    : "border-slate-200 hover:border-slate-300"
                 }`}
               >
                 <div
@@ -95,8 +100,8 @@ export const BackgroundPicker: React.FC = () => {
                 onClick={() => updateStyling({ backgroundPattern: key as any })}
                 className={`p-3 rounded-xl border text-left transition-all ${
                   isSelected
-                    ? 'border-rose-500 bg-rose-50/50 text-rose-700 font-bold'
-                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                    ? "border-rose-500 bg-rose-50/50 text-rose-700 font-bold"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                 }`}
               >
                 <span className="text-xs block truncate">{pat.name}</span>
@@ -122,7 +127,9 @@ export const BackgroundPicker: React.FC = () => {
           max="0.4"
           step="0.02"
           value={styling.backgroundOpacity}
-          onChange={(e) => updateStyling({ backgroundOpacity: parseFloat(e.target.value) })}
+          onChange={(e) =>
+            updateStyling({ backgroundOpacity: parseFloat(e.target.value) })
+          }
           className="w-full accent-rose-600 cursor-pointer"
         />
       </div>
@@ -148,7 +155,7 @@ export const BackgroundPicker: React.FC = () => {
             icon={<Upload className="w-3.5 h-3.5" />}
             onClick={() => fileInputRef.current?.click()}
           >
-            {styling.backgroundImageUrl ? 'Change Image' : 'Upload Image'}
+            {styling.backgroundImageUrl ? "Change Image" : "Upload Image"}
           </Button>
 
           {styling.backgroundImageUrl && (
@@ -170,8 +177,8 @@ export const BackgroundPicker: React.FC = () => {
             icon={<RotateCcw className="w-3.5 h-3.5 text-slate-400" />}
             onClick={() =>
               updateStyling({
-                backgroundColor: '#FFFDF9',
-                backgroundPattern: 'none',
+                backgroundColor: "#FFFDF9",
+                backgroundPattern: "none",
                 backgroundOpacity: 0.1,
                 backgroundImageUrl: undefined,
               })

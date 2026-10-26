@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { AuthModal } from './AuthModal';
+import React, { useState, useRef, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { AuthModal } from "./AuthModal";
 import {
   LogIn,
   UserPlus,
@@ -10,7 +10,7 @@ import {
   AlertCircle,
   Cloud,
   ChevronDown,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface UserMenuProps {
   compact?: boolean;
@@ -20,7 +20,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ compact = false }) => {
   const { user, signOut, syncStatus, triggerManualSync } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  const [authMode, setAuthMode] = useState<"login" | "signup">("login");
   const [syncingManual, setSyncingManual] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
@@ -32,9 +32,9 @@ export const UserMenu: React.FC<UserMenuProps> = ({ compact = false }) => {
         setDropdownOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -55,13 +55,13 @@ export const UserMenu: React.FC<UserMenuProps> = ({ compact = false }) => {
       <div className="flex items-center gap-1.5 sm:gap-2">
         <button
           onClick={() => {
-            setAuthMode('login');
+            setAuthMode("login");
             setAuthModalOpen(true);
           }}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
             compact
-              ? 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200'
-              : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200/90 shadow-2xs hover:shadow-xs'
+              ? "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200"
+              : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200/90 shadow-2xs hover:shadow-xs"
           }`}
           title="Sign in to your account"
         >
@@ -71,18 +71,18 @@ export const UserMenu: React.FC<UserMenuProps> = ({ compact = false }) => {
 
         <button
           onClick={() => {
-            setAuthMode('signup');
+            setAuthMode("signup");
             setAuthModalOpen(true);
           }}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 ${
             compact
-              ? 'bg-slate-900 hover:bg-slate-800 text-white'
-              : 'bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white shadow-rose-600/20'
+              ? "bg-slate-900 hover:bg-slate-800 text-white"
+              : "bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white shadow-rose-600/20"
           }`}
           title="Create a free account to sync data across devices"
         >
           <UserPlus className="w-3.5 h-3.5 text-white" />
-          <span>{compact ? 'Sign Up' : 'Create Account'}</span>
+          <span>{compact ? "Sign Up" : "Create Account"}</span>
         </button>
 
         <AuthModal
@@ -96,7 +96,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ compact = false }) => {
 
   // If user IS logged in: Show Avatar & Sync Status Pill with Dropdown
   const displayName =
-    user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+    user.user_metadata?.full_name || user.email?.split("@")[0] || "User";
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
@@ -119,15 +119,15 @@ export const UserMenu: React.FC<UserMenuProps> = ({ compact = false }) => {
 
         {/* Sync Status Icon Indicator */}
         <div className="flex items-center">
-          {syncStatus === 'syncing' || syncingManual ? (
+          {syncStatus === "syncing" || syncingManual ? (
             <span title="Syncing...">
               <RefreshCw className="w-3.5 h-3.5 text-amber-500 animate-spin" />
             </span>
-          ) : syncStatus === 'synced' ? (
+          ) : syncStatus === "synced" ? (
             <span title="Synced to Cloud">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
             </span>
-          ) : syncStatus === 'error' ? (
+          ) : syncStatus === "error" ? (
             <span title="Sync Error">
               <AlertCircle className="w-3.5 h-3.5 text-rose-500" />
             </span>
@@ -146,7 +146,9 @@ export const UserMenu: React.FC<UserMenuProps> = ({ compact = false }) => {
         <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200/90 py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
           {/* User Info Header */}
           <div className="px-4 py-3 border-b border-slate-100">
-            <p className="text-xs font-bold text-slate-900 truncate">{displayName}</p>
+            <p className="text-xs font-bold text-slate-900 truncate">
+              {displayName}
+            </p>
             <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
             <div className="mt-2 flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md">
               <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
@@ -158,13 +160,15 @@ export const UserMenu: React.FC<UserMenuProps> = ({ compact = false }) => {
           <div className="px-2 py-1.5 border-b border-slate-100">
             <button
               onClick={handleManualSync}
-              disabled={syncingManual || syncStatus === 'syncing'}
+              disabled={syncingManual || syncStatus === "syncing"}
               className="w-full flex items-center justify-between px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-xl transition-colors disabled:opacity-50"
             >
               <div className="flex items-center gap-2">
                 <RefreshCw
                   className={`w-3.5 h-3.5 text-slate-500 ${
-                    syncingManual || syncStatus === 'syncing' ? 'animate-spin text-amber-500' : ''
+                    syncingManual || syncStatus === "syncing"
+                      ? "animate-spin text-amber-500"
+                      : ""
                   }`}
                 />
                 <span>Sync Now</span>

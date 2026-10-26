@@ -1,6 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { improveBulletPoint, isAIConfigured, getAISettings, AI_PROVIDERS } from '../../../services/aiService';
-import { X, Sparkles, Check, RefreshCw, Loader2, ArrowRight, Settings } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import {
+  improveBulletPoint,
+  isAIConfigured,
+  getAISettings,
+  AI_PROVIDERS,
+} from "../../../services/aiService";
+import {
+  X,
+  Sparkles,
+  Check,
+  RefreshCw,
+  Loader2,
+  ArrowRight,
+  Settings,
+} from "lucide-react";
 
 interface AIBulletAssistModalProps {
   isOpen: boolean;
@@ -25,17 +38,21 @@ export const AIBulletAssistModal: React.FC<AIBulletAssistModalProps> = ({
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const configured = isAIConfigured();
-  const currentProviderName = AI_PROVIDERS[getAISettings().provider]?.name || 'AI Router';
+  const currentProviderName =
+    AI_PROVIDERS[getAISettings().provider]?.name || "AI Router";
 
   const fetchSuggestions = async () => {
     if (!configured) return;
     setLoading(true);
     setError(null);
     try {
-      const results = await improveBulletPoint(initialBullet, { position, company });
+      const results = await improveBulletPoint(initialBullet, {
+        position,
+        company,
+      });
       setSuggestions(results);
     } catch (err: any) {
-      setError(err.message || 'Failed to generate AI suggestions.');
+      setError(err.message || "Failed to generate AI suggestions.");
     } finally {
       setLoading(false);
     }
@@ -55,9 +72,21 @@ export const AIBulletAssistModal: React.FC<AIBulletAssistModalProps> = ({
   if (!isOpen) return null;
 
   const styles = [
-    { label: 'Action & Execution', badge: 'Action', color: 'bg-blue-50 text-blue-700 border-blue-200' },
-    { label: 'Metric & Quantified Impact', badge: 'Metrics', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-    { label: 'Executive & Strategic', badge: 'Executive', color: 'bg-purple-50 text-purple-700 border-purple-200' },
+    {
+      label: "Action & Execution",
+      badge: "Action",
+      color: "bg-blue-50 text-blue-700 border-blue-200",
+    },
+    {
+      label: "Metric & Quantified Impact",
+      badge: "Metrics",
+      color: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    },
+    {
+      label: "Executive & Strategic",
+      badge: "Executive",
+      color: "bg-purple-50 text-purple-700 border-purple-200",
+    },
   ];
 
   return (
@@ -70,8 +99,12 @@ export const AIBulletAssistModal: React.FC<AIBulletAssistModalProps> = ({
               <Sparkles className="w-5 h-5 text-teal-300" />
             </div>
             <div>
-              <h3 className="font-bold text-sm sm:text-base leading-tight">AI Bullet Point Enhancer</h3>
-              <p className="text-xs text-teal-200">Powered by {currentProviderName}</p>
+              <h3 className="font-bold text-sm sm:text-base leading-tight">
+                AI Bullet Point Enhancer
+              </h3>
+              <p className="text-xs text-teal-200">
+                Powered by {currentProviderName}
+              </p>
             </div>
           </div>
           <button
@@ -90,9 +123,13 @@ export const AIBulletAssistModal: React.FC<AIBulletAssistModalProps> = ({
               <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center mx-auto">
                 <Settings className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-slate-900 text-sm">AI Router API Key Required</h4>
+              <h4 className="font-bold text-slate-900 text-sm">
+                AI Router API Key Required
+              </h4>
               <p className="text-slate-600 max-w-sm mx-auto leading-relaxed">
-                Configure your API key for Nara Router, OpenRouter, or AgentRouter to activate real-time bullet improvements, summary generation, and ATS analysis.
+                Configure your API key for Nara Router, OpenRouter, or
+                AgentRouter to activate real-time bullet improvements, summary
+                generation, and ATS analysis.
               </p>
               <button
                 type="button"
@@ -114,11 +151,11 @@ export const AIBulletAssistModal: React.FC<AIBulletAssistModalProps> = ({
                   Original Bullet
                 </span>
                 <p className="text-slate-800 font-medium italic">
-                  "{initialBullet || 'No text entered yet'}"
+                  "{initialBullet || "No text entered yet"}"
                 </p>
                 {(position || company) && (
                   <div className="text-[10px] text-slate-400 mt-1">
-                    Context: {position} {company ? `at ${company}` : ''}
+                    Context: {position} {company ? `at ${company}` : ""}
                   </div>
                 )}
               </div>

@@ -1,9 +1,9 @@
-import { getSupabaseClient } from './supabaseClient';
-import { BiodataDocument } from '../types/biodata';
-import { ResumeDocument } from '../types/resume';
+import { getSupabaseClient } from "./supabaseClient";
+import { BiodataDocument } from "../types/biodata";
+import { ResumeDocument } from "../types/resume";
 
 export interface SharedDocumentResult {
-  type: 'biodata' | 'resume';
+  type: "biodata" | "resume";
   title: string;
   data: BiodataDocument | ResumeDocument;
   createdAt?: string;
@@ -13,29 +13,34 @@ export interface SharedDocumentResult {
 /**
  * Encodes an object safely into a URL-friendly UTF-8 Base64 string
  */
-export function encodeDocumentToHash(type: 'biodata' | 'resume', doc: any): string {
+export function encodeDocumentToHash(
+  type: "biodata" | "resume",
+  doc: any,
+): string {
   try {
     const jsonStr = JSON.stringify(doc);
     // UTF-8 safe base64
     const utf8Bytes = new TextEncoder().encode(jsonStr);
-    let binary = '';
+    let binary = "";
     utf8Bytes.forEach((b) => (binary += String.fromCharCode(b)));
     const base64 = btoa(binary);
     return `${type}:${base64}`;
   } catch (e) {
-    console.error('Failed to encode document to hash:', e);
-    return '';
+    console.error("Failed to encode document to hash:", e);
+    return "";
   }
 }
 
 /**
  * Decodes a document from a URL-friendly UTF-8 Base64 string
  */
-export function decodeDocumentFromHash(hashPayload: string): { type: 'biodata' | 'resume'; data: any } | null {
+export function decodeDocumentFromHash(
+  hashPayload: string,
+): { type: "biodata" | "resume"; data: any } | null {
   try {
-    const colonIdx = hashPayload.indexOf(':');
+    const colonIdx = hashPayload.indexOf(":");
     if (colonIdx === -1) return null;
-    const type = hashPayload.slice(0, colonIdx) as 'biodata' | 'resume';
+    const type = hashPayload.slice(0, colonIdx) as "biodata" | "resume";
     const base64 = hashPayload.slice(colonIdx + 1);
 
     const binary = atob(base64);
@@ -47,7 +52,7 @@ export function decodeDocumentFromHash(hashPayload: string): { type: 'biodata' |
     const data = JSON.parse(jsonStr);
     return { type, data };
   } catch (e) {
-    console.error('Failed to decode document from hash:', e);
+    console.error("Failed to decode document from hash:", e);
     return null;
   }
 }
@@ -58,8 +63,8 @@ export function decodeDocumentFromHash(hashPayload: string): { type: 'biodata' |
  * 2. If not connected or fails, falls back immediately to a 100% offline, zero-config URL hash link.
  */
 export async function createShareableLink(
-  type: 'biodata' | 'resume',
-  doc: BiodataDocument | ResumeDocument
+  type: "biodata" | "resume",
+  doc: BiodataDocument | ResumeDocument,
 ): Promise<{ url: string; isCloud: boolean }> {
   const baseUrl = `${window.location.origin}${window.location.pathname}`;
   const client = getSupabaseClient();
@@ -67,16 +72,16 @@ export async function createShareableLink(
   // Try Supabase first if available
   if (client) {
     try {
-      const shareSlug = (doc.id || 'doc').replace(/[^a-zA-Z0-9_-]/g, '_');
-      const { error } = await client.from('shared_documents').upsert(
+      const shareSlug = (doc.id || "doc").replace(/[^a-zA-Z0-9_-]/g, "_");
+      const { error } = await client.from("shared_documents").upsert(
         {
           share_id: shareSlug,
           type,
-          title: doc.title || (type === 'biodata' ? 'Biodata' : 'Resume'),
+          title: doc.title || (type === "biodata" ? "Biodata" : "Resume"),
           data: doc,
           created_at: new Date().toISOString(),
         },
-        { onConflict: 'share_id' }
+        { onConflict: "share_id" },
       );
 
       if (!error) {
@@ -86,11 +91,11 @@ export async function createShareableLink(
         };
       }
       // If table doesn't exist yet (PGRST205), silently fall back to zero-config hash link
-      if (error.code !== 'PGRST205') {
-        console.warn('Supabase shared_documents upsert notice:', error.message);
+      if (error.code !== "PGRST205") {
+        console.warn("Supabase shared_documents upsert notice:", error.message);
       }
     } catch (e) {
-      console.warn('Supabase share error, falling back to zero-config:', e);
+      console.warn("Supabase share error, falling back to zero-config:", e);
     }
   }
 
@@ -107,13 +112,15 @@ export async function createShareableLink(
  */
 export async function resolveSharedDocument(): Promise<SharedDocumentResult | null> {
   const hash = window.location.hash;
-  if (!hash.includes('/share')) return null;
+  if (!hash.includes("/share")) return null;
 
-  const searchPart = hash.includes('?') ? hash.split('?')[1] : window.location.search.replace(/^\?/, '');
+  const searchPart = hash.includes("?")
+    ? hash.split("?")[1]
+    : window.location.search.replace(/^\?/, "");
   const params = new URLSearchParams(searchPart);
 
-  const cloudId = params.get('id');
-  const encodedData = params.get('d');
+  const cloudId = params.get("id");
+  const encodedData = params.get("d");
 
   // 1. Try decoding from encoded hash data
   if (encodedData) {
@@ -121,7 +128,9 @@ export async function resolveSharedDocument(): Promise<SharedDocumentResult | nu
     if (decoded) {
       return {
         type: decoded.type,
-        title: decoded.data.title || (decoded.type === 'biodata' ? 'Biodata' : 'Resume'),
+        title:
+          decoded.data.title ||
+          (decoded.type === "biodata" ? "Biodata" : "Resume"),
         data: decoded.data,
       };
     }
@@ -133,15 +142,17 @@ export async function resolveSharedDocument(): Promise<SharedDocumentResult | nu
     if (client) {
       try {
         const { data, error } = await client
-          .from('shared_documents')
-          .select('*')
-          .eq('share_id', cloudId)
+          .from("shared_documents")
+          .select("*")
+          .eq("share_id", cloudId)
           .single();
 
         if (data && !error) {
           // Increment view counter asynchronously
           try {
-            await client.rpc('increment_share_view', { target_share_id: cloudId });
+            await client.rpc("increment_share_view", {
+              target_share_id: cloudId,
+            });
           } catch {
             // silent ignore
           }
@@ -155,7 +166,7 @@ export async function resolveSharedDocument(): Promise<SharedDocumentResult | nu
           };
         }
       } catch (e) {
-        console.error('Error fetching shared document from Supabase:', e);
+        console.error("Error fetching shared document from Supabase:", e);
       }
     }
   }

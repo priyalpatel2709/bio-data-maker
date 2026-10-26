@@ -1,5 +1,5 @@
-import React from 'react';
-import { ResumeDocument } from '../../../types/resume';
+import React from "react";
+import { ResumeDocument } from "../../../types/resume";
 import {
   Mail,
   Phone,
@@ -9,50 +9,63 @@ import {
   Github,
   ExternalLink,
   Award,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface TemplateProps {
   resume: ResumeDocument;
 }
 
 export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
-  const { contact, summary, experience, education, skillCategories, projects, certifications, customSections, styling } = resume;
+  const {
+    contact,
+    summary,
+    experience,
+    education,
+    skillCategories,
+    projects,
+    certifications,
+    customSections,
+    styling,
+  } = resume;
 
-  const primaryColor = styling.primaryColor || '#0F766E';
-  const secondaryColor = styling.secondaryColor || '#0284C7';
-  const textColor = styling.textColor || '#1E293B';
-  const isCompact = styling.fontSize === 'compact';
-  const isRelaxed = styling.fontSize === 'relaxed';
+  const primaryColor = styling.primaryColor || "#0F766E";
+  const secondaryColor = styling.secondaryColor || "#0284C7";
+  const textColor = styling.textColor || "#1E293B";
+  const isCompact = styling.fontSize === "compact";
+  const isRelaxed = styling.fontSize === "relaxed";
 
-  const isLetter = styling.paperSize === 'letter';
-  const docWidth = isLetter ? '816px' : '794px';
-  const docMinHeight = isLetter ? '1056px' : '1123px';
+  const isLetter = styling.paperSize === "letter";
+  const docWidth = isLetter ? "816px" : "794px";
+  const docMinHeight = isLetter ? "1056px" : "1123px";
 
   // Padding options
   const paddingClass =
-    styling.pageMargin === 'compact'
-      ? 'p-6'
-      : styling.pageMargin === 'spacious'
-      ? 'p-12'
-      : 'p-9';
+    styling.pageMargin === "compact"
+      ? "p-6"
+      : styling.pageMargin === "spacious"
+        ? "p-12"
+        : "p-9";
 
   const fontStyle = {
-    fontFamily: `${styling.fontFamily || 'Inter'}, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`,
+    fontFamily: `${styling.fontFamily || "Inter"}, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`,
     color: textColor,
     width: docWidth,
     minHeight: docMinHeight,
-    boxSizing: 'border-box' as const,
+    boxSizing: "border-box" as const,
   };
 
   // Determine pagination split
-  const isSinglePage = styling.pageSplitAt === 'single-page';
-  const splitAt = styling.pageSplitAt || 'auto';
+  const isSinglePage = styling.pageSplitAt === "single-page";
+  const splitAt = styling.pageSplitAt || "auto";
 
   // If not single page, decide if we have page 2
   // Auto split: Page 1 = Summary, Experience, Skills. Page 2 = Projects, Education, Certifications, Custom.
   const hasPage2 =
     !isSinglePage &&
-    (projects.length > 0 || education.length > 0 || certifications.length > 0 || customSections.length > 0);
+    (projects.length > 0 ||
+      education.length > 0 ||
+      certifications.length > 0 ||
+      customSections.length > 0);
 
   const totalPages = hasPage2 ? 2 : 1;
 
@@ -61,14 +74,21 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
     if (isPage2) {
       if (!styling.showPage2Header) return null;
       return (
-        <header className="border-b-2 pb-3 mb-5 flex flex-row items-center justify-between" style={{ borderColor: primaryColor }}>
+        <header
+          className="border-b-2 pb-3 mb-5 flex flex-row items-center justify-between"
+          style={{ borderColor: primaryColor }}
+        >
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold tracking-tight text-slate-900">{contact.fullName}</h2>
+              <h2 className="text-xl font-bold tracking-tight text-slate-900">
+                {contact.fullName}
+              </h2>
               {contact.jobTitle && (
                 <>
                   <span className="text-slate-400">•</span>
-                  <span className="text-xs font-semibold text-slate-600">{contact.jobTitle}</span>
+                  <span className="text-xs font-semibold text-slate-600">
+                    {contact.jobTitle}
+                  </span>
                 </>
               )}
             </div>
@@ -76,7 +96,9 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
               {contact.email && <span>{contact.email}</span>}
               {contact.phone && <span>• {contact.phone}</span>}
               {contact.location && <span>• {contact.location}</span>}
-              {contact.linkedin && <span>• {contact.linkedin.replace(/^https?:\/\//, '')}</span>}
+              {contact.linkedin && (
+                <span>• {contact.linkedin.replace(/^https?:\/\//, "")}</span>
+              )}
             </div>
           </div>
           <div className="text-right">
@@ -99,7 +121,7 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
               className="text-3xl font-extrabold tracking-tight"
               style={{ color: primaryColor }}
             >
-              {contact.fullName || 'Your Full Name'}
+              {contact.fullName || "Your Full Name"}
             </h1>
             {contact.jobTitle && (
               <p className="text-base font-semibold tracking-wide text-slate-600 mt-1">
@@ -111,19 +133,28 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
             <div className="flex flex-wrap items-center gap-y-1.5 gap-x-4 mt-2.5 text-xs text-slate-600">
               {contact.email && (
                 <span className="flex items-center gap-1.5 hover:text-slate-900">
-                  <Mail className="w-3.5 h-3.5" style={{ color: secondaryColor }} />
+                  <Mail
+                    className="w-3.5 h-3.5"
+                    style={{ color: secondaryColor }}
+                  />
                   {contact.email}
                 </span>
               )}
               {contact.phone && (
                 <span className="flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5" style={{ color: secondaryColor }} />
+                  <Phone
+                    className="w-3.5 h-3.5"
+                    style={{ color: secondaryColor }}
+                  />
                   {contact.phone}
                 </span>
               )}
               {contact.location && (
                 <span className="flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5" style={{ color: secondaryColor }} />
+                  <MapPin
+                    className="w-3.5 h-3.5"
+                    style={{ color: secondaryColor }}
+                  />
                   {contact.location}
                 </span>
               )}
@@ -134,30 +165,43 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
                   rel="noreferrer"
                   className="flex items-center gap-1.5 hover:underline"
                 >
-                  <Globe className="w-3.5 h-3.5" style={{ color: secondaryColor }} />
-                  {contact.website.replace(/^https?:\/\//, '')}
+                  <Globe
+                    className="w-3.5 h-3.5"
+                    style={{ color: secondaryColor }}
+                  />
+                  {contact.website.replace(/^https?:\/\//, "")}
                 </a>
               )}
               {contact.linkedin && (
                 <a
-                  href={`https://${contact.linkedin.replace(/^https?:\/\//, '')}`}
+                  href={`https://${contact.linkedin.replace(/^https?:\/\//, "")}`}
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center gap-1.5 hover:underline"
                 >
-                  <Linkedin className="w-3.5 h-3.5" style={{ color: secondaryColor }} />
-                  {contact.linkedin.replace(/^https?:\/\//, '').replace(/^www\./, '')}
+                  <Linkedin
+                    className="w-3.5 h-3.5"
+                    style={{ color: secondaryColor }}
+                  />
+                  {contact.linkedin
+                    .replace(/^https?:\/\//, "")
+                    .replace(/^www\./, "")}
                 </a>
               )}
               {contact.github && (
                 <a
-                  href={`https://${contact.github.replace(/^https?:\/\//, '')}`}
+                  href={`https://${contact.github.replace(/^https?:\/\//, "")}`}
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center gap-1.5 hover:underline"
                 >
-                  <Github className="w-3.5 h-3.5" style={{ color: secondaryColor }} />
-                  {contact.github.replace(/^https?:\/\//, '').replace(/^www\./, '')}
+                  <Github
+                    className="w-3.5 h-3.5"
+                    style={{ color: secondaryColor }}
+                  />
+                  {contact.github
+                    .replace(/^https?:\/\//, "")
+                    .replace(/^www\./, "")}
                 </a>
               )}
             </div>
@@ -170,11 +214,11 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
                 src={contact.photoUrl}
                 alt={contact.fullName}
                 className={`w-20 h-20 object-cover border-2 shadow-sm ${
-                  styling.photoShape === 'circle'
-                    ? 'rounded-full'
-                    : styling.photoShape === 'rounded'
-                    ? 'rounded-xl'
-                    : 'rounded-none'
+                  styling.photoShape === "circle"
+                    ? "rounded-full"
+                    : styling.photoShape === "rounded"
+                      ? "rounded-xl"
+                      : "rounded-none"
                 }`}
                 style={{ borderColor: primaryColor }}
               />
@@ -193,10 +237,15 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
           className="text-xs font-bold uppercase tracking-wider mb-1.5 flex items-center gap-2"
           style={{ color: primaryColor }}
         >
-          <span className="w-2.5 h-0.5 rounded-full" style={{ backgroundColor: secondaryColor }} />
+          <span
+            className="w-2.5 h-0.5 rounded-full"
+            style={{ backgroundColor: secondaryColor }}
+          />
           Professional Summary
         </h2>
-        <p className={`text-slate-700 leading-relaxed ${isCompact ? 'text-xs' : 'text-sm'}`}>
+        <p
+          className={`text-slate-700 leading-relaxed ${isCompact ? "text-xs" : "text-sm"}`}
+        >
           {summary}
         </p>
       </section>
@@ -211,7 +260,10 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
           className="text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-2"
           style={{ color: primaryColor }}
         >
-          <span className="w-2.5 h-0.5 rounded-full" style={{ backgroundColor: secondaryColor }} />
+          <span
+            className="w-2.5 h-0.5 rounded-full"
+            style={{ backgroundColor: secondaryColor }}
+          />
           Work Experience
         </h2>
         <div className="space-y-3.5">
@@ -219,21 +271,28 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
             <div key={exp.id}>
               <div className="flex flex-row items-baseline justify-between gap-2">
                 <div>
-                  <span className="text-sm font-bold text-slate-900">{exp.position}</span>
-                  <span className="text-sm font-semibold ml-1.5" style={{ color: primaryColor }}>
+                  <span className="text-sm font-bold text-slate-900">
+                    {exp.position}
+                  </span>
+                  <span
+                    className="text-sm font-semibold ml-1.5"
+                    style={{ color: primaryColor }}
+                  >
                     @ {exp.company}
                   </span>
                 </div>
                 <div className="text-xs font-medium text-slate-500 flex items-center gap-1.5 shrink-0">
                   {exp.location && <span>{exp.location} •</span>}
                   <span>
-                    {exp.startDate} - {exp.isCurrent ? 'Present' : exp.endDate}
+                    {exp.startDate} - {exp.isCurrent ? "Present" : exp.endDate}
                   </span>
                 </div>
               </div>
 
               {exp.bullets.length > 0 && (
-                <ul className={`mt-1.5 space-y-1 list-disc list-outside ml-4 text-slate-700 ${isCompact ? 'text-[11px]' : 'text-xs sm:text-sm'}`}>
+                <ul
+                  className={`mt-1.5 space-y-1 list-disc list-outside ml-4 text-slate-700 ${isCompact ? "text-[11px]" : "text-xs sm:text-sm"}`}
+                >
                   {exp.bullets.map((b, idx) => (
                     <li key={idx} className="leading-relaxed">
                       {b}
@@ -256,7 +315,10 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
           className="text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-2"
           style={{ color: primaryColor }}
         >
-          <span className="w-2.5 h-0.5 rounded-full" style={{ backgroundColor: secondaryColor }} />
+          <span
+            className="w-2.5 h-0.5 rounded-full"
+            style={{ backgroundColor: secondaryColor }}
+          />
           Skills & Proficiencies
         </h2>
         <div className="space-y-2">
@@ -265,7 +327,7 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
               <span className="text-xs font-bold text-slate-800 w-36 shrink-0">
                 {cat.categoryName}:
               </span>
-              {styling.skillsDisplay === 'chips' ? (
+              {styling.skillsDisplay === "chips" ? (
                 <div className="flex flex-wrap gap-1.5 flex-1">
                   {cat.skills.map((s, idx) => (
                     <span
@@ -276,17 +338,21 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
                     </span>
                   ))}
                 </div>
-              ) : styling.skillsDisplay === 'dots' ? (
+              ) : styling.skillsDisplay === "dots" ? (
                 <div className="text-xs text-slate-700 flex flex-wrap items-center gap-1.5">
                   {cat.skills.map((s, idx) => (
                     <React.Fragment key={idx}>
                       <span>{s}</span>
-                      {idx < cat.skills.length - 1 && <span className="text-slate-300">•</span>}
+                      {idx < cat.skills.length - 1 && (
+                        <span className="text-slate-300">•</span>
+                      )}
                     </React.Fragment>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-slate-700 flex-1">{cat.skills.join(', ')}</p>
+                <p className="text-xs text-slate-700 flex-1">
+                  {cat.skills.join(", ")}
+                </p>
               )}
             </div>
           ))}
@@ -303,7 +369,10 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
           className="text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-2"
           style={{ color: primaryColor }}
         >
-          <span className="w-2.5 h-0.5 rounded-full" style={{ backgroundColor: secondaryColor }} />
+          <span
+            className="w-2.5 h-0.5 rounded-full"
+            style={{ backgroundColor: secondaryColor }}
+          />
           Key Projects
         </h2>
         <div className="space-y-2.5">
@@ -311,7 +380,9 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
             <div key={proj.id}>
               <div className="flex flex-row items-baseline justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-slate-900">{proj.name}</span>
+                  <span className="text-sm font-bold text-slate-900">
+                    {proj.name}
+                  </span>
                   {proj.roleOrSubtitle && (
                     <span className="text-xs text-slate-500 font-medium italic">
                       ({proj.roleOrSubtitle})
@@ -332,7 +403,7 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
                 </div>
                 {proj.startDate && (
                   <span className="text-xs text-slate-400">
-                    {proj.startDate} {proj.endDate ? `- ${proj.endDate}` : ''}
+                    {proj.startDate} {proj.endDate ? `- ${proj.endDate}` : ""}
                   </span>
                 )}
               </div>
@@ -351,7 +422,9 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
               )}
 
               {proj.bullets.length > 0 && (
-                <ul className={`mt-1 space-y-1 list-disc list-outside ml-4 text-slate-700 ${isCompact ? 'text-[11px]' : 'text-xs'}`}>
+                <ul
+                  className={`mt-1 space-y-1 list-disc list-outside ml-4 text-slate-700 ${isCompact ? "text-[11px]" : "text-xs"}`}
+                >
                   {proj.bullets.map((b, idx) => (
                     <li key={idx} className="leading-relaxed">
                       {b}
@@ -374,7 +447,10 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
           className="text-xs font-bold uppercase tracking-wider mb-2.5 flex items-center gap-2"
           style={{ color: primaryColor }}
         >
-          <span className="w-2.5 h-0.5 rounded-full" style={{ backgroundColor: secondaryColor }} />
+          <span
+            className="w-2.5 h-0.5 rounded-full"
+            style={{ backgroundColor: secondaryColor }}
+          />
           Education
         </h2>
         <div className="space-y-2.5">
@@ -384,19 +460,21 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
                 <div>
                   <span className="text-sm font-bold text-slate-900">
                     {edu.degree}
-                    {edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''}
+                    {edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ""}
                   </span>
                   <span className="text-xs font-semibold ml-2 text-slate-600">
                     {edu.institution}
-                    {edu.location ? `, ${edu.location}` : ''}
+                    {edu.location ? `, ${edu.location}` : ""}
                   </span>
                 </div>
                 <span className="text-xs font-medium text-slate-500 shrink-0">
-                  {edu.startDate} - {edu.isCurrent ? 'Present' : edu.endDate}
+                  {edu.startDate} - {edu.isCurrent ? "Present" : edu.endDate}
                 </span>
               </div>
               {edu.gradeOrGpa && (
-                <p className="text-xs text-slate-500 italic mt-0.5">{edu.gradeOrGpa}</p>
+                <p className="text-xs text-slate-500 italic mt-0.5">
+                  {edu.gradeOrGpa}
+                </p>
               )}
               {edu.bullets && edu.bullets.length > 0 && (
                 <ul className="mt-1 space-y-1 list-disc list-outside ml-4 text-xs text-slate-600">
@@ -420,7 +498,10 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
           className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2"
           style={{ color: primaryColor }}
         >
-          <span className="w-2.5 h-0.5 rounded-full" style={{ backgroundColor: secondaryColor }} />
+          <span
+            className="w-2.5 h-0.5 rounded-full"
+            style={{ backgroundColor: secondaryColor }}
+          />
           Certifications & Credentials
         </h2>
         <div className="grid grid-cols-2 gap-2 text-xs">
@@ -429,14 +510,19 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
               key={cert.id}
               className="p-2 rounded-lg bg-slate-50 border border-slate-200/80 flex items-start gap-2"
             >
-              <Award className="w-4 h-4 shrink-0 mt-0.5" style={{ color: primaryColor }} />
+              <Award
+                className="w-4 h-4 shrink-0 mt-0.5"
+                style={{ color: primaryColor }}
+              />
               <div>
                 <span className="font-bold text-slate-800">{cert.name}</span>
                 <p className="text-[11px] text-slate-500">
-                  {cert.issuer} {cert.issueDate ? `(${cert.issueDate})` : ''}
+                  {cert.issuer} {cert.issueDate ? `(${cert.issueDate})` : ""}
                 </p>
                 {cert.credentialId && (
-                  <p className="text-[10px] text-slate-400 font-mono">ID: {cert.credentialId}</p>
+                  <p className="text-[10px] text-slate-400 font-mono">
+                    ID: {cert.credentialId}
+                  </p>
                 )}
               </div>
             </div>
@@ -457,15 +543,29 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
               className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2"
               style={{ color: primaryColor }}
             >
-              <span className="w-2.5 h-0.5 rounded-full" style={{ backgroundColor: secondaryColor }} />
+              <span
+                className="w-2.5 h-0.5 rounded-full"
+                style={{ backgroundColor: secondaryColor }}
+              />
               {cs.title}
             </h2>
             <div className="grid grid-cols-2 gap-2 text-xs">
               {cs.items.map((item) => (
-                <div key={item.id} className="p-2 bg-slate-50/80 rounded border border-slate-200/60">
+                <div
+                  key={item.id}
+                  className="p-2 bg-slate-50/80 rounded border border-slate-200/60"
+                >
                   <span className="font-bold text-slate-800">{item.title}</span>
-                  {item.subtitle && <span className="text-slate-500 ml-1.5">— {item.subtitle}</span>}
-                  {item.description && <p className="text-[11px] text-slate-600 mt-1">{item.description}</p>}
+                  {item.subtitle && (
+                    <span className="text-slate-500 ml-1.5">
+                      — {item.subtitle}
+                    </span>
+                  )}
+                  {item.description && (
+                    <p className="text-[11px] text-slate-600 mt-1">
+                      {item.description}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
@@ -525,7 +625,7 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
           {renderHeader(false)}
           {renderSummary()}
           {renderExperience()}
-          {splitAt !== 'skills' && renderSkills()}
+          {splitAt !== "skills" && renderSkills()}
         </div>
         {renderFooter(1)}
       </div>
@@ -538,7 +638,7 @@ export const ModernTechTemplate: React.FC<TemplateProps> = ({ resume }) => {
       >
         <div className="space-y-4">
           {renderHeader(true)}
-          {splitAt === 'skills' && renderSkills()}
+          {splitAt === "skills" && renderSkills()}
           {renderProjects()}
           {renderEducation()}
           {renderCertifications()}

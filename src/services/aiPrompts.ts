@@ -4,10 +4,14 @@ Always use strong action verbs (e.g., Spearheaded, Architected, Accelerated, Eng
 Never use passive phrasing ("responsible for", "helped with", "worked on").
 Be concise, direct, and avoid buzzword fluff.`;
 
-export const BULLET_IMPROVER_PROMPT = (bullet: string, position?: string, company?: string) => `
+export const BULLET_IMPROVER_PROMPT = (
+  bullet: string,
+  position?: string,
+  company?: string,
+) => `
 Context:
-Position: ${position || 'Professional'}
-Company: ${company || 'Organization'}
+Position: ${position || "Professional"}
+Company: ${company || "Organization"}
 Original Bullet: "${bullet}"
 
 Rewrite this resume bullet into 3 distinct, high-impact variations using active voice and quantifiable results where applicable:
@@ -26,10 +30,10 @@ export const SUMMARY_GENERATOR_PROMPT = (candidateContext: {
   topExperiences?: string[];
 }) => `
 Candidate Profile:
-Name: ${candidateContext.fullName || 'Professional'}
-Target Role: ${candidateContext.jobTitle || 'Specialist'}
-Core Skills: ${candidateContext.skills?.join(', ') || 'Various'}
-Key Highlights: ${candidateContext.topExperiences?.join('; ') || 'N/A'}
+Name: ${candidateContext.fullName || "Professional"}
+Target Role: ${candidateContext.jobTitle || "Specialist"}
+Core Skills: ${candidateContext.skills?.join(", ") || "Various"}
+Key Highlights: ${candidateContext.topExperiences?.join("; ") || "N/A"}
 
 Write 3 compelling professional summary options (each 2-4 sentences long):
 1. Impact & Achievement-Focused (High energy, emphasis on proven track record)
@@ -40,7 +44,10 @@ Return ONLY a valid JSON array of 3 strings, with no markdown code blocks and no
 ["Summary option 1...", "Summary option 2...", "Summary option 3..."]
 `;
 
-export const ATS_JOB_MATCHER_PROMPT = (resumeContent: string, jobDescription: string) => `
+export const ATS_JOB_MATCHER_PROMPT = (
+  resumeContent: string,
+  jobDescription: string,
+) => `
 Analyze how well this candidate's resume matches the provided Job Description (JD).
 Perform an ATS keyword gap analysis.
 
@@ -71,7 +78,7 @@ Return ONLY a valid JSON object matching this schema, with no markdown code bloc
 
 export const JOB_TAILOR_AND_COVER_LETTER_PROMPT = (
   resumeText: string,
-  jobDescription: string
+  jobDescription: string,
 ) => `
 You are an expert career strategist and executive resume writer.
 Your task is to analyze the candidate's existing resume alongside the target Job Description (JD), and produce:
@@ -139,4 +146,3 @@ Generate a complete JSON response according to this EXACT schema:
 
 Return ONLY valid JSON. No markdown code blocks, no preamble, and no explanation.
 `;
-

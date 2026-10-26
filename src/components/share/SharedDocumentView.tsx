@@ -1,24 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { resolveSharedDocument, SharedDocumentResult } from '../../services/shareService';
-import { ResumeDocument } from '../../types/resume';
-import { BiodataDocument } from '../../types/biodata';
-import { ResumeTemplateRenderer } from '../resume/ResumeTemplateRenderer';
+import React, { useState, useEffect } from "react";
+import {
+  resolveSharedDocument,
+  SharedDocumentResult,
+} from "../../services/shareService";
+import { ResumeDocument } from "../../types/resume";
+import { BiodataDocument } from "../../types/biodata";
+import { ResumeTemplateRenderer } from "../resume/ResumeTemplateRenderer";
 
 // Biodata Templates
-import { MandalaRadiance } from '../preview/templates/MandalaRadiance';
-import { MarigoldToran } from '../preview/templates/MarigoldToran';
-import { VintageParchment } from '../preview/templates/VintageParchment';
-import { ClassicTraditional } from '../preview/templates/ClassicTraditional';
-import { SimpleBox } from '../preview/templates/SimpleBox';
-import { FloralBorder } from '../preview/templates/FloralBorder';
-import { InstantRoyalMaroon } from '../preview/templates/InstantRoyalMaroon';
-import { InstantPeacockNavy } from '../preview/templates/InstantPeacockNavy';
-import { InstantFloralBlush } from '../preview/templates/InstantFloralBlush';
-import { ModernMinimal } from '../preview/templates/ModernMinimal';
-import { ElegantPremium } from '../preview/templates/ElegantPremium';
-import { FamilyFocused } from '../preview/templates/FamilyFocused';
-import { Professional } from '../preview/templates/Professional';
-import { PhotoFocused } from '../preview/templates/PhotoFocused';
+import { MandalaRadiance } from "../preview/templates/MandalaRadiance";
+import { MarigoldToran } from "../preview/templates/MarigoldToran";
+import { VintageParchment } from "../preview/templates/VintageParchment";
+import { ClassicTraditional } from "../preview/templates/ClassicTraditional";
+import { SimpleBox } from "../preview/templates/SimpleBox";
+import { FloralBorder } from "../preview/templates/FloralBorder";
+import { InstantRoyalMaroon } from "../preview/templates/InstantRoyalMaroon";
+import { InstantPeacockNavy } from "../preview/templates/InstantPeacockNavy";
+import { InstantFloralBlush } from "../preview/templates/InstantFloralBlush";
+import { ModernMinimal } from "../preview/templates/ModernMinimal";
+import { ElegantPremium } from "../preview/templates/ElegantPremium";
+import { FamilyFocused } from "../preview/templates/FamilyFocused";
+import { Professional } from "../preview/templates/Professional";
+import { PhotoFocused } from "../preview/templates/PhotoFocused";
 
 import {
   Printer,
@@ -31,7 +34,7 @@ import {
   AlertCircle,
   Briefcase,
   Heart,
-} from 'lucide-react';
+} from "lucide-react";
 
 export const SharedDocumentView: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -48,7 +51,7 @@ export const SharedDocumentView: React.FC = () => {
         }
       })
       .catch((err) => {
-        console.error('Error resolving shared document:', err);
+        console.error("Error resolving shared document:", err);
         if (isMounted) setLoading(false);
       });
 
@@ -68,8 +71,8 @@ export const SharedDocumentView: React.FC = () => {
   };
 
   const handleGoHome = () => {
-    window.location.hash = '';
-    window.location.search = '';
+    window.location.hash = "";
+    window.location.search = "";
     window.location.reload();
   };
 
@@ -77,7 +80,9 @@ export const SharedDocumentView: React.FC = () => {
     return (
       <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center p-4">
         <Loader2 className="w-8 h-8 animate-spin text-teal-600 mb-2" />
-        <p className="text-sm font-semibold text-slate-700">Loading shared document...</p>
+        <p className="text-sm font-semibold text-slate-700">
+          Loading shared document...
+        </p>
       </div>
     );
   }
@@ -89,9 +94,12 @@ export const SharedDocumentView: React.FC = () => {
           <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
             <AlertCircle className="w-6 h-6" />
           </div>
-          <h2 className="text-lg font-bold text-slate-900">Document Not Found</h2>
+          <h2 className="text-lg font-bold text-slate-900">
+            Document Not Found
+          </h2>
           <p className="text-xs text-slate-500">
-            This share link may have expired or is incomplete. Please check the URL with the sender.
+            This share link may have expired or is incomplete. Please check the
+            URL with the sender.
           </p>
           <button
             onClick={handleGoHome}
@@ -109,29 +117,29 @@ export const SharedDocumentView: React.FC = () => {
   // Render biodata template
   const renderBiodata = (biodata: BiodataDocument) => {
     switch (biodata.styling.templateId) {
-      case 'mandala-radiance':
+      case "mandala-radiance":
         return <MandalaRadiance document={biodata} />;
-      case 'marigold-toran':
+      case "marigold-toran":
         return <MarigoldToran document={biodata} />;
-      case 'vintage-parchment':
+      case "vintage-parchment":
         return <VintageParchment document={biodata} />;
-      case 'instant-royal-maroon':
+      case "instant-royal-maroon":
         return <InstantRoyalMaroon document={biodata} />;
-      case 'instant-peacock-navy':
+      case "instant-peacock-navy":
         return <InstantPeacockNavy document={biodata} />;
-      case 'instant-floral-blush':
+      case "instant-floral-blush":
         return <InstantFloralBlush document={biodata} />;
-      case 'simple-box':
+      case "simple-box":
         return <SimpleBox document={biodata} />;
-      case 'floral-border':
+      case "floral-border":
         return <FloralBorder document={biodata} />;
-      case 'modern-minimal':
+      case "modern-minimal":
         return <ModernMinimal document={biodata} />;
-      case 'elegant-premium':
+      case "elegant-premium":
         return <ElegantPremium document={biodata} />;
-      case 'family-focused':
+      case "family-focused":
         return <FamilyFocused document={biodata} />;
-      case 'photo-focused':
+      case "photo-focused":
         return <PhotoFocused document={biodata} />;
       default:
         return <Professional document={biodata} />;
@@ -142,18 +150,18 @@ export const SharedDocumentView: React.FC = () => {
     if (doc.sections) {
       for (const s of doc.sections) {
         for (const f of s.fields) {
-          if (f.label.toLowerCase().includes('name') && f.value?.trim()) {
+          if (f.label.toLowerCase().includes("name") && f.value?.trim()) {
             return f.value.trim();
           }
         }
       }
     }
-    return doc.title || 'Biodata';
+    return doc.title || "Biodata";
   };
 
   const displayName =
-    type === 'resume'
-      ? (data as ResumeDocument).contact.fullName || 'Professional'
+    type === "resume"
+      ? (data as ResumeDocument).contact.fullName || "Professional"
       : getBiodataName(data as BiodataDocument);
 
   return (
@@ -164,17 +172,24 @@ export const SharedDocumentView: React.FC = () => {
         <div className="flex items-center gap-3">
           <div
             className={`w-8 h-8 rounded-lg text-white flex items-center justify-center font-bold shadow-xs ${
-              type === 'biodata' ? 'bg-rose-600' : 'bg-teal-700'
+              type === "biodata" ? "bg-rose-600" : "bg-teal-700"
             }`}
           >
-            {type === 'biodata' ? <Heart className="w-4 h-4" /> : <Briefcase className="w-4 h-4" />}
+            {type === "biodata" ? (
+              <Heart className="w-4 h-4" />
+            ) : (
+              <Briefcase className="w-4 h-4" />
+            )}
           </div>
           <div>
             <h1 className="text-xs sm:text-sm font-bold text-slate-900 leading-tight">
               {displayName}
             </h1>
             <p className="text-[10px] text-slate-500 font-medium">
-              Read-Only {type === 'biodata' ? 'Matrimonial Biodata' : 'Professional Resume'}
+              Read-Only{" "}
+              {type === "biodata"
+                ? "Matrimonial Biodata"
+                : "Professional Resume"}
             </p>
           </div>
         </div>
@@ -185,8 +200,14 @@ export const SharedDocumentView: React.FC = () => {
             onClick={handleCopyLink}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition"
           >
-            {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{copiedLink ? 'Link Copied' : 'Copy Link'}</span>
+            {copiedLink ? (
+              <Check className="w-3.5 h-3.5 text-emerald-600" />
+            ) : (
+              <Copy className="w-3.5 h-3.5" />
+            )}
+            <span className="hidden sm:inline">
+              {copiedLink ? "Link Copied" : "Copy Link"}
+            </span>
           </button>
 
           <button
@@ -209,7 +230,7 @@ export const SharedDocumentView: React.FC = () => {
 
       {/* Main Document Canvas Viewport */}
       <main className="flex-1 overflow-auto p-4 sm:p-8 flex justify-center items-start print:p-0 print:overflow-visible">
-        {type === 'resume' ? (
+        {type === "resume" ? (
           <div className="preview-scale-wrapper w-full max-w-[794px] print:max-w-none">
             <ResumeTemplateRenderer resume={data as ResumeDocument} />
           </div>

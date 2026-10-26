@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { CustomField, FieldType } from '../../types/biodata';
-import { Modal } from '../common/Modal';
-import { Input } from '../common/Input';
-import { Button } from '../common/Button';
-import { Switch } from '../common/Switch';
+import React, { useState, useEffect } from "react";
+import { CustomField, FieldType } from "../../types/biodata";
+import { Modal } from "../common/Modal";
+import { Input } from "../common/Input";
+import { Button } from "../common/Button";
+import { Switch } from "../common/Switch";
 
 interface CustomFieldModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (field: Omit<CustomField, 'id'>) => void;
+  onSave: (field: Omit<CustomField, "id">) => void;
   initialField?: CustomField | null;
   sectionTitle: string;
 }
@@ -20,46 +20,52 @@ export const CustomFieldModal: React.FC<CustomFieldModalProps> = ({
   initialField,
   sectionTitle,
 }) => {
-  const [label, setLabel] = useState('');
-  const [type, setType] = useState<FieldType>('text');
-  const [value, setValue] = useState('');
-  const [placeholder, setPlaceholder] = useState('');
-  const [optionsStr, setOptionsStr] = useState('');
+  const [label, setLabel] = useState("");
+  const [type, setType] = useState<FieldType>("text");
+  const [value, setValue] = useState("");
+  const [placeholder, setPlaceholder] = useState("");
+  const [optionsStr, setOptionsStr] = useState("");
   const [visible, setVisible] = useState(true);
   const [required, setRequired] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (initialField) {
       setLabel(initialField.label);
       setType(initialField.type);
       setValue(initialField.value);
-      setPlaceholder(initialField.placeholder || '');
-      setOptionsStr(initialField.options ? initialField.options.join(', ') : '');
+      setPlaceholder(initialField.placeholder || "");
+      setOptionsStr(
+        initialField.options ? initialField.options.join(", ") : "",
+      );
       setVisible(initialField.visible !== false);
       setRequired(initialField.required || false);
     } else {
-      setLabel('');
-      setType('text');
-      setValue('');
-      setPlaceholder('');
-      setOptionsStr('');
+      setLabel("");
+      setType("text");
+      setValue("");
+      setPlaceholder("");
+      setOptionsStr("");
       setVisible(true);
       setRequired(false);
     }
-    setError('');
+    setError("");
   }, [initialField, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!label.trim()) {
-      setError('Field label is required');
+      setError("Field label is required");
       return;
     }
 
-    const options = type === 'select'
-      ? optionsStr.split(',').map(s => s.trim()).filter(Boolean)
-      : undefined;
+    const options =
+      type === "select"
+        ? optionsStr
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : undefined;
 
     onSave({
       label: label.trim(),
@@ -77,7 +83,7 @@ export const CustomFieldModal: React.FC<CustomFieldModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={initialField ? 'Edit Field' : 'Add Custom Field'}
+      title={initialField ? "Edit Field" : "Add Custom Field"}
       description={`Add a custom property to "${sectionTitle}"`}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -108,7 +114,7 @@ export const CustomFieldModal: React.FC<CustomFieldModalProps> = ({
           </select>
         </div>
 
-        {type === 'select' && (
+        {type === "select" && (
           <Input
             label="Dropdown Options"
             placeholder="Option 1, Option 2, Option 3 (comma separated)"
@@ -146,7 +152,7 @@ export const CustomFieldModal: React.FC<CustomFieldModalProps> = ({
             Cancel
           </Button>
           <Button type="submit" variant="primary">
-            {initialField ? 'Update Field' : 'Add Field'}
+            {initialField ? "Update Field" : "Add Field"}
           </Button>
         </div>
       </form>

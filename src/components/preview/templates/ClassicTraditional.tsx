@@ -1,9 +1,9 @@
-import React from 'react';
-import { BiodataDocument } from '../../../types/biodata';
-import { DocumentPhoto } from '../DocumentPhoto';
-import { HeaderEmblem } from '../HeaderEmblem';
-import { calculateAge, formatDate } from '../../../utils/calculateAge';
-import { getLocalizedDocText } from '../../../i18n/translations';
+import React from "react";
+import { BiodataDocument } from "../../../types/biodata";
+import { DocumentPhoto } from "../DocumentPhoto";
+import { HeaderEmblem } from "../HeaderEmblem";
+import { calculateAge, formatDate } from "../../../utils/calculateAge";
+import { getLocalizedDocText } from "../../../i18n/translations";
 
 interface TemplateProps {
   document: BiodataDocument;
@@ -12,15 +12,15 @@ interface TemplateProps {
 export const ClassicTraditional: React.FC<TemplateProps> = ({ document }) => {
   const { styling, sections, photoUrl } = document;
   const visibleSections = sections.filter((s) => s.visible);
-  const docLang = styling.language || document.language || 'en';
-  const titleText = getLocalizedDocText('documentTitle', docLang);
-  const mantraText = getLocalizedDocText('mantra', docLang);
-  const yearsText = getLocalizedDocText('years', docLang);
+  const docLang = styling.language || document.language || "en";
+  const titleText = getLocalizedDocText("documentTitle", docLang);
+  const mantraText = getLocalizedDocText("mantra", docLang);
+  const yearsText = getLocalizedDocText("years", docLang);
 
   return (
     <div className="w-full h-full p-8 sm:p-10 relative flex flex-col justify-between">
       {/* Decorative Ornate Double Border */}
-      {styling.borderStyle !== 'none' && (
+      {styling.borderStyle !== "none" && (
         <div
           className="absolute inset-4 sm:inset-5 pointer-events-none"
           style={{
@@ -52,7 +52,7 @@ export const ClassicTraditional: React.FC<TemplateProps> = ({ document }) => {
         {/* Traditional Auspicious Header */}
         <div className="text-center mb-6">
           <HeaderEmblem
-            symbol={styling.headerSymbol || 'om'}
+            symbol={styling.headerSymbol || "om"}
             customSymbol={styling.customHeaderSymbol}
             customText={styling.customHeaderText}
             showEmblem={styling.showEmblem !== false}
@@ -60,20 +60,23 @@ export const ClassicTraditional: React.FC<TemplateProps> = ({ document }) => {
             primaryColor={styling.primaryColor}
             accentColor={styling.accentColor}
           />
-          {styling.showDocumentTitle !== false && (styling.customDocumentTitle || titleText) && (
-            <h1
-              className="text-2xl sm:text-3xl font-bold uppercase tracking-wider"
-              style={{
-                color: styling.primaryColor,
-                fontFamily: styling.fontFamilyHeading,
-              }}
-            >
-              {styling.customDocumentTitle !== undefined && styling.customDocumentTitle !== ''
-                ? styling.customDocumentTitle
-                : titleText}
-            </h1>
-          )}
-          {(styling.showDocumentTitle !== false || styling.showEmblem !== false) && (
+          {styling.showDocumentTitle !== false &&
+            (styling.customDocumentTitle || titleText) && (
+              <h1
+                className="text-2xl sm:text-3xl font-bold uppercase tracking-wider"
+                style={{
+                  color: styling.primaryColor,
+                  fontFamily: styling.fontFamilyHeading,
+                }}
+              >
+                {styling.customDocumentTitle !== undefined &&
+                styling.customDocumentTitle !== ""
+                  ? styling.customDocumentTitle
+                  : titleText}
+              </h1>
+            )}
+          {(styling.showDocumentTitle !== false ||
+            styling.showEmblem !== false) && (
             <div className="flex items-center justify-center gap-3 my-2">
               <span
                 className="h-[1.5px] w-12 sm:w-20"
@@ -99,20 +102,32 @@ export const ClassicTraditional: React.FC<TemplateProps> = ({ document }) => {
 
             // Determine if this section houses the photo
             const personalIdx = visibleSections.findIndex(
-              (s) => s.key === 'personal' || s.title.toLowerCase().includes('personal')
+              (s) =>
+                s.key === "personal" ||
+                s.title.toLowerCase().includes("personal"),
             );
-            const isPhotoSection = styling.showPhoto && sectionIdx === (personalIdx !== -1 ? personalIdx : 0);
+            const isPhotoSection =
+              styling.showPhoto &&
+              sectionIdx === (personalIdx !== -1 ? personalIdx : 0);
 
-            const renderFieldRow = (field: typeof visibleFields[0], isSpanFull = false) => {
-              const isDob = field.id.includes('dob') || field.label.toLowerCase().includes('date of birth');
+            const renderFieldRow = (
+              field: (typeof visibleFields)[0],
+              isSpanFull = false,
+            ) => {
+              const isDob =
+                field.id.includes("dob") ||
+                field.label.toLowerCase().includes("date of birth");
               const calculatedAge = isDob ? calculateAge(field.value) : null;
-              const displayValue = field.type === 'date' ? formatDate(field.value) : field.value;
+              const displayValue =
+                field.type === "date" ? formatDate(field.value) : field.value;
 
               return (
                 <div
                   key={field.id}
                   className={`flex items-baseline py-1 text-xs sm:text-sm border-b border-dashed border-slate-200/80 ${
-                    isSpanFull || field.type === 'textarea' ? 'md:col-span-2' : ''
+                    isSpanFull || field.type === "textarea"
+                      ? "md:col-span-2"
+                      : ""
                   }`}
                 >
                   <span
@@ -128,7 +143,7 @@ export const ClassicTraditional: React.FC<TemplateProps> = ({ document }) => {
                     className="text-slate-800 flex-1 leading-relaxed"
                     style={{ fontFamily: styling.fontFamilyBody }}
                   >
-                    {displayValue || '—'}
+                    {displayValue || "—"}
                     {calculatedAge !== null && (
                       <span className="ml-1.5 text-xs text-slate-500 font-medium">
                         ({calculatedAge} {yearsText})
@@ -159,14 +174,16 @@ export const ClassicTraditional: React.FC<TemplateProps> = ({ document }) => {
 
                 {/* Section Content: Side-by-side if photo section, otherwise full width */}
                 {isPhotoSection ? (
-                  styling.photoPosition === 'top-center' ? (
+                  styling.photoPosition === "top-center" ? (
                     <div className="space-y-4">
                       <div className="flex justify-center">
                         <DocumentPhoto photoUrl={photoUrl} styling={styling} />
                       </div>
                       <div
                         className={`grid ${
-                          styling.columns === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'
+                          styling.columns === 2
+                            ? "grid-cols-1 md:grid-cols-2"
+                            : "grid-cols-1"
                         } gap-x-6 gap-y-2 w-full`}
                       >
                         {visibleFields.map((field) => renderFieldRow(field))}
@@ -175,7 +192,9 @@ export const ClassicTraditional: React.FC<TemplateProps> = ({ document }) => {
                   ) : (
                     <div
                       className={`flex flex-col ${
-                        styling.photoPosition === 'top-left' ? 'sm:flex-row-reverse' : 'sm:flex-row'
+                        styling.photoPosition === "top-left"
+                          ? "sm:flex-row-reverse"
+                          : "sm:flex-row"
                       } gap-4 sm:gap-6 items-start`}
                     >
                       {/* Fields taking up the remaining space */}
@@ -193,7 +212,9 @@ export const ClassicTraditional: React.FC<TemplateProps> = ({ document }) => {
                   /* Fields Table Grid across 100% full width */
                   <div
                     className={`grid ${
-                      styling.columns === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'
+                      styling.columns === 2
+                        ? "grid-cols-1 md:grid-cols-2"
+                        : "grid-cols-1"
                     } gap-x-6 gap-y-2 w-full`}
                   >
                     {visibleFields.map((field) => renderFieldRow(field))}

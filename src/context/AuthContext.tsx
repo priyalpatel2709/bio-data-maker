@@ -1,16 +1,22 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import { User, Session } from "@supabase/supabase-js";
 import {
   getSupabaseClient,
   isSupabaseConfigured,
-} from '../services/supabaseClient';
+} from "../services/supabaseClient";
 import {
   syncAllUserData,
   subscribeSyncStatus,
   getSyncStatus,
   SyncStatus,
   SyncResult,
-} from '../services/syncService';
+} from "../services/syncService";
 
 interface AuthContextType {
   user: User | null;
@@ -19,7 +25,11 @@ interface AuthContextType {
   isConfigured: boolean;
   syncStatus: SyncStatus;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, fullName?: string) => Promise<{ error: Error | null; user: User | null }>;
+  signUp: (
+    email: string,
+    password: string,
+    fullName?: string,
+  ) => Promise<{ error: Error | null; user: User | null }>;
   signOut: () => Promise<void>;
   resetPasswordForEmail: (email: string) => Promise<{ error: Error | null }>;
   resendConfirmationEmail: (email: string) => Promise<{ error: Error | null }>;
@@ -29,12 +39,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [isConfigured, setIsConfigured] = useState<boolean>(isSupabaseConfigured());
-  const [syncStatus, setSyncStatusState] = useState<SyncStatus>(getSyncStatus());
+  const [isConfigured, setIsConfigured] = useState<boolean>(
+    isSupabaseConfigured(),
+  );
+  const [syncStatus, setSyncStatusState] =
+    useState<SyncStatus>(getSyncStatus());
 
   // Listen to sync status changes
   useEffect(() => {
@@ -64,19 +79,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     // Get initial session
-    client.auth.getSession().then(({ data: { session: initialSession }, error }) => {
-      if (error) {
-        console.warn('Failed to retrieve initial auth session:', error);
-      }
-      setSession(initialSession);
-      setUser(initialSession?.user ?? null);
-      setLoading(false);
+    client.auth
+      .getSession()
+      .then(({ data: { session: initialSession }, error }) => {
+        if (error) {
+          console.warn("Failed to retrieve initial auth session:", error);
+        }
+        setSession(initialSession);
+        setUser(initialSession?.user ?? null);
+        setLoading(false);
 
-      if (initialSession?.user) {
-        // Run initial synchronization
-        void syncAllUserData(initialSession.user.id);
-      }
-    });
+        if (initialSession?.user) {
+          // Run initial synchronization
+          void syncAllUserData(initialSession.user.id);
+        }
+      });
 
     // Listen for auth state changes
     const {
@@ -86,12 +103,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(currentSession?.user ?? null);
       setLoading(false);
 
-      if (event === 'SIGNED_IN' && currentSession?.user) {
+      if (event === "SIGNED_IN" && currentSession?.user) {
         // Trigger sync immediately on successful sign-in
         await syncAllUserData(currentSession.user.id);
-      } else if (event === 'SIGNED_OUT') {
+      } else if (event === "SIGNED_OUT") {
         // Revert sync status to idle
-        setSyncStatusState('idle');
+        setSyncStatusState("idle");
       }
     });
 
@@ -103,7 +120,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string, password: string) => {
     const client = getSupabaseClient();
     if (!client) {
-      return { error: new Error('Supabase is not configured yet. Please enter your project credentials.') };
+      return {
+        error: new Error(
+          "Supabase is not configured yet. Please enter your project credentials.",
+        ),
+      };
     }
 
     try {
@@ -125,7 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return { error: null };
     } catch (err: any) {
-      return { error: err || new Error('Failed to sign in') };
+      return { error: err || new Error("Failed to sign in") };
     }
   };
 
@@ -133,7 +154,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const client = getSupabaseClient();
     if (!client) {
       return {
-        error: new Error('Supabase is not configured yet. Please enter your project credentials.'),
+        error: new Error(
+          "Supabase is not configured yet. Please enter your project credentials.",
+        ),
         user: null,
       };
     }
@@ -144,7 +167,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password,
         options: {
           data: {
-            full_name: fullName || email.split('@')[0],
+            full_name: fullName || email.split("@")[0],
           },
         },
       });
@@ -162,7 +185,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return { error: null, user: data.user };
     } catch (err: any) {
-      return { error: err || new Error('Failed to sign up'), user: null };
+      return { error: err || new Error("Failed to sign up"), user: null };
     }
   };
 
@@ -172,7 +195,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         await client.auth.signOut();
       } catch (err) {
-        console.warn('Error signing out of Supabase:', err);
+        console.warn("Error signing out of Supabase:", err);
       }
     }
     setUser(null);
@@ -182,31 +205,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const resetPasswordForEmail = async (email: string) => {
     const client = getSupabaseClient();
     if (!client) {
-      return { error: new Error('Supabase is not configured yet.') };
+      return { error: new Error("Supabase is not configured yet.") };
     }
 
     try {
       const { error } = await client.auth.resetPasswordForEmail(email);
       return { error };
     } catch (err: any) {
-      return { error: err || new Error('Failed to send password reset email') };
+      return { error: err || new Error("Failed to send password reset email") };
     }
   };
 
   const resendConfirmationEmail = async (email: string) => {
     const client = getSupabaseClient();
     if (!client) {
-      return { error: new Error('Supabase is not configured yet.') };
+      return { error: new Error("Supabase is not configured yet.") };
     }
 
     try {
       const { error } = await client.auth.resend({
-        type: 'signup',
+        type: "signup",
         email,
       });
       return { error };
     } catch (err: any) {
-      return { error: err || new Error('Failed to resend confirmation email') };
+      return { error: err || new Error("Failed to resend confirmation email") };
     }
   };
 
@@ -240,7 +263,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

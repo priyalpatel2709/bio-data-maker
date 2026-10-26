@@ -1,5 +1,5 @@
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 export interface ExportPdfOptions {
   filename?: string;
@@ -19,7 +19,7 @@ function clearTransformChain(element: HTMLElement): TransformSnapshot[] {
 
   while (node && node !== document.documentElement) {
     saved.push({ node, transform: node.style.transform });
-    node.style.transform = 'none';
+    node.style.transform = "none";
     node = node.parentElement;
   }
 
@@ -33,21 +33,24 @@ function restoreTransformChain(saved: TransformSnapshot[]): void {
 }
 
 /** Apply html2canvas-safe styles on the cloned DOM (preview layout stays unchanged). */
-function prepareClonedDocumentForCapture(clonedDoc: Document, elementId: string): void {
+function prepareClonedDocumentForCapture(
+  clonedDoc: Document,
+  elementId: string,
+): void {
   const clonedElement = clonedDoc.getElementById(elementId);
   if (!clonedElement) return;
 
-  clonedElement.style.transform = 'none';
-  clonedElement.style.margin = '0';
-  clonedElement.style.boxShadow = 'none';
+  clonedElement.style.transform = "none";
+  clonedElement.style.margin = "0";
+  clonedElement.style.boxShadow = "none";
 
   let parent: HTMLElement | null = clonedElement.parentElement;
   while (parent && parent !== clonedDoc.documentElement) {
-    parent.style.transform = 'none';
+    parent.style.transform = "none";
     parent = parent.parentElement;
   }
 
-  const fixStyle = clonedDoc.createElement('style');
+  const fixStyle = clonedDoc.createElement("style");
   fixStyle.textContent = `
     #${elementId} img,
     #${elementId} svg {
@@ -60,34 +63,34 @@ function prepareClonedDocumentForCapture(clonedDoc: Document, elementId: string)
   `;
   clonedDoc.head.appendChild(fixStyle);
 
-  clonedElement.querySelectorAll('img').forEach((img) => {
+  clonedElement.querySelectorAll("img").forEach((img) => {
     const el = img as HTMLImageElement;
-    el.style.display = 'inline-block';
-    el.style.verticalAlign = 'middle';
+    el.style.display = "inline-block";
+    el.style.verticalAlign = "middle";
   });
 
   clonedElement.querySelectorAll('[class*="items-baseline"]').forEach((row) => {
-    (row as HTMLElement).style.alignItems = 'flex-start';
+    (row as HTMLElement).style.alignItems = "flex-start";
   });
 }
 
 export async function exportBiodataToPdf(
-  elementId: string = 'printable-biodata',
-  options: ExportPdfOptions = {}
+  elementId: string = "printable-biodata",
+  options: ExportPdfOptions = {},
 ): Promise<void> {
-  const { filename = 'biodata.pdf', onProgress } = options;
+  const { filename = "biodata.pdf", onProgress } = options;
 
   const element = document.getElementById(elementId);
   if (!element) {
     throw new Error(`Export target #${elementId} not found in DOM`);
   }
 
-  onProgress?.(10, 'Initializing high-resolution renderer...');
+  onProgress?.(10, "Initializing high-resolution renderer...");
 
   await document.fonts.ready;
 
   const transformSnapshots = clearTransformChain(element);
-  const scrollParent = element.closest('.overflow-auto');
+  const scrollParent = element.closest(".overflow-auto");
   const previousScrollTop =
     scrollParent instanceof HTMLElement ? scrollParent.scrollTop : null;
 
@@ -96,13 +99,16 @@ export async function exportBiodataToPdf(
   }
 
   try {
-    const captureScale = Math.min(2.5, Math.max(2, window.devicePixelRatio || 2));
+    const captureScale = Math.min(
+      2.5,
+      Math.max(2, window.devicePixelRatio || 2),
+    );
 
     const canvas = await html2canvas(element, {
       scale: captureScale,
       useCORS: true,
       allowTaint: true,
-      backgroundColor: '#ffffff',
+      backgroundColor: "#ffffff",
       logging: false,
       imageTimeout: 15000,
       width: element.scrollWidth,
@@ -114,7 +120,7 @@ export async function exportBiodataToPdf(
       },
     });
 
-    onProgress?.(50, 'Processing crystal-clear document pages...');
+    onProgress?.(50, "Processing crystal-clear document pages...");
 
     const a4Ratio = A4_HEIGHT_MM / A4_WIDTH_MM;
     const pageCanvasHeight = Math.round(canvas.width * a4Ratio);
@@ -123,16 +129,16 @@ export async function exportBiodataToPdf(
     const totalPages = Math.max(1, Math.ceil(totalHeight / pageCanvasHeight));
 
     const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4',
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
       compress: true,
     });
 
     for (let page = 0; page < totalPages; page++) {
       onProgress?.(
         50 + Math.round(((page + 1) / totalPages) * 40),
-        `Rendering page ${page + 1} of ${totalPages}...`
+        `Rendering page ${page + 1} of ${totalPages}...`,
       );
 
       if (page > 0) {
@@ -143,13 +149,13 @@ export async function exportBiodataToPdf(
       const sliceHeight = Math.min(pageCanvasHeight, totalHeight - srcY);
       const slicePdfHeight = (sliceHeight / pageCanvasHeight) * A4_HEIGHT_MM;
 
-      const pageCanvas = window.document.createElement('canvas');
+      const pageCanvas = window.document.createElement("canvas");
       pageCanvas.width = canvas.width;
       pageCanvas.height = pageCanvasHeight;
-      const ctx = pageCanvas.getContext('2d');
+      const ctx = pageCanvas.getContext("2d");
 
       if (ctx) {
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = "#FFFFFF";
         ctx.fillRect(0, 0, pageCanvas.width, pageCanvasHeight);
 
         ctx.drawImage(
@@ -161,26 +167,26 @@ export async function exportBiodataToPdf(
           0,
           0,
           canvas.width,
-          sliceHeight
+          sliceHeight,
         );
 
-        const pageImgData = pageCanvas.toDataURL('image/png');
+        const pageImgData = pageCanvas.toDataURL("image/png");
         pdf.addImage(
           pageImgData,
-          'PNG',
+          "PNG",
           0,
           0,
           A4_WIDTH_MM,
           slicePdfHeight,
           undefined,
-          'SLOW'
+          "SLOW",
         );
       }
     }
 
-    onProgress?.(95, 'Finalizing download package...');
-    pdf.save(filename.endsWith('.pdf') ? filename : `${filename}.pdf`);
-    onProgress?.(100, 'Complete!');
+    onProgress?.(95, "Finalizing download package...");
+    pdf.save(filename.endsWith(".pdf") ? filename : `${filename}.pdf`);
+    onProgress?.(100, "Complete!");
   } finally {
     restoreTransformChain(transformSnapshots);
     if (scrollParent instanceof HTMLElement && previousScrollTop !== null) {

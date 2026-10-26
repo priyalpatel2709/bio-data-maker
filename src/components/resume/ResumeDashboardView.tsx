@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
-import { useResume } from '../../context/ResumeContext';
-import { useAppMode } from '../../context/AppModeContext';
-import { RESUME_TEMPLATES } from '../../data/defaultResume';
-import { ResumeDocument, ResumeTemplateId, ResumeTemplateDefinition } from '../../types/resume';
-import { ResumeTemplateThumbnail } from './ResumeTemplateThumbnail';
-import { ResumeTemplatePreviewModal } from './ResumeTemplatePreviewModal';
-import { AIJobTailorModal } from './ai/AIJobTailorModal';
-import { AISettingsModal } from './ai/AISettingsModal';
+import React, { useState } from "react";
+import { useResume } from "../../context/ResumeContext";
+import { useAppMode } from "../../context/AppModeContext";
+import { RESUME_TEMPLATES } from "../../data/defaultResume";
+import {
+  ResumeDocument,
+  ResumeTemplateId,
+  ResumeTemplateDefinition,
+} from "../../types/resume";
+import { ResumeTemplateThumbnail } from "./ResumeTemplateThumbnail";
+import { ResumeTemplatePreviewModal } from "./ResumeTemplatePreviewModal";
+import { AIJobTailorModal } from "./ai/AIJobTailorModal";
+import { AISettingsModal } from "./ai/AISettingsModal";
 import {
   Plus,
   Edit3,
@@ -23,7 +27,7 @@ import {
   ExternalLink,
   Heart,
   Eye,
-} from 'lucide-react';
+} from "lucide-react";
 
 export const ResumeDashboardView: React.FC = () => {
   const { setAppMode } = useAppMode();
@@ -37,19 +41,20 @@ export const ResumeDashboardView: React.FC = () => {
     setViewMode,
   } = useResume();
 
-  const [previewTemplate, setPreviewTemplate] = useState<ResumeTemplateDefinition | null>(null);
+  const [previewTemplate, setPreviewTemplate] =
+    useState<ResumeTemplateDefinition | null>(null);
   const [isTailorModalOpen, setIsTailorModalOpen] = useState(false);
   const [isAISettingsOpen, setIsAISettingsOpen] = useState(false);
 
   const handleStartWithTemplate = (templateId: ResumeTemplateId) => {
-    createNewResume('software');
+    createNewResume("software");
     setTemplate(templateId);
-    setViewMode('studio');
+    setViewMode("studio");
   };
 
   const handleEditResume = (doc: ResumeDocument) => {
     loadResume(doc);
-    setViewMode('studio');
+    setViewMode("studio");
   };
 
   return (
@@ -70,7 +75,9 @@ export const ResumeDashboardView: React.FC = () => {
                 </span>
               </h1>
               <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
-                Build ATS-friendly, recruiter-approved resumes in minutes. Export to high-definition PDF, editable Microsoft Word (.docx), or copy formatted plain text directly for application forms.
+                Build ATS-friendly, recruiter-approved resumes in minutes.
+                Export to high-definition PDF, editable Microsoft Word (.docx),
+                or copy formatted plain text directly for application forms.
               </p>
             </div>
 
@@ -84,14 +91,14 @@ export const ResumeDashboardView: React.FC = () => {
                 <span>Tailor for JD & Cover Letter</span>
               </button>
               <button
-                onClick={() => createNewResume('software')}
+                onClick={() => createNewResume("software")}
                 className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm shadow-md shadow-teal-600/20 transition active:scale-95"
               >
                 <Plus className="w-5 h-5" />
                 <span>Create New</span>
               </button>
               <button
-                onClick={() => setViewMode('studio')}
+                onClick={() => setViewMode("studio")}
                 className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white border border-slate-300 hover:border-slate-400 text-slate-700 font-semibold text-sm transition"
               >
                 <Edit3 className="w-5 h-5" />
@@ -114,15 +121,18 @@ export const ResumeDashboardView: React.FC = () => {
                 <span className="text-xs font-bold uppercase tracking-wider text-rose-400 bg-rose-950/60 border border-rose-500/30 px-2 py-0.5 rounded-full">
                   Matrimonial & Personal
                 </span>
-                <h3 className="text-base font-bold text-white">Looking for Marriage & Matrimonial Biodata?</h3>
+                <h3 className="text-base font-bold text-white">
+                  Looking for Marriage & Matrimonial Biodata?
+                </h3>
               </div>
               <p className="text-xs sm:text-sm text-slate-300 mt-1">
-                Design traditional Indian, floral, mandala, and executive matrimonial biodatas with multi-language support.
+                Design traditional Indian, floral, mandala, and executive
+                matrimonial biodatas with multi-language support.
               </p>
             </div>
           </div>
           <button
-            onClick={() => setAppMode('biodata')}
+            onClick={() => setAppMode("biodata")}
             className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-bold text-xs flex items-center justify-center gap-2 transition shrink-0 shadow-lg shadow-rose-500/20 active:scale-95"
           >
             <span>Open Biodata Maker</span>
@@ -137,13 +147,17 @@ export const ResumeDashboardView: React.FC = () => {
         <section>
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-xl font-bold text-slate-900">Your Resumes ({savedResumes.length})</h2>
-              <p className="text-xs text-slate-500">Auto-saved locally on your device with complete privacy</p>
+              <h2 className="text-xl font-bold text-slate-900">
+                Your Resumes ({savedResumes.length})
+              </h2>
+              <p className="text-xs text-slate-500">
+                Auto-saved locally on your device with complete privacy
+              </p>
             </div>
 
             <div className="flex gap-2">
               <button
-                onClick={() => createNewResume('blank')}
+                onClick={() => createNewResume("blank")}
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-white text-slate-700 transition flex items-center gap-1.5"
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -155,10 +169,14 @@ export const ResumeDashboardView: React.FC = () => {
           {savedResumes.length === 0 ? (
             <div className="p-8 text-center bg-white rounded-2xl border border-dashed border-slate-300">
               <FileText className="w-10 h-10 text-slate-400 mx-auto mb-2" />
-              <h3 className="text-sm font-bold text-slate-800">No saved resumes yet</h3>
-              <p className="text-xs text-slate-500 mt-1 mb-4">Start by creating a new resume with one click.</p>
+              <h3 className="text-sm font-bold text-slate-800">
+                No saved resumes yet
+              </h3>
+              <p className="text-xs text-slate-500 mt-1 mb-4">
+                Start by creating a new resume with one click.
+              </p>
               <button
-                onClick={() => createNewResume('software')}
+                onClick={() => createNewResume("software")}
                 className="px-4 py-2 bg-teal-600 text-white text-xs font-semibold rounded-lg"
               >
                 Create Software Resume
@@ -179,7 +197,7 @@ export const ResumeDashboardView: React.FC = () => {
                           style={{ backgroundColor: doc.styling.primaryColor }}
                         />
                         <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                          {doc.styling.templateId.replace('-', ' ')}
+                          {doc.styling.templateId.replace("-", " ")}
                         </span>
                       </div>
                       <span className="text-[10px] text-slate-400 flex items-center gap-1">
@@ -192,7 +210,8 @@ export const ResumeDashboardView: React.FC = () => {
                       {doc.title}
                     </h3>
                     <p className="text-xs font-medium text-slate-600 mt-0.5">
-                      {doc.contact.fullName || 'Untitled'} {doc.contact.jobTitle ? `• ${doc.contact.jobTitle}` : ''}
+                      {doc.contact.fullName || "Untitled"}{" "}
+                      {doc.contact.jobTitle ? `• ${doc.contact.jobTitle}` : ""}
                     </p>
 
                     <div className="flex flex-wrap gap-1.5 mt-3">
@@ -203,7 +222,11 @@ export const ResumeDashboardView: React.FC = () => {
                         {doc.education.length} Degrees
                       </span>
                       <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-medium">
-                        {doc.skillCategories.reduce((acc, c) => acc + c.skills.length, 0)} Skills
+                        {doc.skillCategories.reduce(
+                          (acc, c) => acc + c.skills.length,
+                          0,
+                        )}{" "}
+                        Skills
                       </span>
                     </div>
                   </div>
@@ -240,8 +263,13 @@ export const ResumeDashboardView: React.FC = () => {
         {/* Templates Showcase */}
         <section id="templates">
           <div className="mb-6">
-            <h2 className="text-xl font-bold text-slate-900">Explore Resume Templates</h2>
-            <p className="text-xs text-slate-500">Engineered to pass Applicant Tracking Systems (ATS) with flying colors</p>
+            <h2 className="text-xl font-bold text-slate-900">
+              Explore Resume Templates
+            </h2>
+            <p className="text-xs text-slate-500">
+              Engineered to pass Applicant Tracking Systems (ATS) with flying
+              colors
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -298,7 +326,9 @@ export const ResumeDashboardView: React.FC = () => {
                     </p>
 
                     <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-600">
-                      <span className="font-semibold text-slate-800">Best for: </span>
+                      <span className="font-semibold text-slate-800">
+                        Best for:{" "}
+                      </span>
                       <span className="text-slate-600">{tpl.bestFor}</span>
                     </div>
                   </div>

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { useResume } from '../../context/ResumeContext';
-import { ResumeFormEditor } from './ResumeFormEditor';
-import { ResumeStylingPanel } from './ResumeStylingPanel';
-import { ResumeTemplateSelector } from './ResumeTemplateSelector';
-import { ResumeLivePreview } from './ResumeLivePreview';
-import { ResumeExportModal } from './ResumeExportModal';
+import React, { useState } from "react";
+import { useResume } from "../../context/ResumeContext";
+import { ResumeFormEditor } from "./ResumeFormEditor";
+import { ResumeStylingPanel } from "./ResumeStylingPanel";
+import { ResumeTemplateSelector } from "./ResumeTemplateSelector";
+import { ResumeLivePreview } from "./ResumeLivePreview";
+import { ResumeExportModal } from "./ResumeExportModal";
 import {
   ArrowLeft,
   FileText,
@@ -19,15 +19,15 @@ import {
   Mail,
   Share2,
   Loader2,
-} from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { AISettingsModal } from './ai/AISettingsModal';
-import { AIJobMatcherModal } from './ai/AIJobMatcherModal';
-import { AIJobTailorModal } from './ai/AIJobTailorModal';
-import { CoverLetterStudioModal } from './CoverLetterStudioModal';
-import { ShareDocumentModal } from '../common/ShareDocumentModal';
-import { isAIConfigured } from '../../services/aiService';
-import { UserMenu } from '../auth/UserMenu';
+} from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { AISettingsModal } from "./ai/AISettingsModal";
+import { AIJobMatcherModal } from "./ai/AIJobMatcherModal";
+import { AIJobTailorModal } from "./ai/AIJobTailorModal";
+import { CoverLetterStudioModal } from "./CoverLetterStudioModal";
+import { ShareDocumentModal } from "../common/ShareDocumentModal";
+import { isAIConfigured } from "../../services/aiService";
+import { UserMenu } from "../auth/UserMenu";
 
 export const ResumeStudioView: React.FC = () => {
   const {
@@ -43,7 +43,7 @@ export const ResumeStudioView: React.FC = () => {
 
   const { user, syncStatus } = useAuth();
 
-  const [mobileTab, setMobileTab] = useState<'editor' | 'preview'>('editor');
+  const [mobileTab, setMobileTab] = useState<"editor" | "preview">("editor");
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [tempTitle, setTempTitle] = useState(document.title);
   const [isAISettingsOpen, setIsAISettingsOpen] = useState(false);
@@ -54,9 +54,21 @@ export const ResumeStudioView: React.FC = () => {
   const [hasAI, setHasAI] = useState(isAIConfigured());
 
   const tabs = [
-    { id: 'content' as const, label: 'Content & History', icon: <FileText className="w-4 h-4" /> },
-    { id: 'design' as const, label: 'Styling & ATS', icon: <Palette className="w-4 h-4" /> },
-    { id: 'templates' as const, label: 'Templates', icon: <Layout className="w-4 h-4" /> },
+    {
+      id: "content" as const,
+      label: "Content & History",
+      icon: <FileText className="w-4 h-4" />,
+    },
+    {
+      id: "design" as const,
+      label: "Styling & ATS",
+      icon: <Palette className="w-4 h-4" />,
+    },
+    {
+      id: "templates" as const,
+      label: "Templates",
+      icon: <Layout className="w-4 h-4" />,
+    },
   ];
 
   const handleSaveTitle = () => {
@@ -73,7 +85,7 @@ export const ResumeStudioView: React.FC = () => {
         <div className="flex items-center gap-3 min-w-0">
           <button
             type="button"
-            onClick={() => setViewMode('dashboard')}
+            onClick={() => setViewMode("dashboard")}
             className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors shrink-0"
             title="Back to Resumes Dashboard"
           >
@@ -88,7 +100,7 @@ export const ResumeStudioView: React.FC = () => {
                   value={tempTitle}
                   onChange={(e) => setTempTitle(e.target.value)}
                   onBlur={handleSaveTitle}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSaveTitle()}
+                  onKeyDown={(e) => e.key === "Enter" && handleSaveTitle()}
                   autoFocus
                   className="px-2 py-0.5 text-sm font-bold text-slate-900 border border-teal-500 rounded focus:outline-none"
                 />
@@ -108,28 +120,32 @@ export const ResumeStudioView: React.FC = () => {
                 className="text-sm sm:text-base font-bold text-slate-900 truncate cursor-pointer hover:text-teal-700 transition"
                 title="Click to rename"
               >
-                {document.title || 'Untitled Resume'}
+                {document.title || "Untitled Resume"}
               </h1>
             )}
             <div className="flex items-center gap-2 text-[11px] text-slate-500">
               <span className="capitalize font-medium text-teal-700">
-                {document.styling.templateId.replace('-', ' ')}
+                {document.styling.templateId.replace("-", " ")}
               </span>
               <span>•</span>
-              {user && syncStatus === 'syncing' ? (
+              {user && syncStatus === "syncing" ? (
                 <span className="text-amber-600 font-semibold flex items-center gap-1 animate-pulse">
                   <Loader2 className="w-3 h-3 animate-spin" />
                   Saving...
                 </span>
-              ) : user && syncStatus === 'synced' ? (
+              ) : user && syncStatus === "synced" ? (
                 <span className="text-emerald-600 font-semibold flex items-center gap-1">
                   <Check className="w-3 h-3" />
                   Cloud synced
                 </span>
-              ) : user && syncStatus === 'error' ? (
-                <span className="text-amber-700 font-medium">Saved locally (offline)</span>
+              ) : user && syncStatus === "error" ? (
+                <span className="text-amber-700 font-medium">
+                  Saved locally (offline)
+                </span>
               ) : (
-                <span className="text-slate-500 font-medium">Auto-saved locally</span>
+                <span className="text-slate-500 font-medium">
+                  Auto-saved locally
+                </span>
               )}
             </div>
           </div>
@@ -143,8 +159,8 @@ export const ResumeStudioView: React.FC = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeTab === tab.id
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
               }`}
             >
               {tab.icon}
@@ -158,17 +174,21 @@ export const ResumeStudioView: React.FC = () => {
           {/* Mobile view toggle */}
           <div className="flex md:hidden bg-slate-100 p-1 rounded-lg">
             <button
-              onClick={() => setMobileTab('editor')}
+              onClick={() => setMobileTab("editor")}
               className={`px-2.5 py-1 text-xs font-semibold rounded ${
-                mobileTab === 'editor' ? 'bg-white shadow-2xs text-slate-900' : 'text-slate-600'
+                mobileTab === "editor"
+                  ? "bg-white shadow-2xs text-slate-900"
+                  : "text-slate-600"
               }`}
             >
               Edit
             </button>
             <button
-              onClick={() => setMobileTab('preview')}
+              onClick={() => setMobileTab("preview")}
               className={`px-2.5 py-1 text-xs font-semibold rounded ${
-                mobileTab === 'preview' ? 'bg-white shadow-2xs text-slate-900' : 'text-slate-600'
+                mobileTab === "preview"
+                  ? "bg-white shadow-2xs text-slate-900"
+                  : "text-slate-600"
               }`}
             >
               Preview
@@ -227,9 +247,9 @@ export const ResumeStudioView: React.FC = () => {
             <span className="hidden sm:inline">AI Assistant</span>
             <span
               className={`w-2 h-2 rounded-full ${
-                hasAI ? 'bg-emerald-500' : 'bg-slate-300'
+                hasAI ? "bg-emerald-500" : "bg-slate-300"
               }`}
-              title={hasAI ? 'Nara AI Connected' : 'Nara AI Unconfigured'}
+              title={hasAI ? "Nara AI Connected" : "Nara AI Unconfigured"}
             />
           </button>
 
@@ -261,7 +281,7 @@ export const ResumeStudioView: React.FC = () => {
         {/* Left Sidebar Editor Panel */}
         <aside
           className={`w-full md:w-[480px] lg:w-[540px] xl:w-[580px] bg-slate-50 border-r border-slate-200/80 flex flex-col shrink-0 overflow-hidden ${
-            mobileTab === 'preview' ? 'hidden md:flex' : 'flex'
+            mobileTab === "preview" ? "hidden md:flex" : "flex"
           }`}
         >
           {/* Mobile tab bar */}
@@ -271,7 +291,9 @@ export const ResumeStudioView: React.FC = () => {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1 ${
-                  activeTab === tab.id ? 'bg-teal-50 text-teal-700' : 'text-slate-600'
+                  activeTab === tab.id
+                    ? "bg-teal-50 text-teal-700"
+                    : "text-slate-600"
                 }`}
               >
                 {tab.icon}
@@ -282,16 +304,16 @@ export const ResumeStudioView: React.FC = () => {
 
           {/* Tab Content */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-5">
-            {activeTab === 'content' && <ResumeFormEditor />}
-            {activeTab === 'design' && <ResumeStylingPanel />}
-            {activeTab === 'templates' && <ResumeTemplateSelector />}
+            {activeTab === "content" && <ResumeFormEditor />}
+            {activeTab === "design" && <ResumeStylingPanel />}
+            {activeTab === "templates" && <ResumeTemplateSelector />}
           </div>
         </aside>
 
         {/* Right Live Preview Panel */}
         <main
           className={`flex-1 flex flex-col overflow-hidden ${
-            mobileTab === 'editor' ? 'hidden md:flex' : 'flex'
+            mobileTab === "editor" ? "hidden md:flex" : "flex"
           }`}
         >
           <ResumeLivePreview />

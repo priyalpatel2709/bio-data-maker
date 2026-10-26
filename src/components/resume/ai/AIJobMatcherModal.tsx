@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
-import { useResume } from '../../../context/ResumeContext';
-import { analyzeJobMatch, isAIConfigured, AtsMatchResult } from '../../../services/aiService';
+import React, { useState } from "react";
+import { useResume } from "../../../context/ResumeContext";
+import {
+  analyzeJobMatch,
+  isAIConfigured,
+  AtsMatchResult,
+} from "../../../services/aiService";
 import {
   X,
   Target,
@@ -12,7 +16,7 @@ import {
   Loader2,
   Settings,
   TrendingUp,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface AIJobMatcherModalProps {
   isOpen: boolean;
@@ -26,7 +30,7 @@ export const AIJobMatcherModal: React.FC<AIJobMatcherModalProps> = ({
   onOpenSettings,
 }) => {
   const { document, addSkillCategory } = useResume();
-  const [jobDescription, setJobDescription] = useState('');
+  const [jobDescription, setJobDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<AtsMatchResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +49,7 @@ export const AIJobMatcherModal: React.FC<AIJobMatcherModalProps> = ({
       const res = await analyzeJobMatch(document, jobDescription);
       setResult(res);
     } catch (err: any) {
-      setError(err.message || 'Failed to analyze job match.');
+      setError(err.message || "Failed to analyze job match.");
     } finally {
       setLoading(false);
     }
@@ -58,9 +62,9 @@ export const AIJobMatcherModal: React.FC<AIJobMatcherModalProps> = ({
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-emerald-700 bg-emerald-50 border-emerald-300';
-    if (score >= 60) return 'text-amber-700 bg-amber-50 border-amber-300';
-    return 'text-rose-700 bg-rose-50 border-rose-300';
+    if (score >= 80) return "text-emerald-700 bg-emerald-50 border-emerald-300";
+    if (score >= 60) return "text-amber-700 bg-amber-50 border-amber-300";
+    return "text-rose-700 bg-rose-50 border-rose-300";
   };
 
   return (
@@ -96,9 +100,12 @@ export const AIJobMatcherModal: React.FC<AIJobMatcherModalProps> = ({
               <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center mx-auto">
                 <Settings className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-slate-900 text-sm">AI Router API Key Required</h4>
+              <h4 className="font-bold text-slate-900 text-sm">
+                AI Router API Key Required
+              </h4>
               <p className="text-slate-600 max-w-sm mx-auto leading-relaxed">
-                Configure your API key for Nara Router, OpenRouter, or AgentRouter once to unlock real-time ATS keyword matching.
+                Configure your API key for Nara Router, OpenRouter, or
+                AgentRouter once to unlock real-time ATS keyword matching.
               </p>
               <button
                 type="button"
@@ -128,7 +135,10 @@ export const AIJobMatcherModal: React.FC<AIJobMatcherModalProps> = ({
                 />
                 <div className="mt-2 flex items-center justify-between">
                   <span className="text-[11px] text-slate-400">
-                    Comparing candidate: <span className="font-semibold text-slate-700">{document.contact.fullName || 'Current Resume'}</span>
+                    Comparing candidate:{" "}
+                    <span className="font-semibold text-slate-700">
+                      {document.contact.fullName || "Current Resume"}
+                    </span>
                   </span>
                   <button
                     type="button"
@@ -162,7 +172,9 @@ export const AIJobMatcherModal: React.FC<AIJobMatcherModalProps> = ({
               {result && (
                 <div className="space-y-4 pt-3 border-t border-slate-200 animate-in fade-in duration-300">
                   {/* Score Card */}
-                  <div className={`p-4 rounded-xl border flex items-center justify-between ${getScoreColor(result.matchScore)}`}>
+                  <div
+                    className={`p-4 rounded-xl border flex items-center justify-between ${getScoreColor(result.matchScore)}`}
+                  >
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-full border-4 border-current flex items-center justify-center font-black text-lg">
                         {result.matchScore}%
@@ -170,13 +182,14 @@ export const AIJobMatcherModal: React.FC<AIJobMatcherModalProps> = ({
                       <div>
                         <div className="font-bold text-sm">
                           {result.matchScore >= 80
-                            ? 'Excellent Match for this Role!'
+                            ? "Excellent Match for this Role!"
                             : result.matchScore >= 60
-                            ? 'Moderate Match — Optimization Recommended'
-                            : 'Low Match — Add Missing Keywords'}
+                              ? "Moderate Match — Optimization Recommended"
+                              : "Low Match — Add Missing Keywords"}
                         </div>
                         <div className="text-[11px] opacity-90 mt-0.5">
-                          Calculated based on ATS keyword alignment and core job competencies.
+                          Calculated based on ATS keyword alignment and core job
+                          competencies.
                         </div>
                       </div>
                     </div>
@@ -188,7 +201,9 @@ export const AIJobMatcherModal: React.FC<AIJobMatcherModalProps> = ({
                     <div className="p-3.5 bg-emerald-50/50 rounded-xl border border-emerald-200">
                       <div className="flex items-center gap-1.5 text-emerald-800 font-bold mb-2">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                        <span>Matching Keywords ({result.matchingKeywords.length})</span>
+                        <span>
+                          Matching Keywords ({result.matchingKeywords.length})
+                        </span>
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {result.matchingKeywords.map((kw, i) => (
@@ -207,7 +222,9 @@ export const AIJobMatcherModal: React.FC<AIJobMatcherModalProps> = ({
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-1.5 text-amber-900 font-bold">
                           <AlertTriangle className="w-4 h-4 text-amber-600" />
-                          <span>Missing Keywords ({result.missingKeywords.length})</span>
+                          <span>
+                            Missing Keywords ({result.missingKeywords.length})
+                          </span>
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-1.5 mb-3">
@@ -229,7 +246,9 @@ export const AIJobMatcherModal: React.FC<AIJobMatcherModalProps> = ({
                           className="w-full py-1.5 px-2.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-white font-bold text-[11px] flex items-center justify-center gap-1.5 transition disabled:opacity-50"
                         >
                           <Plus className="w-3.5 h-3.5" />
-                          {addedSkillsSuccess ? 'Added to Resume Skills!' : 'Add Missing Keywords to Skills'}
+                          {addedSkillsSuccess
+                            ? "Added to Resume Skills!"
+                            : "Add Missing Keywords to Skills"}
                         </button>
                       )}
                     </div>

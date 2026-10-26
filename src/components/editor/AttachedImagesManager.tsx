@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
-import { useBiodata } from '../../context/BiodataContext';
-import { Button } from '../common/Button';
+import React, { useRef } from "react";
+import { useBiodata } from "../../context/BiodataContext";
+import { Button } from "../common/Button";
 import {
   ImagePlus,
   Trash2,
@@ -9,7 +9,7 @@ import {
   Sparkles,
   FileImage,
   ShieldCheck,
-} from 'lucide-react';
+} from "lucide-react";
 
 export const AttachedImagesManager: React.FC = () => {
   const {
@@ -28,7 +28,7 @@ export const AttachedImagesManager: React.FC = () => {
     if (!files || files.length === 0) return;
 
     Array.from(files).forEach((file) => {
-      if (!file.type.startsWith('image/')) {
+      if (!file.type.startsWith("image/")) {
         alert(`File "${file.name}" is not a supported image.`);
         return;
       }
@@ -36,11 +36,11 @@ export const AttachedImagesManager: React.FC = () => {
       // Read high-resolution image data without lossy compression
       const reader = new FileReader();
       reader.onload = () => {
-        if (typeof reader.result === 'string') {
+        if (typeof reader.result === "string") {
           // Derive default caption from filename if clean
           const defaultCaption = file.name
-            .replace(/\.[^/.]+$/, '')
-            .replace(/[-_]/g, ' ')
+            .replace(/\.[^/.]+$/, "")
+            .replace(/[-_]/g, " ")
             .replace(/\b\w/g, (c) => c.toUpperCase());
 
           addAttachedImage({
@@ -56,12 +56,12 @@ export const AttachedImagesManager: React.FC = () => {
 
     // Reset input
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
-  const handleMove = (index: number, direction: 'up' | 'down') => {
-    const newIdx = direction === 'up' ? index - 1 : index + 1;
+  const handleMove = (index: number, direction: "up" | "down") => {
+    const newIdx = direction === "up" ? index - 1 : index + 1;
     if (newIdx < 0 || newIdx >= attachedImages.length) return;
 
     const updated = [...attachedImages];
@@ -79,7 +79,8 @@ export const AttachedImagesManager: React.FC = () => {
             Attached Photos & Document Pages ({attachedImages.length})
           </h4>
           <p className="text-xs text-slate-500 mt-0.5">
-            Add full-length portraits, family pictures, or horoscope/kundali charts to the end of your PDF & Word document.
+            Add full-length portraits, family pictures, or horoscope/kundali
+            charts to the end of your PDF & Word document.
           </p>
         </div>
 
@@ -109,7 +110,9 @@ export const AttachedImagesManager: React.FC = () => {
       <div className="p-3 bg-emerald-50/70 border border-emerald-200/60 rounded-xl flex items-center gap-2.5 text-xs text-emerald-800">
         <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
         <span>
-          <strong>High-Fidelity Quality:</strong> Images are appended at original resolution without downscaling, preserving crystal-clear clarity in exported PDFs and DOCX files.
+          <strong>High-Fidelity Quality:</strong> Images are appended at
+          original resolution without downscaling, preserving crystal-clear
+          clarity in exported PDFs and DOCX files.
         </span>
       </div>
 
@@ -117,7 +120,9 @@ export const AttachedImagesManager: React.FC = () => {
       {attachedImages.length > 0 ? (
         <div className="space-y-3 pt-1">
           {attachedImages.map((img, index) => {
-            const sizeKb = img.sizeBytes ? Math.round(img.sizeBytes / 1024) : null;
+            const sizeKb = img.sizeBytes
+              ? Math.round(img.sizeBytes / 1024)
+              : null;
 
             return (
               <div
@@ -128,7 +133,7 @@ export const AttachedImagesManager: React.FC = () => {
                 <div className="w-16 h-20 rounded-lg overflow-hidden bg-slate-200 shrink-0 border border-slate-200/90 shadow-xs flex items-center justify-center">
                   <img
                     src={img.url}
-                    alt={img.caption || 'Attached photo'}
+                    alt={img.caption || "Attached photo"}
                     className="w-full h-full object-cover object-center"
                   />
                 </div>
@@ -141,19 +146,25 @@ export const AttachedImagesManager: React.FC = () => {
                     </span>
                     {sizeKb && (
                       <span className="text-[10px] text-slate-400 font-mono">
-                        {sizeKb > 1024 ? `${(sizeKb / 1024).toFixed(1)} MB` : `${sizeKb} KB`}
+                        {sizeKb > 1024
+                          ? `${(sizeKb / 1024).toFixed(1)} MB`
+                          : `${sizeKb} KB`}
                       </span>
                     )}
                   </div>
                   <input
                     type="text"
                     value={img.caption}
-                    onChange={(e) => updateAttachedImage(img.id, { caption: e.target.value })}
+                    onChange={(e) =>
+                      updateAttachedImage(img.id, { caption: e.target.value })
+                    }
                     placeholder="Enter image caption (e.g. Full Length Photo, Family Photo, Kundali)"
                     className="w-full text-xs font-semibold text-slate-800 bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-rose-500"
                   />
                   {img.filename && (
-                    <p className="text-[10px] text-slate-400 truncate">{img.filename}</p>
+                    <p className="text-[10px] text-slate-400 truncate">
+                      {img.filename}
+                    </p>
                   )}
                 </div>
 
@@ -162,7 +173,7 @@ export const AttachedImagesManager: React.FC = () => {
                   <button
                     type="button"
                     disabled={index === 0}
-                    onClick={() => handleMove(index, 'up')}
+                    onClick={() => handleMove(index, "up")}
                     className="p-1.5 text-slate-400 hover:text-slate-700 disabled:opacity-30 disabled:hover:text-slate-400 rounded-lg transition-colors"
                     title="Move Up"
                   >
@@ -171,7 +182,7 @@ export const AttachedImagesManager: React.FC = () => {
                   <button
                     type="button"
                     disabled={index === attachedImages.length - 1}
-                    onClick={() => handleMove(index, 'down')}
+                    onClick={() => handleMove(index, "down")}
                     className="p-1.5 text-slate-400 hover:text-slate-700 disabled:opacity-30 disabled:hover:text-slate-400 rounded-lg transition-colors"
                     title="Move Down"
                   >
@@ -196,9 +207,12 @@ export const AttachedImagesManager: React.FC = () => {
           className="cursor-pointer border-2 border-dashed border-slate-200 hover:border-rose-400 p-6 rounded-xl text-center bg-slate-50/50 hover:bg-rose-50/20 transition-all space-y-1.5"
         >
           <ImagePlus className="w-6 h-6 text-slate-400 mx-auto mb-1" />
-          <p className="text-xs font-bold text-slate-700">No additional photos attached yet</p>
+          <p className="text-xs font-bold text-slate-700">
+            No additional photos attached yet
+          </p>
           <p className="text-[11px] text-slate-400 max-w-xs mx-auto">
-            Click here to attach full-length pictures, family photos, or kundali charts to the end of the document.
+            Click here to attach full-length pictures, family photos, or kundali
+            charts to the end of the document.
           </p>
         </div>
       )}

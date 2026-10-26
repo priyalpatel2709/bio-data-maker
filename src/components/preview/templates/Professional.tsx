@@ -1,7 +1,7 @@
-import React from 'react';
-import { BiodataDocument } from '../../../types/biodata';
-import { DocumentPhoto } from '../DocumentPhoto';
-import { calculateAge, formatDate } from '../../../utils/calculateAge';
+import React from "react";
+import { BiodataDocument } from "../../../types/biodata";
+import { DocumentPhoto } from "../DocumentPhoto";
+import { calculateAge, formatDate } from "../../../utils/calculateAge";
 
 interface TemplateProps {
   document: BiodataDocument;
@@ -11,14 +11,15 @@ export const Professional: React.FC<TemplateProps> = ({ document }) => {
   const { styling, sections, photoUrl } = document;
 
   // Split into sidebar sections (contact, vitals) and main sections (education, career, additional)
-  const contactSec = sections.find((s) => s.key === 'contact');
-  const personalSec = sections.find((s) => s.key === 'personal');
+  const contactSec = sections.find((s) => s.key === "contact");
+  const personalSec = sections.find((s) => s.key === "personal");
   const mainSections = sections.filter(
-    (s) => s.key !== 'contact' && s.key !== 'personal' && s.visible
+    (s) => s.key !== "contact" && s.key !== "personal" && s.visible,
   );
 
   const candidateName =
-    personalSec?.fields.find((f) => f.id.includes('name'))?.value || document.title;
+    personalSec?.fields.find((f) => f.id.includes("name"))?.value ||
+    document.title;
 
   return (
     <div className="w-full h-full flex flex-col sm:flex-row min-h-[297mm]">
@@ -36,7 +37,7 @@ export const Professional: React.FC<TemplateProps> = ({ document }) => {
                 styling={{
                   ...styling,
                   photoBorder: true,
-                  photoShape: 'square',
+                  photoShape: "square",
                 }}
                 className="w-32 h-40 border-2 border-white/80 shadow-md"
               />
@@ -53,7 +54,7 @@ export const Professional: React.FC<TemplateProps> = ({ document }) => {
                 {personalSec.fields
                   .filter((f) => f.visible)
                   .map((f) => {
-                    const isDob = f.id.includes('dob');
+                    const isDob = f.id.includes("dob");
                     const age = isDob ? calculateAge(f.value) : null;
                     return (
                       <div key={f.id} className="border-b border-white/10 pb-1">
@@ -61,7 +62,9 @@ export const Professional: React.FC<TemplateProps> = ({ document }) => {
                           {f.label}
                         </span>
                         <span className="font-medium text-white/95">
-                          {f.type === 'date' ? formatDate(f.value) : f.value || '—'}
+                          {f.type === "date"
+                            ? formatDate(f.value)
+                            : f.value || "—"}
                           {age !== null && ` (${age} yrs)`}
                         </span>
                       </div>
@@ -86,7 +89,7 @@ export const Professional: React.FC<TemplateProps> = ({ document }) => {
                         {f.label}
                       </span>
                       <span className="font-medium text-white/95 leading-relaxed">
-                        {f.value || '—'}
+                        {f.value || "—"}
                       </span>
                     </div>
                   ))}
@@ -150,14 +153,16 @@ export const Professional: React.FC<TemplateProps> = ({ document }) => {
                       <div
                         key={f.id}
                         className={`text-xs sm:text-sm ${
-                          f.type === 'textarea' ? 'sm:col-span-2' : ''
+                          f.type === "textarea" ? "sm:col-span-2" : ""
                         }`}
                       >
                         <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
                           {f.label}
                         </span>
                         <span className="text-slate-900 font-medium leading-relaxed">
-                          {f.type === 'date' ? formatDate(f.value) : f.value || '—'}
+                          {f.type === "date"
+                            ? formatDate(f.value)
+                            : f.value || "—"}
                         </span>
                       </div>
                     ))}
