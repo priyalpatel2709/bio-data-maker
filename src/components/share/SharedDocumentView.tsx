@@ -164,28 +164,47 @@ export const SharedDocumentView: React.FC = () => {
       ? (data as ResumeDocument).contact.fullName || "Professional"
       : getBiodataName(data as BiodataDocument);
 
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (!containerRef.current) return;
+      const parentWidth = containerRef.current.clientWidth - 24;
+      const docWidth = 794;
+      if (parentWidth > 0 && parentWidth < docWidth) {
+        setScale(Math.max(0.25, Math.min(1, parentWidth / docWidth)));
+      } else {
+        setScale(1);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [loading]);
+
   return (
-    <div className="min-h-screen bg-slate-200 flex flex-col">
+    <div className="min-h-screen bg-slate-200 flex flex-col font-sans">
       {/* Top Read-Only Bar */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-4 sm:px-6 h-14 flex items-center justify-between no-print">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-3 sm:px-6 h-14 flex items-center justify-between no-print gap-2">
         {/* Left: Document info */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <div
-            className={`w-8 h-8 rounded-lg text-white flex items-center justify-center font-bold shadow-xs ${
+            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg text-white flex items-center justify-center font-bold shadow-xs shrink-0 ${
               type === "biodata" ? "bg-rose-600" : "bg-teal-700"
             }`}
           >
             {type === "biodata" ? (
-              <Heart className="w-4 h-4" />
+              <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             ) : (
-              <Briefcase className="w-4 h-4" />
+              <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             )}
           </div>
-          <div>
-            <h1 className="text-xs sm:text-sm font-bold text-slate-900 leading-tight">
+          <div className="min-w-0">
+            <h1 className="text-xs sm:text-sm font-bold text-slate-900 leading-tight truncate">
               {displayName}
             </h1>
-            <p className="text-[10px] text-slate-500 font-medium">
+            <p className="text-[10px] text-slate-500 font-medium truncate">
               Read-Only{" "}
               {type === "biodata"
                 ? "Matrimonial Biodata"
@@ -195,10 +214,10 @@ export const SharedDocumentView: React.FC = () => {
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <button
             onClick={handleCopyLink}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition"
+            className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition"
           >
             {copiedLink ? (
               <Check className="w-3.5 h-3.5 text-emerald-600" />
@@ -212,10 +231,11 @@ export const SharedDocumentView: React.FC = () => {
 
           <button
             onClick={handlePrint}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold shadow-xs transition active:scale-95"
+            className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold shadow-xs transition active:scale-95"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span>Print / Save PDF</span>
+            <span className="hidden sm:inline">Print / Save PDF</span>
+            <span className="sm:hidden">Print</span>
           </button>
 
           <button
@@ -229,19 +249,40 @@ export const SharedDocumentView: React.FC = () => {
       </header>
 
       {/* Main Document Canvas Viewport */}
-      <main className="flex-1 overflow-auto p-4 sm:p-8 flex justify-center items-start print:p-0 print:overflow-visible">
-        {type === "resume" ? (
-          <div className="preview-scale-wrapper w-full max-w-[794px] print:max-w-none">
-            <ResumeTemplateRenderer resume={data as ResumeDocument} />
-          </div>
-        ) : (
+      <main
+        ref={containerRef}
+        className="flex-1 overflow-auto p-2 sm:p-8 flex flex-col items-center justify-start print:p-0 print:overflow-visible"
+      >
+        <div
+          style={{
+            width: `${Math.round(794 * scale)}px`,
+            position: "relative",
+          }}
+          className="shrink-0 mb-12 mx-auto"
+        >
           <div
-            id="printable-biodata"
-            className="preview-scale-wrapper w-full max-w-[794px] print:max-w-none bg-white shadow-sm rounded overflow-hidden"
+            style={{
+              width: "794px",
+              transform: `scale(${scale})`,
+              transformOrigin: "top left",
+              transition: "transform 0.15s ease-out",
+              marginBottom: scale < 1 ? `-${1123 * (1 - scale)}px` : undefined,
+              marginRight: scale < 1 ? `-${794 * (1 - scale)}px` : undefined,
+            }}
+            className="preview-scale-wrapper shadow-xl rounded origin-top-left"
           >
-            {renderBiodata(data as BiodataDocument)}
+            {type === "resume" ? (
+              <ResumeTemplateRenderer resume={data as ResumeDocument} />
+            ) : (
+              <div
+                id="printable-biodata"
+                className="bg-white shadow-sm rounded overflow-hidden"
+              >
+                {renderBiodata(data as BiodataDocument)}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </main>
     </div>
   );

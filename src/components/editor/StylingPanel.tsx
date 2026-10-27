@@ -42,7 +42,7 @@ export const StylingPanel: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6 pb-24">
+    <div className="space-y-6 pb-24 w-full max-w-full">
       {/* 0. Document Language & Script */}
       <div className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-sm space-y-4">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">

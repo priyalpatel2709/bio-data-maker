@@ -9,8 +9,8 @@ export const TemplateSelector: React.FC = () => {
   const currentTemplateId = document.styling.templateId;
 
   return (
-    <div className="space-y-4 pb-24">
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm">
+    <div className="space-y-4 pb-24 w-full max-w-full">
+      <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm w-full">
         <h4 className="text-sm font-bold text-slate-900">
           Switch Template Layout
         </h4>
@@ -20,14 +20,14 @@ export const TemplateSelector: React.FC = () => {
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 w-full">
         {TEMPLATES.map((tpl) => {
           const isSelected = currentTemplateId === tpl.id;
           return (
             <div
               key={tpl.id}
               onClick={() => setTemplate(tpl.id)}
-              className={`cursor-pointer rounded-2xl border p-4 transition-all duration-200 flex items-start gap-4 ${
+              className={`cursor-pointer rounded-2xl border p-3 sm:p-4 transition-all duration-200 flex items-start gap-3 sm:gap-4 w-full min-w-0 ${
                 isSelected
                   ? "border-rose-500 bg-rose-50/30 ring-2 ring-rose-200 shadow-md"
                   : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"

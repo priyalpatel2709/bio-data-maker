@@ -9,7 +9,7 @@ export const ResumeTemplateSelector: React.FC = () => {
   const currentTemplateId = document.styling.templateId;
 
   return (
-    <div className="space-y-4 pb-12">
+    <div className="space-y-4 pb-12 w-full max-w-full">
       <div className="bg-gradient-to-r from-teal-50 to-sky-50 p-4 rounded-xl border border-teal-200/80">
         <div className="flex items-center gap-2 text-teal-800 font-bold text-sm mb-1">
           <Sparkles className="w-4 h-4" />
@@ -21,7 +21,7 @@ export const ResumeTemplateSelector: React.FC = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full">
         {RESUME_TEMPLATES.map((tpl) => {
           const isSelected = currentTemplateId === tpl.id;
 
@@ -29,7 +29,7 @@ export const ResumeTemplateSelector: React.FC = () => {
             <div
               key={tpl.id}
               onClick={() => setTemplate(tpl.id)}
-              className={`group cursor-pointer rounded-xl border-2 overflow-hidden transition-all relative flex flex-col justify-between ${
+              className={`group cursor-pointer rounded-xl border-2 overflow-hidden transition-all relative flex flex-col justify-between w-full min-w-0 ${
                 isSelected
                   ? "border-teal-600 bg-teal-50/20 shadow-md ring-2 ring-teal-600/20"
                   : "border-slate-200 hover:border-slate-300 bg-white hover:shadow-sm"

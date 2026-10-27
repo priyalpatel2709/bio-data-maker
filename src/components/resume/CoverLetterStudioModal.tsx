@@ -75,6 +75,9 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
     "delivering high-quality, customer-centric products and pushing technology forward",
   );
 
+  // Mobile view tab toggle
+  const [mobileTab, setMobileTab] = useState<"editor" | "preview">("editor");
+
   // Copy & save feedback
   const [copiedText, setCopiedText] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -237,41 +240,41 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
   const primaryColor = styling.primaryColor || "#0F766E";
 
   const modalContent = (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
-      <div className="bg-white rounded-2xl shadow-2xl border border-slate-200/90 w-full max-w-5xl h-[92vh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
+      <div className="bg-white rounded-2xl shadow-2xl border border-slate-200/90 w-full max-w-5xl h-[94vh] sm:h-[92vh] flex flex-col overflow-hidden">
         {/* Top Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70 shrink-0">
-          <div className="flex items-center gap-3">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70 shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             <div
-              className="w-10 h-10 rounded-xl text-white flex items-center justify-center shadow-xs"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl text-white flex items-center justify-center shadow-xs shrink-0"
               style={{ backgroundColor: primaryColor }}
             >
-              <Mail className="w-5 h-5" />
+              <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div>
-              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                Cover Letter Builder
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-teal-100 text-teal-800">
-                  Fill-In-The-Blank (No AI)
+            <div className="min-w-0">
+              <h2 className="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-1.5 sm:gap-2 truncate">
+                <span>Cover Letter Builder</span>
+                <span className="hidden sm:inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-teal-100 text-teal-800">
+                  Fill-In-The-Blank
                 </span>
               </h2>
-              <p className="text-xs text-slate-500">
-                Coordinated with your resume branding, colors, and typography.
+              <p className="text-[11px] text-slate-500 truncate">
+                Branded with your resume styling.
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={handleSave}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold shadow-xs transition active:scale-95"
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold shadow-xs transition active:scale-95"
             >
               {savedSuccess ? (
                 <Check className="w-3.5 h-3.5" />
               ) : (
                 <Save className="w-3.5 h-3.5" />
               )}
-              <span>{savedSuccess ? "Saved to Resume" : "Save"}</span>
+              <span>{savedSuccess ? "Saved" : "Save"}</span>
             </button>
             <button
               onClick={onClose}
@@ -282,10 +285,34 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
           </div>
         </div>
 
+        {/* Mobile View Switcher */}
+        <div className="flex md:hidden bg-slate-100 p-1 border-b border-slate-200 shrink-0">
+          <button
+            onClick={() => setMobileTab("editor")}
+            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition ${
+              mobileTab === "editor"
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            Edit Details
+          </button>
+          <button
+            onClick={() => setMobileTab("preview")}
+            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition ${
+              mobileTab === "preview"
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            Letter Preview
+          </button>
+        </div>
+
         {/* Modal Main Area: Left Form Inputs | Right Styled Live Preview */}
         <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
           {/* Left Inputs Column (5 cols) */}
-          <div className="md:col-span-5 border-r border-slate-200 overflow-y-auto p-5 space-y-5 bg-slate-50/40">
+          <div className={`md:col-span-5 border-r border-slate-200 overflow-y-auto p-4 sm:p-5 space-y-5 bg-slate-50/40 ${mobileTab === "preview" ? "hidden md:block" : "block"}`}>
             {/* Template Selector */}
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1.5">
@@ -413,7 +440,7 @@ export const CoverLetterStudioModal: React.FC<CoverLetterStudioModalProps> = ({
           </div>
 
           {/* Right Live Styled Preview Column (7 cols) */}
-          <div className="md:col-span-7 flex flex-col bg-slate-200/70 overflow-hidden">
+          <div className={`md:col-span-7 flex flex-col bg-slate-200/70 overflow-hidden ${mobileTab === "editor" ? "hidden md:flex" : "flex"}`}>
             {/* Preview Toolbar */}
             <div className="h-12 bg-white/95 border-b border-slate-200/80 px-4 py-2 flex items-center justify-between shrink-0">
               <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">

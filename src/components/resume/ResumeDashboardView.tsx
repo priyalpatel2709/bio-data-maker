@@ -58,59 +58,61 @@ export const ResumeDashboardView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/70 pb-20">
+    <div className="min-h-screen bg-slate-50/70 pb-20 w-full max-w-full overflow-x-hidden">
       {/* Hero Banner */}
-      <section className="bg-gradient-to-b from-white via-white to-slate-50 border-b border-slate-200/80 pt-12 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      <section className="bg-gradient-to-b from-white via-white to-slate-50 border-b border-slate-200/80 pt-8 sm:pt-12 pb-10 sm:pb-16 px-4 sm:px-6 lg:px-8 w-full max-w-full">
+        <div className="max-w-7xl mx-auto w-full">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200/60 text-teal-800 text-xs font-semibold uppercase tracking-wider mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200/60 text-teal-800 text-xs font-semibold uppercase tracking-wider mb-3 sm:mb-4">
                 <Sparkles className="w-3.5 h-3.5" />
                 ATS-Optimized Resume Engine
               </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
                 Craft Modern, Job-Winning <br className="hidden sm:inline" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-700 via-sky-600 to-indigo-700">
                   Professional Resumes
                 </span>
               </h1>
-              <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
+              <p className="mt-3 sm:mt-4 text-sm sm:text-lg text-slate-600 leading-relaxed">
                 Build ATS-friendly, recruiter-approved resumes in minutes.
                 Export to high-definition PDF, editable Microsoft Word (.docx),
                 or copy formatted plain text directly for application forms.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+            <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 shrink-0">
               <button
                 onClick={() => setIsTailorModalOpen(true)}
-                className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-teal-800 via-sky-900 to-indigo-900 hover:from-teal-900 hover:to-indigo-950 text-white font-bold text-sm shadow-lg shadow-teal-900/20 transition active:scale-95"
+                className="flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-teal-800 via-sky-900 to-indigo-900 hover:from-teal-900 hover:to-indigo-950 text-white font-bold text-xs sm:text-sm shadow-lg shadow-teal-900/20 transition active:scale-95"
                 title="Paste a job description to tailor your resume and generate a customized cover letter"
               >
                 <Sparkles className="w-4 h-4 text-teal-300" />
                 <span>Tailor for JD & Cover Letter</span>
               </button>
-              <button
-                onClick={() => createNewResume("software")}
-                className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-sm shadow-md shadow-teal-600/20 transition active:scale-95"
-              >
-                <Plus className="w-5 h-5" />
-                <span>Create New</span>
-              </button>
-              <button
-                onClick={() => setViewMode("studio")}
-                className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white border border-slate-300 hover:border-slate-400 text-slate-700 font-semibold text-sm transition"
-              >
-                <Edit3 className="w-5 h-5" />
-                <span>Studio</span>
-              </button>
+              <div className="grid grid-cols-2 sm:flex gap-2.5 sm:gap-3">
+                <button
+                  onClick={() => createNewResume("software")}
+                  className="flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs sm:text-sm shadow-md shadow-teal-600/20 transition active:scale-95"
+                >
+                  <Plus className="w-4 sm:w-5 h-4 sm:h-5" />
+                  <span>Create New</span>
+                </button>
+                <button
+                  onClick={() => setViewMode("studio")}
+                  className="flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl bg-white border border-slate-300 hover:border-slate-400 text-slate-700 font-semibold text-xs sm:text-sm transition"
+                >
+                  <Edit3 className="w-4 sm:w-5 h-4 sm:h-5" />
+                  <span>Studio</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Switch to Biodata Maker Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 w-full">
         <div className="bg-gradient-to-r from-rose-900 via-slate-900 to-amber-950 text-white rounded-2xl p-5 sm:p-6 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-rose-500/20 border border-rose-400/30 text-rose-300 flex items-center justify-center shrink-0">
@@ -142,7 +144,7 @@ export const ResumeDashboardView: React.FC = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 space-y-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 space-y-12 w-full">
         {/* Saved Resumes Section */}
         <section>
           <div className="flex items-center justify-between mb-5">

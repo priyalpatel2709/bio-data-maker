@@ -47,39 +47,39 @@ const AppContent: React.FC = () => {
     (appMode === "resume" && resumeViewMode === "dashboard");
 
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen flex flex-col font-sans w-full max-w-full overflow-x-hidden">
       {/* Top Header when on either Dashboard */}
       {isCurrentDashboard && (
-        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-2 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-1 sm:gap-4 w-full max-w-full">
           {/* Logo & Brand */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             <div
-              className={`w-9 h-9 rounded-xl text-white flex items-center justify-center font-bold shadow-md transition-all ${
+              className={`w-7 h-7 sm:w-9 sm:h-9 rounded-xl text-white flex items-center justify-center font-bold shadow-md transition-all ${
                 appMode === "biodata"
                   ? "bg-gradient-to-tr from-rose-600 to-amber-500 shadow-rose-600/20"
                   : "bg-gradient-to-tr from-teal-700 to-sky-500 shadow-teal-700/20"
               }`}
             >
               {appMode === "biodata" ? (
-                <Sparkles className="w-5 h-5" />
+                <Sparkles className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
               ) : (
-                <Briefcase className="w-5 h-5" />
+                <Briefcase className="w-3.5 h-3.5 sm:w-5 sm:h-5" />
               )}
             </div>
             <div>
-              <span className="text-base font-extrabold tracking-tight text-slate-900">
+              <span className="text-xs sm:text-base font-extrabold tracking-tight text-slate-900">
                 {appMode === "biodata" ? (
                   <>
-                    Biodata<span className="text-rose-600">Maker</span>
+                    Biodata<span className="text-rose-600 hidden xs:inline">Maker</span>
                   </>
                 ) : (
                   <>
-                    Resume<span className="text-teal-700">Builder</span>
+                    Resume<span className="text-teal-700 hidden xs:inline">Builder</span>
                   </>
                 )}
               </span>
               <span
-                className={`hidden sm:inline-block ml-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full border ${
+                className={`hidden md:inline-block ml-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full border ${
                   appMode === "biodata"
                     ? "bg-rose-50 text-rose-700 border-rose-200/60"
                     : "bg-teal-50 text-teal-800 border-teal-200/60"
@@ -91,36 +91,36 @@ const AppContent: React.FC = () => {
           </div>
 
           {/* Mode Switcher Tabs (Center / Desktop & Mobile) */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/80 shadow-2xs">
+          <div className="flex items-center bg-slate-100 p-0.5 sm:p-1 rounded-xl border border-slate-200/80 shadow-2xs shrink-0">
             <button
               onClick={() => setAppMode("biodata")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all ${
                 appMode === "biodata"
                   ? "bg-white text-rose-700 shadow-sm"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              <Heart className="w-3.5 h-3.5 text-rose-600" />
-              <span>Biodata Maker</span>
+              <Heart className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+              <span>Biodata<span className="hidden sm:inline"> Maker</span></span>
             </button>
             <button
               onClick={() => setAppMode("resume")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-semibold transition-all ${
                 appMode === "resume"
                   ? "bg-white text-teal-800 shadow-sm"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              <Briefcase className="w-3.5 h-3.5 text-teal-700" />
-              <span>Resume Builder</span>
-              <span className="ml-1 px-1.5 py-0.2 text-[9px] bg-teal-100 text-teal-800 rounded-full font-bold">
+              <Briefcase className="w-3.5 h-3.5 text-teal-700 shrink-0" />
+              <span>Resume<span className="hidden sm:inline"> Builder</span></span>
+              <span className="hidden sm:inline-block ml-1 px-1.5 py-0.2 text-[9px] bg-teal-100 text-teal-800 rounded-full font-bold">
                 NEW
               </span>
             </button>
           </div>
 
           {/* Right Navigation */}
-          <nav className="flex items-center gap-3 text-xs font-semibold text-slate-600">
+          <nav className="flex items-center gap-1 sm:gap-3 text-xs font-semibold text-slate-600 shrink-0">
             <a
               href="#templates"
               className="hover:text-slate-900 transition-colors hidden md:block"
@@ -128,9 +128,13 @@ const AppContent: React.FC = () => {
               Templates
             </a>
 
-            {appMode === "biodata" && <LanguageSwitcher />}
+            {appMode === "biodata" && (
+              <div className="hidden sm:block">
+                <LanguageSwitcher />
+              </div>
+            )}
 
-            <UserMenu />
+            <UserMenu compact />
 
             <button
               onClick={() => {
@@ -140,20 +144,20 @@ const AppContent: React.FC = () => {
                   setResumeViewMode("studio");
                 }
               }}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold text-white transition-all shadow-sm active:scale-95 ${
+              className={`px-2 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-semibold text-white transition-all shadow-sm active:scale-95 shrink-0 ${
                 appMode === "biodata"
                   ? "bg-slate-900 hover:bg-slate-800"
                   : "bg-teal-700 hover:bg-teal-800"
               }`}
             >
-              Open Studio
+              <span className="hidden sm:inline">Open </span>Studio
             </button>
           </nav>
         </header>
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1">
+      <div className="flex-1 w-full max-w-full min-w-0">
         {appMode === "biodata" ? (
           biodataViewMode === "dashboard" ? (
             <DashboardView />

@@ -79,23 +79,23 @@ export const DashboardView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/60 pb-20">
+    <div className="min-h-screen bg-slate-50/60 pb-20 w-full max-w-full overflow-x-hidden">
       {/* Hero Banner */}
-      <section className="bg-gradient-to-b from-white via-white to-slate-50 border-b border-slate-200/80 pt-12 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      <section className="bg-gradient-to-b from-white via-white to-slate-50 border-b border-slate-200/80 pt-8 sm:pt-12 pb-10 sm:pb-16 px-4 sm:px-6 lg:px-8 w-full max-w-full">
+        <div className="max-w-7xl mx-auto w-full">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200/60 text-rose-700 text-xs font-semibold uppercase tracking-wider mb-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200/60 text-rose-700 text-xs font-semibold uppercase tracking-wider mb-3 sm:mb-4">
                 <Sparkles className="w-3.5 h-3.5" />
                 Next-Gen Biodata Builder
               </div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
                 Craft Elegant, Dignified <br className="hidden sm:inline" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-700 via-amber-600 to-rose-600">
                   Biodata Documents
                 </span>
               </h1>
-              <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
+              <p className="mt-3 sm:mt-4 text-sm sm:text-lg text-slate-600 leading-relaxed">
                 Design stunning personal and matrimonial biodatas in minutes.
                 Choose from handcrafted templates, customize layouts with
                 drag-and-drop, and export high-resolution PDFs or editable Word
@@ -127,7 +127,7 @@ export const DashboardView: React.FC = () => {
       </section>
 
       {/* Resume Builder Spotlight Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 w-full">
         <div className="bg-gradient-to-r from-teal-900 via-slate-900 to-indigo-950 text-white rounded-2xl p-5 sm:p-6 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-teal-500/20 border border-teal-400/30 text-teal-300 flex items-center justify-center shrink-0">
@@ -159,7 +159,7 @@ export const DashboardView: React.FC = () => {
       </div>
 
       {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 space-y-14">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 space-y-14 w-full">
         {/* Saved Drafts Section */}
         {savedDocs.length > 0 && (
           <section>
@@ -272,12 +272,12 @@ export const DashboardView: React.FC = () => {
             </div>
 
             {/* Category Filter Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-2 max-w-full w-full">
               {categories.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap shrink-0 transition-all ${
                     selectedCategory === cat.id
                       ? "bg-slate-900 text-white shadow-sm"
                       : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-100"

@@ -101,7 +101,7 @@ export const ResumeStylingPanel: React.FC = () => {
         </div>
 
         {/* Custom Color Pickers */}
-        <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-4">
+        <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <label className="font-medium text-slate-700">Primary Color:</label>
             <input

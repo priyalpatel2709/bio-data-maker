@@ -52,13 +52,13 @@ export const UserMenu: React.FC<UserMenuProps> = ({ compact = false }) => {
   // If user is NOT logged in: Show both "Sign In" and "Create Account" buttons
   if (!user) {
     return (
-      <div className="flex items-center gap-1.5 sm:gap-2">
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
         <button
           onClick={() => {
             setAuthMode("login");
             setAuthModalOpen(true);
           }}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+          className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
             compact
               ? "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200"
               : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200/90 shadow-2xs hover:shadow-xs"
@@ -74,7 +74,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ compact = false }) => {
             setAuthMode("signup");
             setAuthModalOpen(true);
           }}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 ${
+          className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95 ${
             compact
               ? "bg-slate-900 hover:bg-slate-800 text-white"
               : "bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-700 hover:to-rose-800 text-white shadow-rose-600/20"

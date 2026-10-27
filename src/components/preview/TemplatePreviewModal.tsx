@@ -19,6 +19,16 @@ export const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
   onClose,
   onSelect,
 }) => {
+  const [isMobile, setIsMobile] = React.useState(
+    () => typeof window !== "undefined" && window.innerWidth < 640,
+  );
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   if (!template) return null;
 
   return (
@@ -31,11 +41,11 @@ export const TemplatePreviewModal: React.FC<TemplatePreviewModalProps> = ({
     >
       <div className="flex flex-col lg:flex-row gap-6 items-stretch">
         {/* Full Miniature A4 Preview */}
-        <div className="flex-1 bg-slate-100 rounded-2xl p-4 flex items-center justify-center overflow-hidden border border-slate-200">
+        <div className="flex-1 bg-slate-100 rounded-2xl p-2 sm:p-4 flex items-center justify-center overflow-hidden border border-slate-200">
           <TemplateThumbnail
             templateId={template.id}
-            scale={0.58}
-            height={640}
+            scale={isMobile ? 0.36 : 0.58}
+            height={isMobile ? 380 : 640}
             className="rounded-xl shadow-xl"
           />
         </div>

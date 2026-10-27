@@ -81,34 +81,48 @@ export const TemplateThumbnail: React.FC<TemplateThumbnailProps> = ({
 
   const patternData = PATTERNS[doc.styling.backgroundPattern] || PATTERNS.none;
 
+  const scaledWidth = Math.round(794 * scale);
+  const scaledHeight = Math.round(1123 * scale);
+
   return (
     <div
-      className={`relative w-full overflow-hidden flex justify-center bg-slate-100/60 select-none pointer-events-none ${className}`}
+      className={`relative w-full overflow-hidden flex justify-center items-start bg-slate-100/60 select-none pointer-events-none ${className}`}
       style={{ height }}
     >
       <div
-        className="shrink-0 origin-top shadow-lg"
         style={{
-          width: "794px", // Standard 210mm in pixels
-          minHeight: "1123px", // Standard 297mm in pixels
-          transform: `scale(${scale})`,
-          backgroundColor: doc.styling.backgroundColor || "#FFFFFF",
+          width: `${scaledWidth}px`,
+          height: `${scaledHeight}px`,
+          position: "relative",
+          overflow: "hidden",
+          flexShrink: 0,
         }}
       >
-        {/* Background Pattern Layer */}
-        {doc.styling.backgroundPattern !== "none" && (
-          <div
-            className="absolute inset-0 pointer-events-none z-0"
-            style={{
-              backgroundImage: patternData.css,
-              opacity: doc.styling.backgroundOpacity,
-            }}
-          />
-        )}
+        <div
+          className="shadow-lg"
+          style={{
+            width: "794px", // Standard 210mm in pixels
+            minHeight: "1123px", // Standard 297mm in pixels
+            transform: `scale(${scale})`,
+            transformOrigin: "top left",
+            backgroundColor: doc.styling.backgroundColor || "#FFFFFF",
+          }}
+        >
+          {/* Background Pattern Layer */}
+          {doc.styling.backgroundPattern !== "none" && (
+            <div
+              className="absolute inset-0 pointer-events-none z-0"
+              style={{
+                backgroundImage: patternData.css,
+                opacity: doc.styling.backgroundOpacity,
+              }}
+            />
+          )}
 
-        {/* Actual Live Template Rendered */}
-        <div className="relative z-10 w-full h-full">
-          {renderTemplateComponent()}
+          {/* Actual Live Template Rendered */}
+          <div className="relative z-10 w-full h-full">
+            {renderTemplateComponent()}
+          </div>
         </div>
       </div>
     </div>

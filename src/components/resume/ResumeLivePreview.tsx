@@ -50,23 +50,38 @@ export const ResumeLivePreview: React.FC = () => {
     document.styling.paperSize,
   );
 
-  // Auto-fit calculation
+  // Auto-fit calculation with ResizeObserver for mobile tab switches and window resizes
   useEffect(() => {
     const calculateFit = () => {
       if (!containerRef.current) return;
-      const parentWidth = containerRef.current.clientWidth - 48;
-      if (parentWidth > 0) {
+      const clientWidth = containerRef.current.clientWidth;
+      if (clientWidth <= 0) return;
+      // Account for container padding (p-2 on mobile is 16px total) + 8px safe margin
+      const availableWidth = clientWidth - 24;
+      if (availableWidth > 0) {
         const calculated = Math.min(
           1.0,
-          Math.max(0.4, (parentWidth - 32) / pageWidthPx),
+          Math.max(0.15, availableWidth / pageWidthPx),
         );
         setFitScale(calculated);
       }
     };
 
     calculateFit();
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined" && containerRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        calculateFit();
+      });
+      resizeObserver.observe(containerRef.current);
+    }
+
     window.addEventListener("resize", calculateFit);
-    return () => window.removeEventListener("resize", calculateFit);
+    return () => {
+      if (resizeObserver) resizeObserver.disconnect();
+      window.removeEventListener("resize", calculateFit);
+    };
   }, [pageWidthPx]);
 
   // Comprehensive rule-based ATS audit
@@ -94,14 +109,14 @@ export const ResumeLivePreview: React.FC = () => {
   return (
     <div className="flex-1 flex flex-col h-full bg-slate-200/80 overflow-hidden relative">
       {/* Top Controls Toolbar */}
-      <div className="h-13 bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-4 py-2 flex items-center justify-between gap-3 shrink-0 z-20">
+      <div className="min-h-[3rem] h-auto bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-2.5 sm:px-4 py-1.5 sm:py-2 flex flex-wrap items-center justify-between gap-2 shrink-0 z-20">
         {/* Left Side: ATS Score & A4 Page Badges */}
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 flex-wrap">
           {/* Clickable ATS Score Badge -> opens detailed Auditor */}
           <button
             type="button"
             onClick={() => setIsAuditorOpen(true)}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition hover:shadow-xs active:scale-95 cursor-pointer ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-xs font-bold border transition hover:shadow-xs active:scale-95 cursor-pointer ${
               atsReport.overallScore >= 80
                 ? "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"
                 : atsReport.overallScore >= 60
@@ -110,8 +125,12 @@ export const ResumeLivePreview: React.FC = () => {
             }`}
             title="Click to view detailed Rule-Based ATS Audit & Action Verbs breakdown"
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-teal-700" />
-            <span>ATS Score: {atsReport.overallScore}%</span>
+            <ShieldCheck className="w-3.5 h-3.5 text-teal-700 shrink-0" />
+            <span>
+              <span className="hidden sm:inline">ATS Score: </span>
+              <span className="sm:hidden">ATS: </span>
+              {atsReport.overallScore}%
+            </span>
             <span className="text-[10px] uppercase font-extrabold px-1.5 py-0.2 bg-white/80 rounded-md">
               {atsReport.grade}
             </span>
@@ -126,7 +145,7 @@ export const ResumeLivePreview: React.FC = () => {
               >
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                 <span>
-                  Spills into Page 2 (+{metrics.estimatedLinesOver} lines)
+                  <span className="hidden sm:inline">Spills into </span>Page 2 (+{metrics.estimatedLinesOver})
                 </span>
               </div>
             ) : (
@@ -136,8 +155,8 @@ export const ResumeLivePreview: React.FC = () => {
               >
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>
-                  1 Page {isLetter ? "Letter" : "A4"} ({metrics.fillPercentage}%
-                  full)
+                  1 Page {isLetter ? "Letter" : "A4"}
+                  <span className="hidden sm:inline"> ({metrics.fillPercentage}% full)</span>
                 </span>
               </div>
             )
@@ -243,10 +262,11 @@ export const ResumeLivePreview: React.FC = () => {
           {/* Export Button */}
           <button
             onClick={() => setExportModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-lg shadow-sm transition active:scale-95"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold rounded-lg shadow-sm transition active:scale-95"
           >
             <Download className="w-3.5 h-3.5" />
-            <span>Export Resume</span>
+            <span className="hidden sm:inline">Export Resume</span>
+            <span className="sm:hidden">Export</span>
           </button>
         </div>
       </div>
@@ -254,21 +274,31 @@ export const ResumeLivePreview: React.FC = () => {
       {/* Main Preview Viewport */}
       <div
         ref={containerRef}
-        className="flex-1 overflow-auto p-4 sm:p-8 flex flex-col items-center justify-start print:p-0 print:overflow-visible"
+        className="flex-1 overflow-x-auto overflow-y-auto p-2 sm:p-8 flex flex-col items-center justify-start print:p-0 print:overflow-visible w-full max-w-full"
       >
-        {/* Scale Wrapper */}
+        {/* Outer Scaled Width Constrainer */}
         <div
-          ref={documentWrapperRef}
           style={{
-            transform: `scale(${scale})`,
-            transformOrigin: "top center",
-            transition: "transform 0.12s ease-out",
-            width: `${pageWidthPx}px`,
+            width: `${Math.round(pageWidthPx * scale)}px`,
+            position: "relative",
           }}
-          className="preview-scale-wrapper shrink-0 mb-16 relative"
+          className="shrink-0 mb-16 mx-auto"
         >
-          {/* Document Renderer */}
-          <ResumeTemplateRenderer resume={document} />
+          {/* Scale Wrapper */}
+          <div
+            ref={documentWrapperRef}
+            style={{
+              width: `${pageWidthPx}px`,
+              transform: `scale(${scale})`,
+              transformOrigin: "top left",
+              transition: "transform 0.12s ease-out",
+              marginBottom: `-${(metrics.contentHeightPx || metrics.nominalPageHeightPx) * (1 - scale)}px`,
+              marginRight: `-${pageWidthPx * (1 - scale)}px`,
+            }}
+            className="preview-scale-wrapper shadow-2xl relative origin-top-left"
+          >
+            {/* Document Renderer */}
+            <ResumeTemplateRenderer resume={document} />
 
           {/* Visual Page Break Guide Overlay (Only when enabled and in single-page mode) */}
           {showPageGuides && totalPages === 1 && (
@@ -339,6 +369,7 @@ export const ResumeLivePreview: React.FC = () => {
             )}
           </div>
         </div>
+      </div>
       </div>
 
       {/* ATS Rule-Based Auditor Modal */}
