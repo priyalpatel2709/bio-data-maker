@@ -12,6 +12,8 @@ import { StockholmTemplate } from "./templates/StockholmTemplate";
 import { SydneyTemplate } from "./templates/SydneyTemplate";
 import { DublinTemplate } from "./templates/DublinTemplate";
 import { ViennaTemplate } from "./templates/ViennaTemplate";
+import { WhiteBrownMinimalistTemplate } from "./templates/WhiteBrownMinimalistTemplate";
+import { WhitePurpleMinimalistTemplate } from "./templates/WhitePurpleMinimalistTemplate";
 
 interface ResumeTemplateRendererProps {
   resume: ResumeDocument;
@@ -47,6 +49,10 @@ export const ResumeTemplateRenderer: React.FC<ResumeTemplateRendererProps> = ({
       return <DublinTemplate resume={resume} />;
     case "vienna":
       return <ViennaTemplate resume={resume} />;
+    case "white-brown-minimalist":
+      return <WhiteBrownMinimalistTemplate resume={resume} />;
+    case "white-purple-minimalist":
+      return <WhitePurpleMinimalistTemplate resume={resume} />;
     default:
       return <ModernTechTemplate resume={resume} />;
   }

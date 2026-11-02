@@ -17,6 +17,8 @@ const COLOR_PRESETS = [
   { name: "Emerald Forest", primary: "#047857", secondary: "#0D9488" },
   { name: "Crimson Burgundy", primary: "#991B1B", secondary: "#B91C1C" },
   { name: "Warm Amber / Rust", primary: "#7C2D12", secondary: "#9A3412" },
+  { name: "Warm Mocha / Brown", primary: "#9D7660", secondary: "#785340" },
+  { name: "Modern Purple / Tech", primary: "#7F55DA", secondary: "#6D28D9" },
 ];
 
 const FONT_OPTIONS: { id: ResumeFontOption; label: string; type: string }[] = [

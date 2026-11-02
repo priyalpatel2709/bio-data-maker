@@ -18,7 +18,7 @@ import {
   ResumeTemplateId,
   ResumeSectionMeta,
 } from "../types/resume";
-import { defaultResume, RESUME_TEMPLATES } from "../data/defaultResume";
+import { defaultResume, defaultOperationsResume, RESUME_TEMPLATES } from "../data/defaultResume";
 import { CoverLetterDocument } from "../types/coverLetter";
 import {
   loadCurrentResume,
@@ -108,7 +108,7 @@ interface ResumeContextType {
   refreshSavedResumes: () => void;
   loadResume: (doc: ResumeDocument) => void;
   addSavedResume: (doc: ResumeDocument) => void;
-  createNewResume: (preset?: "software" | "blank" | "executive") => void;
+  createNewResume: (preset?: "software" | "blank" | "executive" | "operations") => void;
   duplicateResume: (doc: ResumeDocument) => void;
   removeResume: (id: string) => void;
   resetToSample: () => void;
@@ -558,7 +558,9 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const createNewResume = useCallback(
-    (preset: "software" | "blank" | "executive" = "software") => {
+    (
+      preset: "software" | "blank" | "executive" | "operations" = "software",
+    ) => {
       let newDoc: ResumeDocument;
       if (preset === "blank") {
         newDoc = {
@@ -579,6 +581,14 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({
           projects: [],
           certifications: [],
           customSections: [],
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+      } else if (preset === "operations") {
+        newDoc = {
+          ...defaultOperationsResume,
+          id: "resume-" + Date.now(),
+          title: "Operations Manager Resume",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };

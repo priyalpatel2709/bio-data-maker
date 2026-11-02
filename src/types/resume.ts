@@ -10,7 +10,9 @@ export type ResumeTemplateId =
   | "stockholm"
   | "sydney"
   | "dublin"
-  | "vienna";
+  | "vienna"
+  | "white-brown-minimalist"
+  | "white-purple-minimalist";
 
 export interface ResumeContactInfo {
   fullName: string;

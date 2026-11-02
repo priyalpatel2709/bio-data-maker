@@ -47,7 +47,11 @@ export const ResumeDashboardView: React.FC = () => {
   const [isAISettingsOpen, setIsAISettingsOpen] = useState(false);
 
   const handleStartWithTemplate = (templateId: ResumeTemplateId) => {
-    createNewResume("software");
+    if (templateId === "white-brown-minimalist") {
+      createNewResume("operations");
+    } else {
+      createNewResume("software");
+    }
     setTemplate(templateId);
     setViewMode("studio");
   };
