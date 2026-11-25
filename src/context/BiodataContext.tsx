@@ -123,6 +123,17 @@ export const BiodataProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     saveCurrentBiodata(document);
 
+    // Keep savedDocs list in state synchronized in real-time
+    setSavedDocs((prev) => {
+      const idx = prev.findIndex((d) => d.id === document.id);
+      if (idx >= 0) {
+        const copy = [...prev];
+        copy[idx] = document;
+        return copy;
+      }
+      return [document, ...prev];
+    });
+
     // Skip cloud API call on initial page load when no user edit has occurred
     if (isFirstMountRef.current) {
       isFirstMountRef.current = false;
@@ -421,8 +432,11 @@ export const BiodataProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   const loadDocument = useCallback((doc: BiodataDocument) => {
-    setDocument(doc);
-    saveCurrentBiodata(doc);
+    const list = getSavedDocuments();
+    const fresh = list.find((d) => d.id === doc.id) || doc;
+    setDocument(fresh);
+    saveCurrentBiodata(fresh);
+    setSavedDocs(list);
     setViewMode("studio");
   }, []);
 

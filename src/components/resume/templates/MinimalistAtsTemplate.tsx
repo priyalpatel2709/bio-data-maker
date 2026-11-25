@@ -1,5 +1,9 @@
 import React from "react";
-import { ResumeDocument } from "../../../types/resume";
+import { ResumeDocument, ResumeSectionKey } from "../../../types/resume";
+import {
+  getEffectiveSectionOrder,
+  getSectionTitle,
+} from "./templateUtils";
 
 interface TemplateProps {
   resume: ResumeDocument;
@@ -91,24 +95,24 @@ export const MinimalistAtsTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderSummary = () => {
+  const renderSummary = (customTitle?: string) => {
     if (!summary) return null;
     return (
       <section>
         <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-0.5 mb-1.5">
-          Professional Summary
+          {customTitle || getSectionTitle(resume, "summary", "Professional Summary")}
         </h2>
         <p className="text-xs text-slate-800 leading-relaxed">{summary}</p>
       </section>
     );
   };
 
-  const renderExperience = () => {
+  const renderExperience = (customTitle?: string) => {
     if (experience.length === 0) return null;
     return (
       <section>
         <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-0.5 mb-2">
-          Work Experience
+          {customTitle || getSectionTitle(resume, "experience", "Work Experience")}
         </h2>
         <div className="space-y-3">
           {experience.map((exp) => (
@@ -143,12 +147,12 @@ export const MinimalistAtsTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderSkills = () => {
+  const renderSkills = (customTitle?: string) => {
     if (skillCategories.length === 0) return null;
     return (
       <section>
         <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-0.5 mb-1.5">
-          Technical & Core Skills
+          {customTitle || getSectionTitle(resume, "skills", "Technical & Core Skills")}
         </h2>
         <div className="space-y-1 text-xs text-slate-800">
           {skillCategories.map((sc) => (
@@ -164,12 +168,12 @@ export const MinimalistAtsTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderProjects = () => {
+  const renderProjects = (customTitle?: string) => {
     if (projects.length === 0) return null;
     return (
       <section>
         <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-0.5 mb-2">
-          Key Projects
+          {customTitle || getSectionTitle(resume, "projects", "Key Projects")}
         </h2>
         <div className="space-y-2">
           {projects.map((proj) => (
@@ -202,12 +206,12 @@ export const MinimalistAtsTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderEducation = () => {
+  const renderEducation = (customTitle?: string) => {
     if (education.length === 0) return null;
     return (
       <section>
         <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-0.5 mb-2">
-          Education
+          {customTitle || getSectionTitle(resume, "education", "Education")}
         </h2>
         <div className="space-y-2">
           {education.map((edu) => (
@@ -232,12 +236,12 @@ export const MinimalistAtsTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderCertifications = () => {
+  const renderCertifications = (customTitle?: string) => {
     if (certifications.length === 0) return null;
     return (
       <section>
         <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-0.5 mb-1.5">
-          Certifications
+          {customTitle || getSectionTitle(resume, "certifications", "Certifications")}
         </h2>
         <div className="space-y-1 text-xs text-slate-800">
           {certifications.map((cert) => (
@@ -259,31 +263,52 @@ export const MinimalistAtsTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderCustomSections = () => {
-    const visibleCustom = customSections.filter((cs) => cs.visible);
-    if (visibleCustom.length === 0) return null;
+  const renderCustomSectionItem = (customId?: string, customTitle?: string) => {
+    const cs = customSections.find((c) => c.id === customId && c.visible);
+    if (!cs || cs.items.length === 0) return null;
     return (
-      <>
-        {visibleCustom.map((cs) => (
-          <section key={cs.id}>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-0.5 mb-1.5">
-              {cs.title}
-            </h2>
-            <div className="space-y-1 text-xs text-slate-800">
-              {cs.items.map((it) => (
-                <div key={it.id}>
-                  <strong>{it.title}</strong>
-                  {it.subtitle && <span> — {it.subtitle}</span>}
-                  {it.description && (
-                    <p className="text-slate-600">{it.description}</p>
-                  )}
-                </div>
-              ))}
+      <section key={cs.id}>
+        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-0.5 mb-1.5">
+          {customTitle || cs.title}
+        </h2>
+        <div className="space-y-1 text-xs text-slate-800">
+          {cs.items.map((it) => (
+            <div key={it.id}>
+              <strong>{it.title}</strong>
+              {it.subtitle && <span> — {it.subtitle}</span>}
+              {it.description && (
+                <p className="text-slate-600">{it.description}</p>
+              )}
             </div>
-          </section>
-        ))}
-      </>
+          ))}
+        </div>
+      </section>
     );
+  };
+
+  const renderSectionByKey = (
+    key: ResumeSectionKey,
+    title: string,
+    customId?: string,
+  ) => {
+    switch (key) {
+      case "summary":
+        return renderSummary(title);
+      case "experience":
+        return renderExperience(title);
+      case "education":
+        return renderEducation(title);
+      case "skills":
+        return renderSkills(title);
+      case "projects":
+        return renderProjects(title);
+      case "certifications":
+        return renderCertifications(title);
+      case "custom":
+        return renderCustomSectionItem(customId, title);
+      default:
+        return null;
+    }
   };
 
   const renderFooter = (pageNumber: number) => {
@@ -298,6 +323,8 @@ export const MinimalistAtsTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
+  const effectiveSections = getEffectiveSectionOrder(resume);
+
   if (!hasPage2) {
     return (
       <div id="resume-preview-document" className="flex flex-col gap-8">
@@ -308,19 +335,31 @@ export const MinimalistAtsTemplate: React.FC<TemplateProps> = ({ resume }) => {
         >
           <div className="space-y-3.5">
             {renderHeader(false)}
-            {renderSummary()}
-            {renderExperience()}
-            {renderSkills()}
-            {renderProjects()}
-            {renderEducation()}
-            {renderCertifications()}
-            {renderCustomSections()}
+            {effectiveSections.map((sec) => (
+              <React.Fragment key={sec.customId || sec.key}>
+                {renderSectionByKey(sec.key, sec.title, sec.customId)}
+              </React.Fragment>
+            ))}
           </div>
           {renderFooter(1)}
         </div>
       </div>
     );
   }
+
+  const splitIndex = (() => {
+    if (splitAt && splitAt !== "auto" && splitAt !== "single-page") {
+      const idx = effectiveSections.findIndex((s) => s.key === splitAt);
+      if (idx > 0) return idx;
+    }
+    return Math.min(
+      Math.max(2, Math.ceil(effectiveSections.length / 2)),
+      effectiveSections.length,
+    );
+  })();
+
+  const page1Sections = effectiveSections.slice(0, splitIndex);
+  const page2Sections = effectiveSections.slice(splitIndex);
 
   return (
     <div id="resume-preview-document" className="flex flex-col gap-8">
@@ -332,9 +371,11 @@ export const MinimalistAtsTemplate: React.FC<TemplateProps> = ({ resume }) => {
       >
         <div className="space-y-3.5">
           {renderHeader(false)}
-          {renderSummary()}
-          {renderExperience()}
-          {splitAt !== "skills" && renderSkills()}
+          {page1Sections.map((sec) => (
+            <React.Fragment key={sec.customId || sec.key}>
+              {renderSectionByKey(sec.key, sec.title, sec.customId)}
+            </React.Fragment>
+          ))}
         </div>
         {renderFooter(1)}
       </div>
@@ -347,11 +388,11 @@ export const MinimalistAtsTemplate: React.FC<TemplateProps> = ({ resume }) => {
       >
         <div className="space-y-3.5">
           {renderHeader(true)}
-          {splitAt === "skills" && renderSkills()}
-          {renderProjects()}
-          {renderEducation()}
-          {renderCertifications()}
-          {renderCustomSections()}
+          {page2Sections.map((sec) => (
+            <React.Fragment key={sec.customId || sec.key}>
+              {renderSectionByKey(sec.key, sec.title, sec.customId)}
+            </React.Fragment>
+          ))}
         </div>
         {renderFooter(2)}
       </div>

@@ -1,5 +1,10 @@
 import React from "react";
-import { ResumeDocument } from "../../../types/resume";
+import { ResumeDocument, ResumeSectionKey } from "../../../types/resume";
+import { Mail, Phone, MapPin, Globe, Linkedin } from "lucide-react";
+import {
+  getEffectiveSectionOrder,
+  getSectionTitle,
+} from "./templateUtils";
 
 interface TemplateProps {
   resume: ResumeDocument;
@@ -60,12 +65,12 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
               {contact.fullName}
             </span>
             {contact.jobTitle && (
-              <span className="text-stone-600 italic ml-2">
+              <span className="font-serif italic text-stone-600 ml-2">
                 — {contact.jobTitle}
               </span>
             )}
           </div>
-          <span className="font-sans text-[10px] uppercase tracking-wider text-stone-500 font-medium">
+          <span className="font-sans text-[10px] uppercase tracking-wider text-stone-400">
             Page 2 of 2
           </span>
         </header>
@@ -73,31 +78,51 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
     }
 
     return (
-      <header className="text-center pb-4 border-b border-stone-300 mb-4">
+      <header className="border-b-2 border-stone-800 pb-4 mb-4 text-center">
         <h1
-          className="text-3xl font-serif font-medium tracking-wide text-stone-900"
+          className="text-3xl font-serif font-bold tracking-tight"
           style={{ color: primaryColor }}
         >
           {contact.fullName || "Your Full Name"}
         </h1>
         {contact.jobTitle && (
-          <p className="text-xs tracking-wider uppercase text-stone-600 mt-0.5 italic">
+          <p className="text-sm font-serif italic text-stone-700 mt-1">
             {contact.jobTitle}
           </p>
         )}
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-2 text-xs text-stone-600 font-sans">
-          {contact.email && <span>{contact.email}</span>}
-          {contact.phone && <span>• {contact.phone}</span>}
-          {contact.location && <span>• {contact.location}</span>}
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-2.5 font-sans text-xs text-stone-600">
+          {contact.location && (
+            <span className="flex items-center gap-1">
+              <MapPin className="w-3 h-3 text-stone-500" /> {contact.location}
+            </span>
+          )}
+          {contact.phone && (
+            <span className="flex items-center gap-1">
+              <Phone className="w-3 h-3 text-stone-500" /> {contact.phone}
+            </span>
+          )}
+          {contact.email && (
+            <span className="flex items-center gap-1">
+              <Mail className="w-3 h-3 text-stone-500" /> {contact.email}
+            </span>
+          )}
+          {contact.linkedin && (
+            <span className="flex items-center gap-1">
+              <Linkedin className="w-3 h-3 text-stone-500" /> {contact.linkedin}
+            </span>
+          )}
           {contact.website && (
-            <span>• {contact.website.replace(/^https?:\/\//, "")}</span>
+            <span className="flex items-center gap-1">
+              <Globe className="w-3 h-3 text-stone-500" />{" "}
+              {contact.website.replace(/^https?:\/\//, "")}
+            </span>
           )}
         </div>
       </header>
     );
   };
 
-  const renderEducation = () => {
+  const renderEducation = (customTitle?: string) => {
     if (education.length === 0) return null;
     return (
       <section>
@@ -105,15 +130,15 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
           className="font-serif text-sm font-semibold tracking-wider uppercase border-b border-stone-300 pb-1 mb-2"
           style={{ color: primaryColor }}
         >
-          Academic Background
+          {customTitle || getSectionTitle(resume, "education", "Education")}
         </h2>
         <div className="space-y-2.5">
           {education.map((edu) => (
             <div key={edu.id}>
               <div className="flex flex-row justify-between items-baseline gap-2">
                 <span className="font-semibold text-stone-900 text-sm">
-                  {edu.degree}{" "}
-                  {edu.fieldOfStudy ? `in ${edu.fieldOfStudy}` : ""}
+                  {edu.degree}
+                  {edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ""}
                 </span>
                 <span className="text-xs text-stone-500 font-sans">
                   {edu.startDate} – {edu.isCurrent ? "Present" : edu.endDate}
@@ -135,7 +160,7 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderExperience = () => {
+  const renderExperience = (customTitle?: string) => {
     if (experience.length === 0) return null;
     return (
       <section>
@@ -143,7 +168,7 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
           className="font-serif text-sm font-semibold tracking-wider uppercase border-b border-stone-300 pb-1 mb-2"
           style={{ color: primaryColor }}
         >
-          Appointments & Experience
+          {customTitle || getSectionTitle(resume, "experience", "Appointments & Experience")}
         </h2>
         <div className="space-y-3">
           {experience.map((exp) => (
@@ -171,7 +196,7 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderSummary = () => {
+  const renderSummary = (customTitle?: string) => {
     if (!summary) return null;
     return (
       <section>
@@ -179,7 +204,7 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
           className="font-serif text-sm font-semibold tracking-wider uppercase border-b border-stone-300 pb-1 mb-1.5"
           style={{ color: primaryColor }}
         >
-          Research & Professional Profile
+          {customTitle || getSectionTitle(resume, "summary", "Research & Professional Profile")}
         </h2>
         <p className="text-xs text-stone-800 leading-relaxed text-justify">
           {summary}
@@ -188,7 +213,7 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderProjects = () => {
+  const renderProjects = (customTitle?: string) => {
     if (projects.length === 0) return null;
     return (
       <section>
@@ -196,7 +221,7 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
           className="font-serif text-sm font-semibold tracking-wider uppercase border-b border-stone-300 pb-1 mb-2"
           style={{ color: primaryColor }}
         >
-          Publications & Projects
+          {customTitle || getSectionTitle(resume, "projects", "Publications & Projects")}
         </h2>
         <div className="space-y-2">
           {projects.map((proj) => (
@@ -230,7 +255,7 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderCertifications = () => {
+  const renderCertifications = (customTitle?: string) => {
     if (certifications.length === 0) return null;
     return (
       <section>
@@ -238,7 +263,7 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
           className="font-serif text-sm font-semibold tracking-wider uppercase border-b border-stone-300 pb-1 mb-1.5"
           style={{ color: primaryColor }}
         >
-          Honors & Certifications
+          {customTitle || getSectionTitle(resume, "certifications", "Honors & Certifications")}
         </h2>
         <div className="space-y-1 text-xs text-stone-800">
           {certifications.map((c) => (
@@ -259,7 +284,7 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderSkills = () => {
+  const renderSkills = (customTitle?: string) => {
     if (skillCategories.length === 0) return null;
     return (
       <section>
@@ -267,7 +292,7 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
           className="font-serif text-sm font-semibold tracking-wider uppercase border-b border-stone-300 pb-1 mb-1.5"
           style={{ color: primaryColor }}
         >
-          Core Expertise
+          {customTitle || getSectionTitle(resume, "skills", "Core Expertise")}
         </h2>
         <div className="space-y-1 text-xs text-stone-800">
           {skillCategories.map((sc) => (
@@ -281,34 +306,55 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderCustomSections = () => {
-    const visibleCustom = customSections.filter((cs) => cs.visible);
-    if (visibleCustom.length === 0) return null;
+  const renderCustomSectionItem = (customId?: string, customTitle?: string) => {
+    const cs = customSections.find((c) => c.id === customId && c.visible);
+    if (!cs || cs.items.length === 0) return null;
     return (
-      <>
-        {visibleCustom.map((cs) => (
-          <section key={cs.id}>
-            <h2
-              className="font-serif text-sm font-semibold tracking-wider uppercase border-b border-stone-300 pb-1 mb-1.5"
-              style={{ color: primaryColor }}
-            >
-              {cs.title}
-            </h2>
-            <div className="space-y-1 text-xs text-stone-800">
-              {cs.items.map((it) => (
-                <div key={it.id}>
-                  <strong>{it.title}</strong>
-                  {it.subtitle && <span> — {it.subtitle}</span>}
-                  {it.description && (
-                    <p className="text-stone-600 mt-0.5">{it.description}</p>
-                  )}
-                </div>
-              ))}
+      <section key={cs.id}>
+        <h2
+          className="font-serif text-sm font-semibold tracking-wider uppercase border-b border-stone-300 pb-1 mb-1.5"
+          style={{ color: primaryColor }}
+        >
+          {customTitle || cs.title}
+        </h2>
+        <div className="space-y-1 text-xs text-stone-800">
+          {cs.items.map((it) => (
+            <div key={it.id}>
+              <strong>{it.title}</strong>
+              {it.subtitle && <span> — {it.subtitle}</span>}
+              {it.description && (
+                <p className="text-stone-600 mt-0.5">{it.description}</p>
+              )}
             </div>
-          </section>
-        ))}
-      </>
+          ))}
+        </div>
+      </section>
     );
+  };
+
+  const renderSectionByKey = (
+    key: ResumeSectionKey,
+    title: string,
+    customId?: string,
+  ) => {
+    switch (key) {
+      case "education":
+        return renderEducation(title);
+      case "experience":
+        return renderExperience(title);
+      case "summary":
+        return renderSummary(title);
+      case "projects":
+        return renderProjects(title);
+      case "certifications":
+        return renderCertifications(title);
+      case "skills":
+        return renderSkills(title);
+      case "custom":
+        return renderCustomSectionItem(customId, title);
+      default:
+        return null;
+    }
   };
 
   const renderFooter = (pageNumber: number) => {
@@ -323,6 +369,23 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
     );
   };
 
+  const effectiveSections = getEffectiveSectionOrder(resume);
+  const splitIndex =
+    splitAt === "projects"
+      ? effectiveSections.findIndex((s) => s.key === "projects")
+      : splitAt === "education"
+        ? effectiveSections.findIndex((s) => s.key === "education")
+        : splitAt === "skills"
+          ? effectiveSections.findIndex((s) => s.key === "skills")
+          : Math.ceil(effectiveSections.length / 2);
+
+  const actualSplitIndex =
+    splitIndex > 0 ? splitIndex : Math.max(1, Math.floor(effectiveSections.length / 2));
+  const page1Sections = hasPage2
+    ? effectiveSections.slice(0, actualSplitIndex)
+    : effectiveSections;
+  const page2Sections = hasPage2 ? effectiveSections.slice(actualSplitIndex) : [];
+
   if (!hasPage2) {
     return (
       <div id="resume-preview-document" className="flex flex-col gap-8">
@@ -333,13 +396,11 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
         >
           <div className="space-y-4">
             {renderHeader(false)}
-            {renderEducation()}
-            {renderExperience()}
-            {renderSummary()}
-            {renderProjects()}
-            {renderCertifications()}
-            {renderSkills()}
-            {renderCustomSections()}
+            {effectiveSections.map((s) => (
+              <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+                {renderSectionByKey(s.key, s.title, s.customId)}
+              </React.Fragment>
+            ))}
           </div>
           {renderFooter(1)}
         </div>
@@ -357,9 +418,11 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
       >
         <div className="space-y-4">
           {renderHeader(false)}
-          {renderEducation()}
-          {renderExperience()}
-          {renderSummary()}
+          {page1Sections.map((s) => (
+            <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+              {renderSectionByKey(s.key, s.title, s.customId)}
+            </React.Fragment>
+          ))}
         </div>
         {renderFooter(1)}
       </div>
@@ -372,10 +435,11 @@ export const ElegantAcademicTemplate: React.FC<TemplateProps> = ({
       >
         <div className="space-y-4">
           {renderHeader(true)}
-          {renderProjects()}
-          {renderCertifications()}
-          {renderSkills()}
-          {renderCustomSections()}
+          {page2Sections.map((s) => (
+            <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+              {renderSectionByKey(s.key, s.title, s.customId)}
+            </React.Fragment>
+          ))}
         </div>
         {renderFooter(2)}
       </div>

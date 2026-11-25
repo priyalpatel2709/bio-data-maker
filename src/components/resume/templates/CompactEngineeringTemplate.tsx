@@ -1,5 +1,9 @@
 import React from "react";
-import { ResumeDocument } from "../../../types/resume";
+import { ResumeDocument, ResumeSectionKey } from "../../../types/resume";
+import {
+  getEffectiveSectionOrder,
+  getSectionTitle,
+} from "./templateUtils";
 
 interface TemplateProps {
   resume: ResumeDocument;
@@ -97,17 +101,27 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
             </span>
             <span>
               {contact.location}{" "}
-              {contact.github
-                ? `• ${contact.github.replace(/^https?:\/\//, "")}`
-                : ""}
+              {contact.github && (
+                <>
+                  •{" "}
+                  <span className="font-mono">
+                    {contact.github.replace(/^https?:\/\//, "")}
+                  </span>
+                </>
+              )}
             </span>
+            {contact.website && (
+              <span className="font-mono text-[10px] text-emerald-700">
+                {contact.website.replace(/^https?:\/\//, "")}
+              </span>
+            )}
           </div>
         </div>
       </header>
     );
   };
 
-  const renderSummary = () => {
+  const renderSummary = (customTitle?: string) => {
     if (!summary) return null;
     return (
       <section>
@@ -115,14 +129,14 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
           className="text-[11px] font-bold uppercase tracking-wider mb-1"
           style={{ color: primaryColor }}
         >
-          Summary
+          {customTitle || getSectionTitle(resume, "summary", "Summary")}
         </h2>
         <p className="text-slate-700 leading-snug">{summary}</p>
       </section>
     );
   };
 
-  const renderSkills = () => {
+  const renderSkills = (customTitle?: string) => {
     if (skillCategories.length === 0) return null;
     return (
       <section>
@@ -130,7 +144,7 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
           className="text-[11px] font-bold uppercase tracking-wider mb-1"
           style={{ color: primaryColor }}
         >
-          Technical Proficiencies
+          {customTitle || getSectionTitle(resume, "skills", "Technical Proficiencies")}
         </h2>
         <div className="bg-slate-50 p-2 rounded border border-slate-200/80 space-y-1">
           {skillCategories.map((sc) => (
@@ -148,7 +162,7 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderExperience = () => {
+  const renderExperience = (customTitle?: string) => {
     if (experience.length === 0) return null;
     return (
       <section>
@@ -156,7 +170,7 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
           className="text-[11px] font-bold uppercase tracking-wider mb-1.5"
           style={{ color: primaryColor }}
         >
-          Experience
+          {customTitle || getSectionTitle(resume, "experience", "Experience")}
         </h2>
         <div className="space-y-2.5">
           {experience.map((exp) => (
@@ -188,7 +202,7 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderProjects = () => {
+  const renderProjects = (customTitle?: string) => {
     if (projects.length === 0) return null;
     return (
       <section>
@@ -196,7 +210,7 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
           className="text-[11px] font-bold uppercase tracking-wider mb-1.5"
           style={{ color: primaryColor }}
         >
-          Key Projects
+          {customTitle || getSectionTitle(resume, "projects", "Key Projects")}
         </h2>
         <div className="space-y-2">
           {projects.map((proj) => (
@@ -230,7 +244,7 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderEducation = () => {
+  const renderEducation = (customTitle?: string) => {
     if (education.length === 0) return null;
     return (
       <section>
@@ -238,7 +252,7 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
           className="text-[11px] font-bold uppercase tracking-wider mb-1"
           style={{ color: primaryColor }}
         >
-          Education
+          {customTitle || getSectionTitle(resume, "education", "Education")}
         </h2>
         {education.map((edu) => (
           <div key={edu.id} className="text-slate-800">
@@ -260,7 +274,7 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderCertifications = () => {
+  const renderCertifications = (customTitle?: string) => {
     if (certifications.length === 0) return null;
     return (
       <section>
@@ -268,7 +282,7 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
           className="text-[11px] font-bold uppercase tracking-wider mb-1"
           style={{ color: primaryColor }}
         >
-          Certifications
+          {customTitle || getSectionTitle(resume, "certifications", "Certifications")}
         </h2>
         <div className="space-y-1">
           {certifications.map((c) => (
@@ -284,34 +298,55 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderCustomSections = () => {
-    const visibleCustom = customSections.filter((cs) => cs.visible);
-    if (visibleCustom.length === 0) return null;
+  const renderCustomSectionItem = (customId?: string, customTitle?: string) => {
+    const cs = customSections.find((c) => c.id === customId && c.visible);
+    if (!cs || cs.items.length === 0) return null;
     return (
-      <>
-        {visibleCustom.map((cs) => (
-          <section key={cs.id}>
-            <h2
-              className="text-[11px] font-bold uppercase tracking-wider mb-1"
-              style={{ color: primaryColor }}
-            >
-              {cs.title}
-            </h2>
-            <div className="space-y-1 text-slate-700">
-              {cs.items.map((it) => (
-                <div key={it.id}>
-                  <strong>{it.title}</strong>
-                  {it.subtitle && <span> — {it.subtitle}</span>}
-                  {it.description && (
-                    <p className="text-slate-600">{it.description}</p>
-                  )}
-                </div>
-              ))}
+      <section key={cs.id}>
+        <h2
+          className="text-[11px] font-bold uppercase tracking-wider mb-1"
+          style={{ color: primaryColor }}
+        >
+          {customTitle || cs.title}
+        </h2>
+        <div className="space-y-1 text-slate-700">
+          {cs.items.map((it) => (
+            <div key={it.id}>
+              <strong>{it.title}</strong>
+              {it.subtitle && <span> — {it.subtitle}</span>}
+              {it.description && (
+                <p className="text-slate-600">{it.description}</p>
+              )}
             </div>
-          </section>
-        ))}
-      </>
+          ))}
+        </div>
+      </section>
     );
+  };
+
+  const renderSectionByKey = (
+    key: ResumeSectionKey,
+    title: string,
+    customId?: string,
+  ) => {
+    switch (key) {
+      case "summary":
+        return renderSummary(title);
+      case "skills":
+        return renderSkills(title);
+      case "experience":
+        return renderExperience(title);
+      case "projects":
+        return renderProjects(title);
+      case "education":
+        return renderEducation(title);
+      case "certifications":
+        return renderCertifications(title);
+      case "custom":
+        return renderCustomSectionItem(customId, title);
+      default:
+        return null;
+    }
   };
 
   const renderFooter = (pageNumber: number) => {
@@ -326,6 +361,23 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
     );
   };
 
+  const effectiveSections = getEffectiveSectionOrder(resume);
+  const splitIndex =
+    splitAt === "projects"
+      ? effectiveSections.findIndex((s) => s.key === "projects")
+      : splitAt === "education"
+        ? effectiveSections.findIndex((s) => s.key === "education")
+        : splitAt === "skills"
+          ? effectiveSections.findIndex((s) => s.key === "skills")
+          : Math.ceil(effectiveSections.length / 2);
+
+  const actualSplitIndex =
+    splitIndex > 0 ? splitIndex : Math.max(1, Math.floor(effectiveSections.length / 2));
+  const page1Sections = hasPage2
+    ? effectiveSections.slice(0, actualSplitIndex)
+    : effectiveSections;
+  const page2Sections = hasPage2 ? effectiveSections.slice(actualSplitIndex) : [];
+
   if (!hasPage2) {
     return (
       <div id="resume-preview-document" className="flex flex-col gap-8">
@@ -336,15 +388,11 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
         >
           <div className="space-y-3">
             {renderHeader(false)}
-            {renderSummary()}
-            {renderSkills()}
-            {renderExperience()}
-            {renderProjects()}
-            <div className="grid grid-cols-2 gap-4">
-              {renderEducation()}
-              {renderCertifications()}
-            </div>
-            {renderCustomSections()}
+            {effectiveSections.map((s) => (
+              <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+                {renderSectionByKey(s.key, s.title, s.customId)}
+              </React.Fragment>
+            ))}
           </div>
           {renderFooter(1)}
         </div>
@@ -362,9 +410,11 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
       >
         <div className="space-y-3">
           {renderHeader(false)}
-          {renderSummary()}
-          {renderSkills()}
-          {renderExperience()}
+          {page1Sections.map((s) => (
+            <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+              {renderSectionByKey(s.key, s.title, s.customId)}
+            </React.Fragment>
+          ))}
         </div>
         {renderFooter(1)}
       </div>
@@ -377,12 +427,11 @@ export const CompactEngineeringTemplate: React.FC<TemplateProps> = ({
       >
         <div className="space-y-3">
           {renderHeader(true)}
-          {renderProjects()}
-          <div className="grid grid-cols-2 gap-4">
-            {renderEducation()}
-            {renderCertifications()}
-          </div>
-          {renderCustomSections()}
+          {page2Sections.map((s) => (
+            <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+              {renderSectionByKey(s.key, s.title, s.customId)}
+            </React.Fragment>
+          ))}
         </div>
         {renderFooter(2)}
       </div>

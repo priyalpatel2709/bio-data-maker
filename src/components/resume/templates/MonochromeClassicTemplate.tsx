@@ -1,6 +1,10 @@
 import React from "react";
-import { ResumeDocument } from "../../../types/resume";
+import { ResumeDocument, ResumeSectionKey } from "../../../types/resume";
 import { Mail, Phone, MapPin, Globe, Linkedin, Github } from "lucide-react";
+import {
+  getEffectiveSectionOrder,
+  getSectionTitle,
+} from "./templateUtils";
 
 interface TemplateProps {
   resume: ResumeDocument;
@@ -58,109 +62,87 @@ export const MonochromeClassicTemplate: React.FC<TemplateProps> = ({
       return (
         <header className="border-b-2 border-black pb-2 mb-4 flex flex-row items-center justify-between text-xs">
           <div>
-            <span className="font-bold text-black text-sm tracking-wide uppercase">
-              {contact.fullName || "Candidate Name"}
+            <span className="font-bold text-black uppercase tracking-wider text-sm">
+              {contact.fullName || "Candidate"}
             </span>
             {contact.jobTitle && (
-              <span className="text-zinc-700 ml-2 italic">
-                — {contact.jobTitle}
+              <span className="text-zinc-700 ml-2 font-medium">
+                | {contact.jobTitle}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-3 text-zinc-600 text-[11px]">
-            {contact.email && <span>{contact.email}</span>}
-            {contact.phone && <span>• {contact.phone}</span>}
-            <span className="font-semibold text-black bg-zinc-100 px-2 py-0.5 border border-black rounded text-[10px]">
-              Page 2 of 2
-            </span>
-          </div>
+          <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-600">
+            Page 2 of 2
+          </span>
         </header>
       );
     }
 
     return (
-      <header className="text-center pb-4 mb-4 border-b-2 border-black">
-        <div className="flex flex-col items-center">
-          {styling.showPhoto && contact.photoUrl && (
-            <img
-              src={contact.photoUrl}
-              alt={contact.fullName}
-              className={`w-20 h-20 object-cover mb-3 grayscale contrast-125 border-2 border-black shadow-xs ${
-                styling.photoShape === "circle"
-                  ? "rounded-full"
-                  : styling.photoShape === "rounded"
-                    ? "rounded-lg"
-                    : "rounded-none"
-              }`}
-            />
+      <header className="border-b-2 border-black pb-4 mb-4 text-center">
+        <h1 className="text-3xl font-black uppercase tracking-wider text-black">
+          {contact.fullName || "Your Full Name"}
+        </h1>
+        {contact.jobTitle && (
+          <p className="text-xs font-bold uppercase tracking-widest text-zinc-800 mt-1">
+            {contact.jobTitle}
+          </p>
+        )}
+
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-2.5 text-xs text-zinc-800 font-medium">
+          {contact.email && (
+            <span className="flex items-center gap-1">
+              <Mail className="w-3.5 h-3.5 text-black" />
+              {contact.email}
+            </span>
           )}
-
-          <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-wider text-black">
-            {contact.fullName || "Your Full Name"}
-          </h1>
-
-          {contact.jobTitle && (
-            <p className="text-xs sm:text-sm font-semibold tracking-wide uppercase text-zinc-800 mt-1">
-              {contact.jobTitle}
-            </p>
+          {contact.phone && (
+            <span className="flex items-center gap-1">
+              <Phone className="w-3.5 h-3.5 text-black" />
+              {contact.phone}
+            </span>
           )}
-
-          {/* Contact Strip */}
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 mt-2.5 text-xs text-zinc-800">
-            {contact.email && (
-              <span className="flex items-center gap-1">
-                <Mail className="w-3.5 h-3.5 text-black" />
-                {contact.email}
-              </span>
-            )}
-            {contact.phone && (
-              <span className="flex items-center gap-1">
-                <Phone className="w-3.5 h-3.5 text-black" />
-                {contact.phone}
-              </span>
-            )}
-            {contact.location && (
-              <span className="flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-black" />
-                {contact.location}
-              </span>
-            )}
-            {contact.website && (
-              <span className="flex items-center gap-1">
-                <Globe className="w-3.5 h-3.5 text-black" />
-                {contact.website.replace(/^https?:\/\//, "")}
-              </span>
-            )}
-            {contact.linkedin && (
-              <span className="flex items-center gap-1">
-                <Linkedin className="w-3.5 h-3.5 text-black" />
-                {contact.linkedin.replace(
-                  /^https?:\/\/(www\.)?linkedin\.com\/in\//,
-                  "",
-                )}
-              </span>
-            )}
-            {contact.github && (
-              <span className="flex items-center gap-1">
-                <Github className="w-3.5 h-3.5 text-black" />
-                {contact.github.replace(
-                  /^https?:\/\/(www\.)?github\.com\//,
-                  "",
-                )}
-              </span>
-            )}
-          </div>
+          {contact.location && (
+            <span className="flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5 text-black" />
+              {contact.location}
+            </span>
+          )}
+          {contact.website && (
+            <span className="flex items-center gap-1">
+              <Globe className="w-3.5 h-3.5 text-black" />
+              {contact.website.replace(/^https?:\/\//, "")}
+            </span>
+          )}
+          {contact.linkedin && (
+            <span className="flex items-center gap-1">
+              <Linkedin className="w-3.5 h-3.5 text-black" />
+              {contact.linkedin.replace(
+                /^https?:\/\/(www\.)?linkedin\.com\/in\//,
+                "",
+              )}
+            </span>
+          )}
+          {contact.github && (
+            <span className="flex items-center gap-1">
+              <Github className="w-3.5 h-3.5 text-black" />
+              {contact.github.replace(
+                /^https?:\/\/(www\.)?github\.com\//,
+                "",
+              )}
+            </span>
+          )}
         </div>
       </header>
     );
   };
 
-  const renderSummary = () => {
+  const renderSummary = (customTitle?: string) => {
     if (!summary) return null;
     return (
       <section>
         <h2 className="text-xs font-black uppercase tracking-widest text-black border-b border-black pb-0.5 mb-2 flex items-center justify-between">
-          <span>Professional Summary</span>
+          <span>{customTitle || getSectionTitle(resume, "summary", "Professional Summary")}</span>
         </h2>
         <p className="text-xs text-zinc-900 leading-relaxed text-justify">
           {summary}
@@ -169,12 +151,12 @@ export const MonochromeClassicTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderExperience = () => {
+  const renderExperience = (customTitle?: string) => {
     if (experience.length === 0) return null;
     return (
       <section>
         <h2 className="text-xs font-black uppercase tracking-widest text-black border-b border-black pb-0.5 mb-2.5">
-          Work Experience
+          {customTitle || getSectionTitle(resume, "experience", "Work Experience")}
         </h2>
         <div className="space-y-3.5">
           {experience.map((exp) => (
@@ -214,12 +196,12 @@ export const MonochromeClassicTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderEducation = () => {
+  const renderEducation = (customTitle?: string) => {
     if (education.length === 0) return null;
     return (
       <section>
         <h2 className="text-xs font-black uppercase tracking-widest text-black border-b border-black pb-0.5 mb-2.5">
-          Education & Credentials
+          {customTitle || getSectionTitle(resume, "education", "Education & Credentials")}
         </h2>
         <div className="space-y-3">
           {education.map((edu) => (
@@ -263,12 +245,12 @@ export const MonochromeClassicTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderSkills = () => {
+  const renderSkills = (customTitle?: string) => {
     if (skillCategories.length === 0) return null;
     return (
       <section>
         <h2 className="text-xs font-black uppercase tracking-widest text-black border-b border-black pb-0.5 mb-2">
-          Technical & Professional Skills
+          {customTitle || getSectionTitle(resume, "skills", "Technical & Professional Skills")}
         </h2>
         <div className="space-y-1.5 text-xs text-zinc-900">
           {skillCategories.map((sc) => (
@@ -286,12 +268,12 @@ export const MonochromeClassicTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderProjects = () => {
+  const renderProjects = (customTitle?: string) => {
     if (projects.length === 0) return null;
     return (
       <section>
         <h2 className="text-xs font-black uppercase tracking-widest text-black border-b border-black pb-0.5 mb-2.5">
-          Key Projects & Initiatives
+          {customTitle || getSectionTitle(resume, "projects", "Key Projects & Initiatives")}
         </h2>
         <div className="space-y-3">
           {projects.map((proj) => (
@@ -333,12 +315,12 @@ export const MonochromeClassicTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderCertifications = () => {
+  const renderCertifications = (customTitle?: string) => {
     if (certifications.length === 0) return null;
     return (
       <section>
         <h2 className="text-xs font-black uppercase tracking-widest text-black border-b border-black pb-0.5 mb-2">
-          Certifications
+          {customTitle || getSectionTitle(resume, "certifications", "Certifications")}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
           {certifications.map((cert) => (
@@ -354,50 +336,70 @@ export const MonochromeClassicTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderCustomSections = () => {
-    if (customSections.length === 0) return null;
+  const renderCustomSectionItem = (customId?: string, customTitle?: string) => {
+    const cs = customSections.find((c) => c.id === customId && c.visible);
+    if (!cs || cs.items.length === 0) return null;
     return (
-      <>
-        {customSections
-          .filter((cs) => cs.visible)
-          .map((cs) => (
-            <section key={cs.id}>
-              <h2 className="text-xs font-black uppercase tracking-widest text-black border-b border-black pb-0.5 mb-2">
-                {cs.title}
-              </h2>
-              <div className="space-y-2 text-xs">
-                {cs.items.map((item) => (
-                  <div key={item.id}>
-                    <div className="flex justify-between items-baseline font-bold text-black">
-                      <span>{item.title}</span>
-                      {item.date && (
-                        <span className="text-zinc-700 font-normal">
-                          {item.date}
-                        </span>
-                      )}
-                    </div>
-                    {item.subtitle && (
-                      <div className="text-zinc-700 italic">
-                        {item.subtitle}
-                      </div>
-                    )}
-                    {item.description && (
-                      <p className="text-zinc-800 mt-0.5">{item.description}</p>
-                    )}
-                    {item.bullets && item.bullets.length > 0 && (
-                      <ul className="mt-1 list-disc list-outside ml-4 space-y-0.5 text-zinc-900">
-                        {item.bullets.map((b, idx) => (
-                          <li key={idx}>{b}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
+      <section key={cs.id}>
+        <h2 className="text-xs font-black uppercase tracking-widest text-black border-b border-black pb-0.5 mb-2">
+          {customTitle || cs.title}
+        </h2>
+        <div className="space-y-2 text-xs">
+          {cs.items.map((item) => (
+            <div key={item.id}>
+              <div className="flex justify-between items-baseline font-bold text-black">
+                <span>{item.title}</span>
+                {item.date && (
+                  <span className="text-zinc-700 font-normal">
+                    {item.date}
+                  </span>
+                )}
               </div>
-            </section>
+              {item.subtitle && (
+                <div className="text-zinc-700 italic">
+                  {item.subtitle}
+                </div>
+              )}
+              {item.description && (
+                <p className="text-zinc-800 mt-0.5">{item.description}</p>
+              )}
+              {item.bullets && item.bullets.length > 0 && (
+                <ul className="mt-1 list-disc list-outside ml-4 space-y-0.5 text-zinc-900">
+                  {item.bullets.map((b, idx) => (
+                    <li key={idx}>{b}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
           ))}
-      </>
+        </div>
+      </section>
     );
+  };
+
+  const renderSectionByKey = (
+    key: ResumeSectionKey,
+    title: string,
+    customId?: string,
+  ) => {
+    switch (key) {
+      case "summary":
+        return renderSummary(title);
+      case "experience":
+        return renderExperience(title);
+      case "projects":
+        return renderProjects(title);
+      case "education":
+        return renderEducation(title);
+      case "skills":
+        return renderSkills(title);
+      case "certifications":
+        return renderCertifications(title);
+      case "custom":
+        return renderCustomSectionItem(customId, title);
+      default:
+        return null;
+    }
   };
 
   const renderFooter = (pageNumber: number) => {
@@ -412,107 +414,22 @@ export const MonochromeClassicTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  // Split logic
-  const renderPage1Sections = () => {
-    if (isSinglePage) {
-      return (
-        <div className="space-y-4">
-          {renderSummary()}
-          {renderExperience()}
-          {renderProjects()}
-          {renderEducation()}
-          {renderSkills()}
-          {renderCertifications()}
-          {renderCustomSections()}
-        </div>
-      );
-    }
+  const effectiveSections = getEffectiveSectionOrder(resume);
+  const splitIndex =
+    splitAt === "projects"
+      ? effectiveSections.findIndex((s) => s.key === "projects")
+      : splitAt === "education"
+        ? effectiveSections.findIndex((s) => s.key === "education")
+        : splitAt === "skills"
+          ? effectiveSections.findIndex((s) => s.key === "skills")
+          : Math.ceil(effectiveSections.length / 2);
 
-    if (splitAt === "projects") {
-      return (
-        <div className="space-y-4">
-          {renderSummary()}
-          {renderExperience()}
-        </div>
-      );
-    }
-
-    if (splitAt === "education") {
-      return (
-        <div className="space-y-4">
-          {renderSummary()}
-          {renderExperience()}
-          {renderProjects()}
-        </div>
-      );
-    }
-
-    if (splitAt === "skills") {
-      return (
-        <div className="space-y-4">
-          {renderSummary()}
-          {renderExperience()}
-          {renderProjects()}
-          {renderEducation()}
-        </div>
-      );
-    }
-
-    // Auto split
-    return (
-      <div className="space-y-4">
-        {renderSummary()}
-        {renderExperience()}
-        {experience.length <= 2 && renderProjects()}
-      </div>
-    );
-  };
-
-  const renderPage2Sections = () => {
-    if (splitAt === "projects") {
-      return (
-        <div className="space-y-4">
-          {renderProjects()}
-          {renderEducation()}
-          {renderSkills()}
-          {renderCertifications()}
-          {renderCustomSections()}
-        </div>
-      );
-    }
-
-    if (splitAt === "education") {
-      return (
-        <div className="space-y-4">
-          {renderEducation()}
-          {renderSkills()}
-          {renderCertifications()}
-          {renderCustomSections()}
-        </div>
-      );
-    }
-
-    if (splitAt === "skills") {
-      return (
-        <div className="space-y-4">
-          {renderSkills()}
-          {renderCertifications()}
-          {renderCustomSections()}
-        </div>
-      );
-    }
-
-    // Auto split
-    return (
-      <div className="space-y-4">
-        {experience.length > 2 && renderProjects()}
-        {renderEducation()}
-        {renderSkills()}
-        {renderCertifications()}
-        {renderCustomSections()}
-      </div>
-    );
-  };
+  const actualSplitIndex =
+    splitIndex > 0 ? splitIndex : Math.max(1, Math.floor(effectiveSections.length / 2));
+  const page1Sections = hasPage2
+    ? effectiveSections.slice(0, actualSplitIndex)
+    : effectiveSections;
+  const page2Sections = hasPage2 ? effectiveSections.slice(actualSplitIndex) : [];
 
   return (
     <div
@@ -528,7 +445,13 @@ export const MonochromeClassicTemplate: React.FC<TemplateProps> = ({
       >
         <div>
           {renderHeader(false)}
-          <main>{renderPage1Sections()}</main>
+          <main className="space-y-4">
+            {page1Sections.map((s) => (
+              <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+                {renderSectionByKey(s.key, s.title, s.customId)}
+              </React.Fragment>
+            ))}
+          </main>
         </div>
         {renderFooter(1)}
       </div>
@@ -543,7 +466,13 @@ export const MonochromeClassicTemplate: React.FC<TemplateProps> = ({
         >
           <div>
             {renderHeader(true)}
-            <main>{renderPage2Sections()}</main>
+            <main className="space-y-4">
+              {page2Sections.map((s) => (
+                <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+                  {renderSectionByKey(s.key, s.title, s.customId)}
+                </React.Fragment>
+              ))}
+            </main>
           </div>
           {renderFooter(2)}
         </div>

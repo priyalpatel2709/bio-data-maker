@@ -1,6 +1,7 @@
 import React from "react";
 import { ResumeDocument } from "../../../types/resume";
 import { Mail, Phone, MapPin, Globe, Linkedin, Github } from "lucide-react";
+import { getSectionTitle } from "./templateUtils";
 
 interface TemplateProps {
   resume: ResumeDocument;
@@ -193,7 +194,7 @@ export const WhitePurpleMinimalistTemplate: React.FC<TemplateProps> = ({
       {/* Skills Section */}
       {skillCategories.length > 0 && !isPage2 && (
         <section>
-          {renderSectionHeader("Skills")}
+          {renderSectionHeader(getSectionTitle(resume, "skills", "Skills"))}
           <div className="space-y-3.5">
             {skillCategories.map((cat) => (
               <div key={cat.id}>
@@ -219,7 +220,7 @@ export const WhitePurpleMinimalistTemplate: React.FC<TemplateProps> = ({
       {/* Education Section */}
       {education.length > 0 && (
         <section>
-          {renderSectionHeader("Education")}
+          {renderSectionHeader(getSectionTitle(resume, "education", "Education"))}
           <div className="space-y-3">
             {education.map((edu) => (
               <div key={edu.id} className="text-xs">
@@ -245,7 +246,7 @@ export const WhitePurpleMinimalistTemplate: React.FC<TemplateProps> = ({
       {/* Certifications Section */}
       {certifications.length > 0 && (
         <section>
-          {renderSectionHeader("Certification")}
+          {renderSectionHeader(getSectionTitle(resume, "certifications", "Certification"))}
           <div className="space-y-2.5 text-xs">
             {certifications.map((cert) => (
               <div key={cert.id}>
@@ -309,7 +310,7 @@ export const WhitePurpleMinimalistTemplate: React.FC<TemplateProps> = ({
         {/* Work Experience */}
         {experienceToRender.length > 0 && (
           <section>
-            {renderSectionHeader("Work Experience")}
+            {renderSectionHeader(getSectionTitle(resume, "experience", "Work Experience"))}
             <div className="space-y-5">
               {experienceToRender.map((exp) => (
                 <div key={exp.id}>
@@ -351,7 +352,7 @@ export const WhitePurpleMinimalistTemplate: React.FC<TemplateProps> = ({
         {/* Featured Projects Grid */}
         {projectsToRender.length > 0 && (
           <section>
-            {renderSectionHeader("Featured Projects")}
+            {renderSectionHeader(getSectionTitle(resume, "projects", "Featured Projects"))}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {projectsToRender.map((proj) => (
                 <div

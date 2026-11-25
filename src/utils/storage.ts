@@ -72,8 +72,10 @@ function updateInSavedList(doc: BiodataDocument): void {
     const idx = list.findIndex((d) => d.id === doc.id);
     if (idx >= 0) {
       list[idx] = doc;
-      localStorage.setItem(STORAGE_KEY_SAVED_LIST, JSON.stringify(list));
+    } else {
+      list.unshift(doc);
     }
+    localStorage.setItem(STORAGE_KEY_SAVED_LIST, JSON.stringify(list));
   } catch {
     // silent fallback
   }

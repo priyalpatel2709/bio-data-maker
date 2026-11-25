@@ -1,6 +1,10 @@
 import React from "react";
-import { ResumeDocument } from "../../../types/resume";
+import { ResumeDocument, ResumeSectionKey } from "../../../types/resume";
 import { Mail, Phone, MapPin, Globe, Linkedin, Github } from "lucide-react";
+import {
+  getEffectiveSectionOrder,
+  getSectionTitle,
+} from "./templateUtils";
 
 interface TemplateProps {
   resume: ResumeDocument;
@@ -100,9 +104,9 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
             >
               Contact
             </h3>
-            <div className="space-y-2 text-xs text-slate-600">
+            <div className="space-y-1.5 text-xs text-slate-600">
               {contact.email && (
-                <div className="flex items-center gap-2 break-all">
+                <div className="flex items-center gap-2">
                   <Mail
                     className="w-3.5 h-3.5 shrink-0"
                     style={{ color: primaryColor }}
@@ -150,6 +154,17 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
                   </span>
                 </div>
               )}
+              {contact.website && (
+                <div className="flex items-center gap-2">
+                  <Globe
+                    className="w-3.5 h-3.5 shrink-0"
+                    style={{ color: primaryColor }}
+                  />
+                  <span className="truncate">
+                    {contact.website.replace(/^https?:\/\//, "")}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -160,7 +175,7 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
                 className="text-[11px] font-bold uppercase tracking-wider mb-2 pb-1 border-b"
                 style={{ color: primaryColor, borderColor: "#E2E8F0" }}
               >
-                Skills & Tools
+                {getSectionTitle(resume, "skills", "Skills & Tools")}
               </h3>
               <div className="space-y-2.5">
                 {skillCategories.map((cat) => (
@@ -184,19 +199,19 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
             </div>
           )}
 
-          {/* Certifications in Sidebar */}
+          {/* Sidebar Certifications on Page 2 or Page 1 bottom */}
           {certifications.length > 0 && (
             <div>
               <h3
                 className="text-[11px] font-bold uppercase tracking-wider mb-2 pb-1 border-b"
                 style={{ color: primaryColor, borderColor: "#E2E8F0" }}
               >
-                Certifications
+                {getSectionTitle(resume, "certifications", "Certifications")}
               </h3>
-              <div className="space-y-1.5 text-xs">
+              <div className="space-y-1.5">
                 {certifications.map((c) => (
                   <div key={c.id}>
-                    <p className="font-bold text-slate-800 leading-tight">
+                    <p className="text-xs font-bold text-slate-800 leading-tight">
                       {c.name}
                     </p>
                     <p className="text-[11px] text-slate-500">
@@ -238,7 +253,7 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
     return null;
   };
 
-  const renderSummary = () => {
+  const renderSummary = (customTitle?: string) => {
     if (!summary) return null;
     return (
       <section>
@@ -246,7 +261,7 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
           className="text-xs font-bold uppercase tracking-wider mb-1.5 pb-1 border-b"
           style={{ color: primaryColor, borderColor: "#E2E8F0" }}
         >
-          About Me
+          {customTitle || getSectionTitle(resume, "summary", "About Me")}
         </h2>
         <p
           className={`text-slate-700 leading-relaxed ${isCompact ? "text-xs" : "text-sm"}`}
@@ -257,7 +272,7 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderExperience = () => {
+  const renderExperience = (customTitle?: string) => {
     if (experience.length === 0) return null;
     return (
       <section>
@@ -265,7 +280,7 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
           className="text-xs font-bold uppercase tracking-wider mb-2.5 pb-1 border-b"
           style={{ color: primaryColor, borderColor: "#E2E8F0" }}
         >
-          Professional Experience
+          {customTitle || getSectionTitle(resume, "experience", "Professional Experience")}
         </h2>
         <div className="space-y-3.5">
           {experience.map((exp) => (
@@ -304,7 +319,7 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderProjects = () => {
+  const renderProjects = (customTitle?: string) => {
     if (projects.length === 0) return null;
     return (
       <section>
@@ -312,7 +327,7 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
           className="text-xs font-bold uppercase tracking-wider mb-2.5 pb-1 border-b"
           style={{ color: primaryColor, borderColor: "#E2E8F0" }}
         >
-          Featured Projects
+          {customTitle || getSectionTitle(resume, "projects", "Featured Projects")}
         </h2>
         <div className="space-y-2.5">
           {projects.map((proj) => (
@@ -361,7 +376,7 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderEducation = () => {
+  const renderEducation = (customTitle?: string) => {
     if (education.length === 0) return null;
     return (
       <section>
@@ -369,7 +384,7 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
           className="text-xs font-bold uppercase tracking-wider mb-2.5 pb-1 border-b"
           style={{ color: primaryColor, borderColor: "#E2E8F0" }}
         >
-          Education
+          {customTitle || getSectionTitle(resume, "education", "Education")}
         </h2>
         <div className="space-y-2 text-xs">
           {education.map((edu) => (
@@ -396,35 +411,71 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderCustomSections = () => {
-    const visibleCustom = customSections.filter((cs) => cs.visible);
-    if (visibleCustom.length === 0) return null;
+  const renderCustomSectionItem = (customId?: string, customTitle?: string) => {
+    const cs = customSections.find((c) => c.id === customId && c.visible);
+    if (!cs || cs.items.length === 0) return null;
     return (
-      <>
-        {visibleCustom.map((cs) => (
-          <section key={cs.id}>
-            <h2
-              className="text-xs font-bold uppercase tracking-wider mb-2 pb-1 border-b"
-              style={{ color: primaryColor, borderColor: "#E2E8F0" }}
-            >
-              {cs.title}
-            </h2>
-            <div className="space-y-2 text-xs text-slate-700">
-              {cs.items.map((it) => (
-                <div key={it.id}>
-                  <strong>{it.title}</strong>
-                  {it.subtitle && <span> — {it.subtitle}</span>}
-                  {it.description && (
-                    <p className="text-slate-600 mt-0.5">{it.description}</p>
-                  )}
-                </div>
-              ))}
+      <section key={cs.id}>
+        <h2
+          className="text-xs font-bold uppercase tracking-wider mb-2 pb-1 border-b"
+          style={{ color: primaryColor, borderColor: "#E2E8F0" }}
+        >
+          {customTitle || cs.title}
+        </h2>
+        <div className="space-y-2 text-xs text-slate-700">
+          {cs.items.map((it) => (
+            <div key={it.id}>
+              <strong>{it.title}</strong>
+              {it.subtitle && <span> — {it.subtitle}</span>}
+              {it.description && (
+                <p className="text-slate-600 mt-0.5">{it.description}</p>
+              )}
             </div>
-          </section>
-        ))}
-      </>
+          ))}
+        </div>
+      </section>
     );
   };
+
+  const renderMainSectionByKey = (
+    key: ResumeSectionKey,
+    title: string,
+    customId?: string,
+  ) => {
+    switch (key) {
+      case "summary":
+        return renderSummary(title);
+      case "experience":
+        return renderExperience(title);
+      case "projects":
+        return renderProjects(title);
+      case "education":
+        return renderEducation(title);
+      case "custom":
+        return renderCustomSectionItem(customId, title);
+      default:
+        return null;
+    }
+  };
+
+  const effectiveSections = getEffectiveSectionOrder(resume);
+  const mainSections = effectiveSections.filter(
+    (s) => s.key !== "skills" && s.key !== "certifications" && s.key !== "contact",
+  );
+
+  const splitIndex =
+    splitAt === "projects"
+      ? mainSections.findIndex((s) => s.key === "projects")
+      : splitAt === "education"
+        ? mainSections.findIndex((s) => s.key === "education")
+        : Math.ceil(mainSections.length / 2);
+
+  const actualSplitIndex =
+    splitIndex > 0 ? splitIndex : Math.max(1, Math.floor(mainSections.length / 2));
+  const page1Sections = hasPage2
+    ? mainSections.slice(0, actualSplitIndex)
+    : mainSections;
+  const page2Sections = hasPage2 ? mainSections.slice(actualSplitIndex) : [];
 
   if (!hasPage2) {
     return (
@@ -437,11 +488,11 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
           {renderSidebar(false)}
           <main className="flex-1 p-7 flex flex-col justify-between gap-4 box-border">
             <div className="space-y-4">
-              {renderSummary()}
-              {renderExperience()}
-              {renderProjects()}
-              {renderEducation()}
-              {renderCustomSections()}
+              {mainSections.map((s) => (
+                <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+                  {renderMainSectionByKey(s.key, s.title, s.customId)}
+                </React.Fragment>
+              ))}
             </div>
           </main>
         </div>
@@ -460,8 +511,11 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
         {renderSidebar(false)}
         <main className="flex-1 p-7 flex flex-col justify-between gap-4 box-border">
           <div className="space-y-4">
-            {renderSummary()}
-            {renderExperience()}
+            {page1Sections.map((s) => (
+              <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+                {renderMainSectionByKey(s.key, s.title, s.customId)}
+              </React.Fragment>
+            ))}
           </div>
         </main>
       </div>
@@ -476,9 +530,11 @@ export const CreativeTwoColumnTemplate: React.FC<TemplateProps> = ({
         <main className="flex-1 p-7 flex flex-col justify-between gap-4 box-border">
           <div className="space-y-4">
             {renderMainHeader(true)}
-            {renderProjects()}
-            {renderEducation()}
-            {renderCustomSections()}
+            {page2Sections.map((s) => (
+              <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+                {renderMainSectionByKey(s.key, s.title, s.customId)}
+              </React.Fragment>
+            ))}
           </div>
         </main>
       </div>

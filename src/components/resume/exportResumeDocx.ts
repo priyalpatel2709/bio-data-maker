@@ -8,7 +8,7 @@ import {
   BorderStyle,
 } from "docx";
 import { saveAs } from "file-saver";
-import { ResumeDocument } from "../../types/resume";
+import { ResumeDocument, ResumeSectionMeta } from "../../types/resume";
 
 export async function exportResumeToDocx(
   resume: ResumeDocument,
@@ -124,169 +124,31 @@ export async function exportResumeToDocx(
     );
   };
 
-  onProgress?.(30, "Formatting professional summary & experience...");
+  onProgress?.(30, "Formatting sections in custom order & headers...");
 
-  // Professional Summary
-  if (summary.trim()) {
-    addSectionHeading("Professional Summary");
-    docChildren.push(
-      new Paragraph({
-        spacing: { after: 160 },
-        children: [
-          new TextRun({
-            text: summary,
-            size: 20,
-            color: textHex,
-            font: "Calibri",
-          }),
-        ],
-      }),
-    );
-  }
+  const effectiveSections: ResumeSectionMeta[] =
+    resume.sectionOrder && resume.sectionOrder.length > 0
+      ? resume.sectionOrder.filter((s) => s.visible !== false)
+      : [
+          { key: "summary", title: "Professional Summary", visible: true },
+          { key: "experience", title: "Work Experience", visible: true },
+          { key: "education", title: "Education", visible: true },
+          { key: "skills", title: "Skills & Proficiencies", visible: true },
+          { key: "projects", title: "Projects", visible: true },
+          { key: "certifications", title: "Certifications", visible: true },
+        ];
 
-  // Experience
-  if (experience.length > 0) {
-    addSectionHeading("Work Experience");
-    experience.forEach((exp) => {
-      // Role & Company Header
+  effectiveSections.forEach((section) => {
+    const heading = section.title || section.key;
+
+    if (section.key === "summary" && summary.trim()) {
+      addSectionHeading(heading);
       docChildren.push(
         new Paragraph({
-          spacing: { before: 120, after: 40 },
+          spacing: { after: 160 },
           children: [
             new TextRun({
-              text: exp.position,
-              bold: true,
-              size: 22,
-              color: textHex,
-              font: "Calibri",
-            }),
-            new TextRun({
-              text: ` — ${exp.company}`,
-              bold: true,
-              size: 22,
-              color: primaryHex,
-              font: "Calibri",
-            }),
-            new TextRun({
-              text: `  (${exp.startDate} - ${exp.isCurrent ? "Present" : exp.endDate}${exp.location ? `, ${exp.location}` : ""})`,
-              italics: true,
-              size: 18,
-              color: mutedHex,
-              font: "Calibri",
-            }),
-          ],
-        }),
-      );
-
-      // Bullets
-      exp.bullets.forEach((bullet) => {
-        if (!bullet.trim()) return;
-        docChildren.push(
-          new Paragraph({
-            bullet: { level: 0 },
-            spacing: { after: 40 },
-            children: [
-              new TextRun({
-                text: bullet.trim(),
-                size: 20,
-                color: textHex,
-                font: "Calibri",
-              }),
-            ],
-          }),
-        );
-      });
-    });
-  }
-
-  onProgress?.(60, "Adding education, skills, and projects...");
-
-  // Education
-  if (education.length > 0) {
-    addSectionHeading("Education");
-    education.forEach((edu) => {
-      docChildren.push(
-        new Paragraph({
-          spacing: { before: 120, after: 40 },
-          children: [
-            new TextRun({
-              text:
-                edu.degree +
-                (edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ""),
-              bold: true,
-              size: 22,
-              color: textHex,
-              font: "Calibri",
-            }),
-            new TextRun({
-              text: ` — ${edu.institution}`,
-              size: 20,
-              color: primaryHex,
-              font: "Calibri",
-            }),
-            new TextRun({
-              text: ` (${edu.startDate} - ${edu.isCurrent ? "Present" : edu.endDate})`,
-              italics: true,
-              size: 18,
-              color: mutedHex,
-              font: "Calibri",
-            }),
-          ],
-        }),
-      );
-      if (edu.gradeOrGpa) {
-        docChildren.push(
-          new Paragraph({
-            spacing: { after: 40 },
-            children: [
-              new TextRun({
-                text: edu.gradeOrGpa,
-                italics: true,
-                size: 18,
-                color: mutedHex,
-                font: "Calibri",
-              }),
-            ],
-          }),
-        );
-      }
-      edu.bullets?.forEach((b) => {
-        if (!b.trim()) return;
-        docChildren.push(
-          new Paragraph({
-            bullet: { level: 0 },
-            spacing: { after: 40 },
-            children: [
-              new TextRun({
-                text: b.trim(),
-                size: 20,
-                color: textHex,
-                font: "Calibri",
-              }),
-            ],
-          }),
-        );
-      });
-    });
-  }
-
-  // Skills
-  if (skillCategories.length > 0) {
-    addSectionHeading("Skills & Proficiencies");
-    skillCategories.forEach((sc) => {
-      docChildren.push(
-        new Paragraph({
-          spacing: { after: 60 },
-          children: [
-            new TextRun({
-              text: `${sc.categoryName}: `,
-              bold: true,
-              size: 20,
-              color: textHex,
-              font: "Calibri",
-            }),
-            new TextRun({
-              text: sc.skills.join(", "),
+              text: summary,
               size: 20,
               color: textHex,
               font: "Calibri",
@@ -294,122 +156,29 @@ export async function exportResumeToDocx(
           ],
         }),
       );
-    });
-  }
-
-  // Projects
-  if (projects.length > 0) {
-    addSectionHeading("Projects");
-    projects.forEach((proj) => {
-      docChildren.push(
-        new Paragraph({
-          spacing: { before: 100, after: 40 },
-          children: [
-            new TextRun({
-              text: proj.name,
-              bold: true,
-              size: 22,
-              color: textHex,
-              font: "Calibri",
-            }),
-            new TextRun({
-              text: proj.roleOrSubtitle ? ` (${proj.roleOrSubtitle})` : "",
-              italics: true,
-              size: 18,
-              color: mutedHex,
-              font: "Calibri",
-            }),
-            new TextRun({
-              text: proj.link ? ` [${proj.link}]` : "",
-              size: 18,
-              color: primaryHex,
-              font: "Calibri",
-            }),
-          ],
-        }),
-      );
-      if (proj.techStack && proj.techStack.length > 0) {
+    } else if (section.key === "experience" && experience.length > 0) {
+      addSectionHeading(heading);
+      experience.forEach((exp) => {
         docChildren.push(
           new Paragraph({
-            spacing: { after: 40 },
+            spacing: { before: 120, after: 40 },
             children: [
               new TextRun({
-                text: `Tech Stack: ${proj.techStack.join(", ")}`,
-                italics: true,
-                size: 18,
-                color: mutedHex,
-                font: "Calibri",
-              }),
-            ],
-          }),
-        );
-      }
-      proj.bullets.forEach((b) => {
-        if (!b.trim()) return;
-        docChildren.push(
-          new Paragraph({
-            bullet: { level: 0 },
-            spacing: { after: 40 },
-            children: [
-              new TextRun({
-                text: b.trim(),
-                size: 20,
-                color: textHex,
-                font: "Calibri",
-              }),
-            ],
-          }),
-        );
-      });
-    });
-  }
-
-  // Certifications
-  if (certifications.length > 0) {
-    addSectionHeading("Certifications");
-    certifications.forEach((cert) => {
-      docChildren.push(
-        new Paragraph({
-          spacing: { after: 60 },
-          children: [
-            new TextRun({
-              text: cert.name,
-              bold: true,
-              size: 20,
-              color: textHex,
-              font: "Calibri",
-            }),
-            new TextRun({
-              text: ` — ${cert.issuer}${cert.issueDate ? ` (${cert.issueDate})` : ""}`,
-              size: 20,
-              color: mutedHex,
-              font: "Calibri",
-            }),
-          ],
-        }),
-      );
-    });
-  }
-
-  // Custom Sections
-  customSections
-    .filter((cs) => cs.visible)
-    .forEach((cs) => {
-      addSectionHeading(cs.title);
-      cs.items.forEach((item) => {
-        docChildren.push(
-          new Paragraph({
-            spacing: { before: 80, after: 40 },
-            children: [
-              new TextRun({
-                text: item.title,
+                text: exp.position,
                 bold: true,
+                size: 22,
+                color: textHex,
+                font: "Calibri",
+              }),
+              new TextRun({
+                text: `  |  ${exp.company}${exp.location ? ` (${exp.location})` : ""}`,
                 size: 20,
                 color: textHex,
                 font: "Calibri",
               }),
               new TextRun({
-                text: item.subtitle ? ` — ${item.subtitle}` : "",
+                text: `   (${exp.startDate} - ${exp.isCurrent ? "Present" : exp.endDate})`,
+                italics: true,
                 size: 18,
                 color: mutedHex,
                 font: "Calibri",
@@ -417,13 +186,16 @@ export async function exportResumeToDocx(
             ],
           }),
         );
-        if (item.description) {
+
+        exp.bullets.forEach((bullet) => {
+          if (!bullet.trim()) return;
           docChildren.push(
             new Paragraph({
+              bullet: { level: 0 },
               spacing: { after: 40 },
               children: [
                 new TextRun({
-                  text: item.description,
+                  text: bullet.trim(),
                   size: 20,
                   color: textHex,
                   font: "Calibri",
@@ -431,8 +203,147 @@ export async function exportResumeToDocx(
               ],
             }),
           );
+        });
+      });
+    } else if (section.key === "education" && education.length > 0) {
+      addSectionHeading(heading);
+      education.forEach((edu) => {
+        docChildren.push(
+          new Paragraph({
+            spacing: { before: 120, after: 40 },
+            children: [
+              new TextRun({
+                text:
+                  edu.degree +
+                  (edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ""),
+                bold: true,
+                size: 22,
+                color: textHex,
+                font: "Calibri",
+              }),
+              new TextRun({
+                text: ` — ${edu.institution}${edu.location ? `, ${edu.location}` : ""}`,
+                size: 20,
+                color: primaryHex,
+                font: "Calibri",
+              }),
+              new TextRun({
+                text: ` (${edu.startDate} - ${edu.isCurrent ? "Present" : edu.endDate})`,
+                italics: true,
+                size: 18,
+                color: mutedHex,
+                font: "Calibri",
+              }),
+            ],
+          }),
+        );
+
+        if (edu.gradeOrGpa) {
+          docChildren.push(
+            new Paragraph({
+              spacing: { after: 40 },
+              children: [
+                new TextRun({
+                  text: edu.gradeOrGpa,
+                  italics: true,
+                  size: 18,
+                  color: mutedHex,
+                  font: "Calibri",
+                }),
+              ],
+            }),
+          );
         }
-        item.bullets?.forEach((b) => {
+
+        edu.bullets?.forEach((bullet) => {
+          if (!bullet.trim()) return;
+          docChildren.push(
+            new Paragraph({
+              bullet: { level: 0 },
+              spacing: { after: 40 },
+              children: [
+                new TextRun({
+                  text: bullet.trim(),
+                  size: 20,
+                  color: textHex,
+                  font: "Calibri",
+                }),
+              ],
+            }),
+          );
+        });
+      });
+    } else if (section.key === "skills" && skillCategories.length > 0) {
+      addSectionHeading(heading);
+      skillCategories.forEach((sc) => {
+        docChildren.push(
+          new Paragraph({
+            spacing: { after: 60 },
+            children: [
+              new TextRun({
+                text: `${sc.categoryName}: `,
+                bold: true,
+                size: 20,
+                color: textHex,
+                font: "Calibri",
+              }),
+              new TextRun({
+                text: sc.skills.join(", "),
+                size: 20,
+                color: textHex,
+                font: "Calibri",
+              }),
+            ],
+          }),
+        );
+      });
+    } else if (section.key === "projects" && projects.length > 0) {
+      addSectionHeading(heading);
+      projects.forEach((proj) => {
+        docChildren.push(
+          new Paragraph({
+            spacing: { before: 100, after: 40 },
+            children: [
+              new TextRun({
+                text: proj.name,
+                bold: true,
+                size: 22,
+                color: textHex,
+                font: "Calibri",
+              }),
+              new TextRun({
+                text: proj.roleOrSubtitle ? ` (${proj.roleOrSubtitle})` : "",
+                italics: true,
+                size: 18,
+                color: mutedHex,
+                font: "Calibri",
+              }),
+              new TextRun({
+                text: proj.link ? ` [${proj.link}]` : "",
+                size: 18,
+                color: primaryHex,
+                font: "Calibri",
+              }),
+            ],
+          }),
+        );
+        if (proj.techStack && proj.techStack.length > 0) {
+          docChildren.push(
+            new Paragraph({
+              spacing: { after: 40 },
+              children: [
+                new TextRun({
+                  text: `Tech Stack: ${proj.techStack.join(", ")}`,
+                  italics: true,
+                  size: 18,
+                  color: mutedHex,
+                  font: "Calibri",
+                }),
+              ],
+            }),
+          );
+        }
+        proj.bullets.forEach((b) => {
           if (!b.trim()) return;
           docChildren.push(
             new Paragraph({
@@ -450,7 +361,91 @@ export async function exportResumeToDocx(
           );
         });
       });
-    });
+    } else if (section.key === "certifications" && certifications.length > 0) {
+      addSectionHeading(heading);
+      certifications.forEach((cert) => {
+        docChildren.push(
+          new Paragraph({
+            spacing: { after: 60 },
+            children: [
+              new TextRun({
+                text: cert.name,
+                bold: true,
+                size: 20,
+                color: textHex,
+                font: "Calibri",
+              }),
+              new TextRun({
+                text: ` — ${cert.issuer}${cert.issueDate ? ` (${cert.issueDate})` : ""}`,
+                size: 20,
+                color: mutedHex,
+                font: "Calibri",
+              }),
+            ],
+          }),
+        );
+      });
+    } else if (section.key === "custom" && section.customId) {
+      const cs = customSections.find((c) => c.id === section.customId && c.visible);
+      if (cs && cs.items.length > 0) {
+        addSectionHeading(heading);
+        cs.items.forEach((item) => {
+          docChildren.push(
+            new Paragraph({
+              spacing: { before: 80, after: 40 },
+              children: [
+                new TextRun({
+                  text: item.title,
+                  bold: true,
+                  size: 20,
+                  color: textHex,
+                  font: "Calibri",
+                }),
+                new TextRun({
+                  text: item.subtitle ? ` — ${item.subtitle}` : "",
+                  size: 18,
+                  color: mutedHex,
+                  font: "Calibri",
+                }),
+              ],
+            }),
+          );
+          if (item.description) {
+            docChildren.push(
+              new Paragraph({
+                spacing: { after: 40 },
+                children: [
+                  new TextRun({
+                    text: item.description,
+                    size: 20,
+                    color: textHex,
+                    font: "Calibri",
+                  }),
+                ],
+              }),
+            );
+          }
+          item.bullets?.forEach((b) => {
+            if (!b.trim()) return;
+            docChildren.push(
+              new Paragraph({
+                bullet: { level: 0 },
+                spacing: { after: 40 },
+                children: [
+                  new TextRun({
+                    text: b.trim(),
+                    size: 20,
+                    color: textHex,
+                    font: "Calibri",
+                  }),
+                ],
+              }),
+            );
+          });
+        });
+      }
+    }
+  });
 
   onProgress?.(85, "Packaging Word .docx binary...");
 

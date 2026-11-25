@@ -1,6 +1,10 @@
 import React from "react";
-import { ResumeDocument } from "../../../types/resume";
+import { ResumeDocument, ResumeSectionKey } from "../../../types/resume";
 import { Mail, Phone, MapPin, Globe, Linkedin } from "lucide-react";
+import {
+  getEffectiveSectionOrder,
+  getSectionTitle,
+} from "./templateUtils";
 
 interface TemplateProps {
   resume: ResumeDocument;
@@ -127,7 +131,7 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderSummary = () => {
+  const renderSummary = (customTitle?: string) => {
     if (!summary) return null;
     return (
       <section>
@@ -135,7 +139,7 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
           className="font-sans text-xs font-bold uppercase tracking-widest border-b pb-1 mb-1.5"
           style={{ color: primaryColor, borderColor: "#CBD5E1" }}
         >
-          Executive Summary
+          {customTitle || getSectionTitle(resume, "summary", "Executive Summary")}
         </h2>
         <p
           className={`font-serif text-slate-700 leading-relaxed text-justify ${isCompact ? "text-xs" : "text-sm"}`}
@@ -146,7 +150,7 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderExperience = () => {
+  const renderExperience = (customTitle?: string) => {
     if (experience.length === 0) return null;
     return (
       <section>
@@ -154,7 +158,7 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
           className="font-sans text-xs font-bold uppercase tracking-widest border-b pb-1 mb-2"
           style={{ color: primaryColor, borderColor: "#CBD5E1" }}
         >
-          Professional Experience
+          {customTitle || getSectionTitle(resume, "experience", "Professional Experience")}
         </h2>
         <div className="space-y-3">
           {experience.map((exp) => (
@@ -189,7 +193,7 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderSkills = () => {
+  const renderSkills = (customTitle?: string) => {
     if (skillCategories.length === 0) return null;
     return (
       <section>
@@ -197,7 +201,7 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
           className="font-sans text-xs font-bold uppercase tracking-widest border-b pb-1 mb-1.5"
           style={{ color: primaryColor, borderColor: "#CBD5E1" }}
         >
-          Core Competencies & Expertise
+          {customTitle || getSectionTitle(resume, "skills", "Core Competencies & Expertise")}
         </h2>
         <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
           {skillCategories.map((cat) => (
@@ -215,7 +219,7 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderProjects = () => {
+  const renderProjects = (customTitle?: string) => {
     if (projects.length === 0) return null;
     return (
       <section>
@@ -223,7 +227,7 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
           className="font-sans text-xs font-bold uppercase tracking-widest border-b pb-1 mb-2"
           style={{ color: primaryColor, borderColor: "#CBD5E1" }}
         >
-          Key Initiatives & Projects
+          {customTitle || getSectionTitle(resume, "projects", "Key Initiatives & Projects")}
         </h2>
         <div className="space-y-2">
           {projects.map((proj) => (
@@ -252,7 +256,7 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderEducation = () => {
+  const renderEducation = (customTitle?: string) => {
     if (education.length === 0) return null;
     return (
       <section>
@@ -260,7 +264,7 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
           className="font-sans text-xs font-bold uppercase tracking-widest border-b pb-1 mb-2"
           style={{ color: primaryColor, borderColor: "#CBD5E1" }}
         >
-          Education & Academic Credentials
+          {customTitle || getSectionTitle(resume, "education", "Education & Academic Credentials")}
         </h2>
         <div className="space-y-2">
           {education.map((edu) => (
@@ -298,7 +302,7 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderCertifications = () => {
+  const renderCertifications = (customTitle?: string) => {
     if (certifications.length === 0) return null;
     return (
       <section>
@@ -306,7 +310,7 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
           className="font-sans text-xs font-bold uppercase tracking-widest border-b pb-1 mb-1.5"
           style={{ color: primaryColor, borderColor: "#CBD5E1" }}
         >
-          Certifications & Affiliations
+          {customTitle || getSectionTitle(resume, "certifications", "Certifications & Affiliations")}
         </h2>
         <div className="space-y-1 text-xs font-serif text-slate-700">
           {certifications.map((cert) => (
@@ -329,34 +333,55 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
     );
   };
 
-  const renderCustomSections = () => {
-    const visibleCustom = customSections.filter((cs) => cs.visible);
-    if (visibleCustom.length === 0) return null;
+  const renderCustomSectionItem = (customId?: string, customTitle?: string) => {
+    const cs = customSections.find((c) => c.id === customId && c.visible);
+    if (!cs || cs.items.length === 0) return null;
     return (
-      <>
-        {visibleCustom.map((cs) => (
-          <section key={cs.id}>
-            <h2
-              className="font-sans text-xs font-bold uppercase tracking-widest border-b pb-1 mb-1.5"
-              style={{ color: primaryColor, borderColor: "#CBD5E1" }}
-            >
-              {cs.title}
-            </h2>
-            <div className="space-y-1 text-xs font-serif text-slate-700">
-              {cs.items.map((item) => (
-                <div key={item.id}>
-                  <strong>{item.title}</strong>
-                  {item.subtitle && <span> — {item.subtitle}</span>}
-                  {item.description && (
-                    <p className="mt-0.5 text-slate-600">{item.description}</p>
-                  )}
-                </div>
-              ))}
+      <section key={cs.id}>
+        <h2
+          className="font-sans text-xs font-bold uppercase tracking-widest border-b pb-1 mb-1.5"
+          style={{ color: primaryColor, borderColor: "#CBD5E1" }}
+        >
+          {customTitle || cs.title}
+        </h2>
+        <div className="space-y-1 text-xs font-serif text-slate-700">
+          {cs.items.map((item) => (
+            <div key={item.id}>
+              <strong>{item.title}</strong>
+              {item.subtitle && <span> — {item.subtitle}</span>}
+              {item.description && (
+                <p className="mt-0.5 text-slate-600">{item.description}</p>
+              )}
             </div>
-          </section>
-        ))}
-      </>
+          ))}
+        </div>
+      </section>
     );
+  };
+
+  const renderSectionByKey = (
+    key: ResumeSectionKey,
+    title: string,
+    customId?: string,
+  ) => {
+    switch (key) {
+      case "summary":
+        return renderSummary(title);
+      case "experience":
+        return renderExperience(title);
+      case "education":
+        return renderEducation(title);
+      case "skills":
+        return renderSkills(title);
+      case "projects":
+        return renderProjects(title);
+      case "certifications":
+        return renderCertifications(title);
+      case "custom":
+        return renderCustomSectionItem(customId, title);
+      default:
+        return null;
+    }
   };
 
   const renderFooter = (pageNumber: number) => {
@@ -371,6 +396,23 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
     );
   };
 
+  const effectiveSections = getEffectiveSectionOrder(resume);
+  const splitIndex =
+    splitAt === "projects"
+      ? effectiveSections.findIndex((s) => s.key === "projects")
+      : splitAt === "education"
+        ? effectiveSections.findIndex((s) => s.key === "education")
+        : splitAt === "skills"
+          ? effectiveSections.findIndex((s) => s.key === "skills")
+          : Math.ceil(effectiveSections.length / 2);
+
+  const actualSplitIndex =
+    splitIndex > 0 ? splitIndex : Math.max(1, Math.floor(effectiveSections.length / 2));
+  const page1Sections = hasPage2
+    ? effectiveSections.slice(0, actualSplitIndex)
+    : effectiveSections;
+  const page2Sections = hasPage2 ? effectiveSections.slice(actualSplitIndex) : [];
+
   if (!hasPage2) {
     return (
       <div id="resume-preview-document" className="flex flex-col gap-8">
@@ -381,13 +423,11 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
         >
           <div className="space-y-4">
             {renderHeader(false)}
-            {renderSummary()}
-            {renderExperience()}
-            {renderSkills()}
-            {renderProjects()}
-            {renderEducation()}
-            {renderCertifications()}
-            {renderCustomSections()}
+            {effectiveSections.map((s) => (
+              <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+                {renderSectionByKey(s.key, s.title, s.customId)}
+              </React.Fragment>
+            ))}
           </div>
           {renderFooter(1)}
         </div>
@@ -405,9 +445,11 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
       >
         <div className="space-y-4">
           {renderHeader(false)}
-          {renderSummary()}
-          {renderExperience()}
-          {splitAt !== "skills" && renderSkills()}
+          {page1Sections.map((s) => (
+            <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+              {renderSectionByKey(s.key, s.title, s.customId)}
+            </React.Fragment>
+          ))}
         </div>
         {renderFooter(1)}
       </div>
@@ -420,11 +462,11 @@ export const ExecutiveCorporateTemplate: React.FC<TemplateProps> = ({
       >
         <div className="space-y-4">
           {renderHeader(true)}
-          {splitAt === "skills" && renderSkills()}
-          {renderProjects()}
-          {renderEducation()}
-          {renderCertifications()}
-          {renderCustomSections()}
+          {page2Sections.map((s) => (
+            <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+              {renderSectionByKey(s.key, s.title, s.customId)}
+            </React.Fragment>
+          ))}
         </div>
         {renderFooter(2)}
       </div>

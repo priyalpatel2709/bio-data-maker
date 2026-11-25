@@ -1,5 +1,9 @@
 import React from "react";
-import { ResumeDocument } from "../../../types/resume";
+import { ResumeDocument, ResumeSectionKey } from "../../../types/resume";
+import {
+  getEffectiveSectionOrder,
+  getSectionTitle,
+} from "./templateUtils";
 
 interface TemplateProps {
   resume: ResumeDocument;
@@ -171,11 +175,11 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     </div>
   );
 
-  const renderSummary = () => {
+  const renderSummary = (customTitle?: string) => {
     if (!summary) return null;
     return (
       <section>
-        {renderSectionHeading("Profile")}
+        {renderSectionHeading(customTitle || getSectionTitle(resume, "summary", "Profile"))}
         <p className="text-xs text-slate-800 leading-relaxed text-justify">
           {summary}
         </p>
@@ -183,11 +187,11 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderExperience = () => {
+  const renderExperience = (customTitle?: string) => {
     if (experience.length === 0) return null;
     return (
       <section>
-        {renderSectionHeading("Employment History")}
+        {renderSectionHeading(customTitle || getSectionTitle(resume, "experience", "Employment History"))}
         <div className="space-y-3.5">
           {experience.map((exp) => (
             <div key={exp.id}>
@@ -228,11 +232,11 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderEducation = () => {
+  const renderEducation = (customTitle?: string) => {
     if (education.length === 0) return null;
     return (
       <section>
-        {renderSectionHeading("Education")}
+        {renderSectionHeading(customTitle || getSectionTitle(resume, "education", "Education"))}
         <div className="space-y-3">
           {education.map((edu) => (
             <div key={edu.id} className="text-xs">
@@ -274,11 +278,11 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderSkills = () => {
+  const renderSkills = (customTitle?: string) => {
     if (skillCategories.length === 0) return null;
     return (
       <section>
-        {renderSectionHeading("Skills")}
+        {renderSectionHeading(customTitle || getSectionTitle(resume, "skills", "Skills"))}
         <div className="space-y-1.5 text-xs text-slate-800">
           {skillCategories.map((sc) => (
             <div key={sc.id} className="flex flex-row items-baseline gap-2">
@@ -295,11 +299,11 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderProjects = () => {
+  const renderProjects = (customTitle?: string) => {
     if (projects.length === 0) return null;
     return (
       <section>
-        {renderSectionHeading("Key Projects")}
+        {renderSectionHeading(customTitle || getSectionTitle(resume, "projects", "Key Projects"))}
         <div className="space-y-3">
           {projects.map((proj) => (
             <div key={proj.id} className="text-xs">
@@ -341,11 +345,11 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderCertifications = () => {
+  const renderCertifications = (customTitle?: string) => {
     if (certifications.length === 0) return null;
     return (
       <section>
-        {renderSectionHeading("Certifications")}
+        {renderSectionHeading(customTitle || getSectionTitle(resume, "certifications", "Certifications"))}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
           {certifications.map((cert) => (
             <div
@@ -410,6 +414,72 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
+  const renderCustomSectionItem = (customId?: string, customTitle?: string) => {
+    const cs = customSections.find((c) => c.id === customId && c.visible);
+    if (!cs || cs.items.length === 0) return null;
+    return (
+      <section key={cs.id}>
+        {renderSectionHeading(customTitle || cs.title)}
+        <div className="space-y-2 text-xs">
+          {cs.items.map((item) => (
+            <div key={item.id}>
+              <div className="flex justify-between items-baseline font-bold text-slate-900">
+                <span>{item.title}</span>
+                {item.date && (
+                  <span className="text-slate-500 font-normal text-[11px]">
+                    {item.date}
+                  </span>
+                )}
+              </div>
+              {item.subtitle && (
+                <div className="text-slate-700 italic">
+                  {item.subtitle}
+                </div>
+              )}
+              {item.description && (
+                <p className="text-slate-800 mt-0.5">
+                  {item.description}
+                </p>
+              )}
+              {item.bullets && item.bullets.length > 0 && (
+                <ul className="mt-1 list-disc list-outside ml-4 space-y-0.5 text-slate-800">
+                  {item.bullets.map((b, idx) => (
+                    <li key={idx}>{b}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  };
+
+  const renderSectionByKey = (
+    key: ResumeSectionKey,
+    title: string,
+    customId?: string,
+  ) => {
+    switch (key) {
+      case "summary":
+        return renderSummary(title);
+      case "experience":
+        return renderExperience(title);
+      case "education":
+        return renderEducation(title);
+      case "skills":
+        return renderSkills(title);
+      case "projects":
+        return renderProjects(title);
+      case "certifications":
+        return renderCertifications(title);
+      case "custom":
+        return renderCustomSectionItem(customId, title);
+      default:
+        return null;
+    }
+  };
+
   const renderFooter = (pageNumber: number) => {
     if (!styling.showPageNumbers) return null;
     return (
@@ -422,104 +492,44 @@ export const ClassicTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
+  const effectiveSections = getEffectiveSectionOrder(resume);
+
   // Split logic
+  const splitIndex = (() => {
+    if (isSinglePage) return effectiveSections.length;
+    if (splitAt && splitAt !== "auto" && splitAt !== "single-page") {
+      const idx = effectiveSections.findIndex((s) => s.key === splitAt);
+      if (idx > 0) return idx;
+    }
+    return Math.min(
+      Math.max(2, Math.ceil(effectiveSections.length / 2)),
+      effectiveSections.length,
+    );
+  })();
+
+  const page1Sections = effectiveSections.slice(0, splitIndex);
+  const page2Sections = effectiveSections.slice(splitIndex);
+
   const renderPage1Sections = () => {
-    if (isSinglePage) {
-      return (
-        <div className="space-y-4">
-          {renderSummary()}
-          {renderExperience()}
-          {renderProjects()}
-          {renderEducation()}
-          {renderSkills()}
-          {renderCertifications()}
-          {renderCustomSections()}
-        </div>
-      );
-    }
-
-    if (splitAt === "projects") {
-      return (
-        <div className="space-y-4">
-          {renderSummary()}
-          {renderExperience()}
-        </div>
-      );
-    }
-
-    if (splitAt === "education") {
-      return (
-        <div className="space-y-4">
-          {renderSummary()}
-          {renderExperience()}
-          {renderProjects()}
-        </div>
-      );
-    }
-
-    if (splitAt === "skills") {
-      return (
-        <div className="space-y-4">
-          {renderSummary()}
-          {renderExperience()}
-          {renderProjects()}
-          {renderEducation()}
-        </div>
-      );
-    }
-
-    // Auto split
     return (
       <div className="space-y-4">
-        {renderSummary()}
-        {renderExperience()}
-        {experience.length <= 2 && renderProjects()}
+        {page1Sections.map((sec) => (
+          <React.Fragment key={sec.customId || sec.key}>
+            {renderSectionByKey(sec.key, sec.title, sec.customId)}
+          </React.Fragment>
+        ))}
       </div>
     );
   };
 
   const renderPage2Sections = () => {
-    if (splitAt === "projects") {
-      return (
-        <div className="space-y-4">
-          {renderProjects()}
-          {renderEducation()}
-          {renderSkills()}
-          {renderCertifications()}
-          {renderCustomSections()}
-        </div>
-      );
-    }
-
-    if (splitAt === "education") {
-      return (
-        <div className="space-y-4">
-          {renderEducation()}
-          {renderSkills()}
-          {renderCertifications()}
-          {renderCustomSections()}
-        </div>
-      );
-    }
-
-    if (splitAt === "skills") {
-      return (
-        <div className="space-y-4">
-          {renderSkills()}
-          {renderCertifications()}
-          {renderCustomSections()}
-        </div>
-      );
-    }
-
-    // Auto split
     return (
       <div className="space-y-4">
-        {experience.length > 2 && renderProjects()}
-        {renderEducation()}
-        {renderSkills()}
-        {renderCertifications()}
-        {renderCustomSections()}
+        {page2Sections.map((sec) => (
+          <React.Fragment key={sec.customId || sec.key}>
+            {renderSectionByKey(sec.key, sec.title, sec.customId)}
+          </React.Fragment>
+        ))}
       </div>
     );
   };

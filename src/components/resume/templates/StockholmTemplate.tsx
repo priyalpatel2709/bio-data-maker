@@ -1,6 +1,10 @@
 import React from "react";
-import { ResumeDocument } from "../../../types/resume";
+import { ResumeDocument, ResumeSectionKey } from "../../../types/resume";
 import { Mail, Phone, MapPin, Globe, Linkedin, Github } from "lucide-react";
+import {
+  getEffectiveSectionOrder,
+  getSectionTitle,
+} from "./templateUtils";
 
 interface TemplateProps {
   resume: ResumeDocument;
@@ -58,19 +62,15 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
         <header className="border-b border-slate-200 pb-2 mb-4 flex flex-row items-center justify-between text-xs">
           <div>
             <span className="font-bold text-slate-900 text-sm tracking-tight">
-              {contact.fullName || "Candidate Name"}
+              {contact.fullName || "Candidate"}
             </span>
             {contact.jobTitle && (
-              <span className="text-slate-500 ml-2">— {contact.jobTitle}</span>
+              <span className="text-slate-500 ml-2 font-medium">
+                | {contact.jobTitle}
+              </span>
             )}
           </div>
-          <span
-            className="text-[10px] font-bold px-2 py-0.5 rounded"
-            style={{
-              backgroundColor: `${primaryColor}15`,
-              color: primaryColor,
-            }}
-          >
+          <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
             Page 2 of 2
           </span>
         </header>
@@ -78,35 +78,37 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
     }
 
     return (
-      <header className="pb-5 mb-5 border-b border-slate-200 flex flex-row items-center justify-between gap-5">
-        <div className="flex-1">
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
-            {contact.fullName || "Your Full Name"}
-          </h1>
-          {contact.jobTitle && (
-            <p
-              className="text-sm font-semibold mt-1 tracking-wide"
-              style={{ color: primaryColor }}
-            >
-              {contact.jobTitle}
-            </p>
+      <header className="border-b-2 border-slate-900 pb-4 mb-5">
+        <div className="flex flex-row items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-extrabold uppercase tracking-tight text-slate-900">
+              {contact.fullName || "Your Full Name"}
+            </h1>
+            {contact.jobTitle && (
+              <p
+                className="text-xs font-bold uppercase tracking-wider mt-1"
+                style={{ color: primaryColor }}
+              >
+                {contact.jobTitle}
+              </p>
+            )}
+          </div>
+
+          {styling.showPhoto && contact.photoUrl && (
+            <img
+              src={contact.photoUrl}
+              alt={contact.fullName}
+              className={`w-16 h-16 object-cover border-2 shadow-xs shrink-0 ${
+                styling.photoShape === "circle"
+                  ? "rounded-full"
+                  : styling.photoShape === "rounded"
+                    ? "rounded-xl"
+                    : "rounded-none"
+              }`}
+              style={{ borderColor: primaryColor }}
+            />
           )}
         </div>
-
-        {styling.showPhoto && contact.photoUrl && (
-          <img
-            src={contact.photoUrl}
-            alt={contact.fullName}
-            className={`w-20 h-20 object-cover shadow-sm border-2 shrink-0 ${
-              styling.photoShape === "circle"
-                ? "rounded-full"
-                : styling.photoShape === "rounded"
-                  ? "rounded-xl"
-                  : "rounded-none"
-            }`}
-            style={{ borderColor: primaryColor }}
-          />
-        )}
       </header>
     );
   };
@@ -183,7 +185,7 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
       {skillCategories.length > 0 && (
         <div>
           <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-900 mb-2 border-b border-slate-100 pb-1">
-            Skills
+            {getSectionTitle(resume, "skills", "Skills")}
           </h3>
           <div className="space-y-2.5">
             {skillCategories.map((sc) => (
@@ -211,7 +213,7 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
       {certifications.length > 0 && (
         <div>
           <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-900 mb-2 border-b border-slate-100 pb-1">
-            Certifications
+            {getSectionTitle(resume, "certifications", "Certifications")}
           </h3>
           <div className="space-y-2 text-[11px]">
             {certifications.map((c) => (
@@ -229,11 +231,11 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
   );
 
   // Right Column Content
-  const renderSummary = () => {
+  const renderSummary = (customTitle?: string) => {
     if (!summary) return null;
     return (
       <section>
-        {renderSectionTitle("Profile")}
+        {renderSectionTitle(customTitle || getSectionTitle(resume, "summary", "Profile"))}
         <p className="text-xs text-slate-700 leading-relaxed text-justify">
           {summary}
         </p>
@@ -241,11 +243,11 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderExperience = () => {
+  const renderExperience = (customTitle?: string) => {
     if (experience.length === 0) return null;
     return (
       <section>
-        {renderSectionTitle("Employment History")}
+        {renderSectionTitle(customTitle || getSectionTitle(resume, "experience", "Employment History"))}
         <div className="space-y-3.5">
           {experience.map((exp) => (
             <div key={exp.id} className="text-xs">
@@ -277,11 +279,11 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderEducation = () => {
+  const renderEducation = (customTitle?: string) => {
     if (education.length === 0) return null;
     return (
       <section>
-        {renderSectionTitle("Education")}
+        {renderSectionTitle(customTitle || getSectionTitle(resume, "education", "Education"))}
         <div className="space-y-3">
           {education.map((edu) => (
             <div key={edu.id} className="text-xs">
@@ -314,33 +316,39 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderProjects = () => {
+  const renderProjects = (customTitle?: string) => {
     if (projects.length === 0) return null;
     return (
       <section>
-        {renderSectionTitle("Projects")}
+        {renderSectionTitle(customTitle || getSectionTitle(resume, "projects", "Projects"))}
         <div className="space-y-3">
           {projects.map((proj) => (
             <div key={proj.id} className="text-xs">
               <div className="flex flex-row justify-between items-baseline gap-2">
                 <span className="font-bold text-slate-900">{proj.name}</span>
-                {(proj.startDate || proj.endDate) && (
-                  <span className="text-slate-400 font-medium text-[11px] shrink-0">
-                    {proj.startDate} {proj.endDate ? `— ${proj.endDate}` : ""}
+                {proj.link && (
+                  <span
+                    className="text-[11px] font-medium"
+                    style={{ color: primaryColor }}
+                  >
+                    {proj.link}
                   </span>
                 )}
               </div>
               {proj.roleOrSubtitle && (
-                <div className="text-slate-600 text-xs italic">
+                <div className="text-slate-500 text-[11px] italic">
                   {proj.roleOrSubtitle}
+                </div>
+              )}
+              {proj.techStack && proj.techStack.length > 0 && (
+                <div className="text-[11px] text-slate-500 mt-0.5">
+                  Stack: {proj.techStack.join(", ")}
                 </div>
               )}
               {proj.bullets.length > 0 && (
                 <ul className="mt-1 space-y-0.5 list-disc list-outside ml-4 text-xs text-slate-700">
                   {proj.bullets.map((b, idx) => (
-                    <li key={idx} className="leading-relaxed">
-                      {b}
-                    </li>
+                    <li key={idx}>{b}</li>
                   ))}
                 </ul>
               )}
@@ -351,50 +359,62 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderCustomSections = () => {
-    if (customSections.length === 0) return null;
+  const renderCustomSectionItem = (customId?: string, customTitle?: string) => {
+    const cs = customSections.find((c) => c.id === customId && c.visible);
+    if (!cs || cs.items.length === 0) return null;
     return (
-      <>
-        {customSections
-          .filter((cs) => cs.visible)
-          .map((cs) => (
-            <section key={cs.id}>
-              {renderSectionTitle(cs.title)}
-              <div className="space-y-2 text-xs">
-                {cs.items.map((item) => (
-                  <div key={item.id}>
-                    <div className="flex justify-between items-baseline font-bold text-slate-900">
-                      <span>{item.title}</span>
-                      {item.date && (
-                        <span className="text-slate-400 font-normal text-[11px]">
-                          {item.date}
-                        </span>
-                      )}
-                    </div>
-                    {item.subtitle && (
-                      <div className="text-slate-600 italic">
-                        {item.subtitle}
-                      </div>
-                    )}
-                    {item.description && (
-                      <p className="text-slate-700 mt-0.5">
-                        {item.description}
-                      </p>
-                    )}
-                    {item.bullets && item.bullets.length > 0 && (
-                      <ul className="mt-1 list-disc list-outside ml-4 space-y-0.5 text-slate-700">
-                        {item.bullets.map((b, idx) => (
-                          <li key={idx}>{b}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
+      <section key={cs.id}>
+        {renderSectionTitle(customTitle || cs.title)}
+        <div className="space-y-2 text-xs">
+          {cs.items.map((item) => (
+            <div key={item.id}>
+              <div className="flex justify-between items-baseline font-bold text-slate-900">
+                <span>{item.title}</span>
+                {item.date && (
+                  <span className="text-slate-400 font-normal">
+                    {item.date}
+                  </span>
+                )}
               </div>
-            </section>
+              {item.subtitle && (
+                <div className="text-slate-500 italic">{item.subtitle}</div>
+              )}
+              {item.description && (
+                <p className="text-slate-700 mt-0.5">{item.description}</p>
+              )}
+              {item.bullets && item.bullets.length > 0 && (
+                <ul className="mt-1 list-disc list-outside ml-4 space-y-0.5 text-slate-700">
+                  {item.bullets.map((b, idx) => (
+                    <li key={idx}>{b}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
           ))}
-      </>
+        </div>
+      </section>
     );
+  };
+
+  const renderRightSectionByKey = (
+    key: ResumeSectionKey,
+    title: string,
+    customId?: string,
+  ) => {
+    switch (key) {
+      case "summary":
+        return renderSummary(title);
+      case "experience":
+        return renderExperience(title);
+      case "projects":
+        return renderProjects(title);
+      case "education":
+        return renderEducation(title);
+      case "custom":
+        return renderCustomSectionItem(customId, title);
+      default:
+        return null;
+    }
   };
 
   const renderFooter = (pageNumber: number) => {
@@ -409,75 +429,24 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderPage1Sections = () => {
-    if (isSinglePage) {
-      return (
-        <div className="space-y-4">
-          {renderSummary()}
-          {renderExperience()}
-          {renderProjects()}
-          {renderEducation()}
-          {renderCustomSections()}
-        </div>
-      );
-    }
+  const effectiveSections = getEffectiveSectionOrder(resume);
+  const mainSections = effectiveSections.filter(
+    (s) => s.key !== "skills" && s.key !== "certifications" && s.key !== "contact",
+  );
 
-    if (splitAt === "projects") {
-      return (
-        <div className="space-y-4">
-          {renderSummary()}
-          {renderExperience()}
-        </div>
-      );
-    }
+  const splitIndex =
+    splitAt === "projects"
+      ? mainSections.findIndex((s) => s.key === "projects")
+      : splitAt === "education"
+        ? mainSections.findIndex((s) => s.key === "education")
+        : Math.ceil(mainSections.length / 2);
 
-    if (splitAt === "education") {
-      return (
-        <div className="space-y-4">
-          {renderSummary()}
-          {renderExperience()}
-          {renderProjects()}
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-4">
-        {renderSummary()}
-        {renderExperience()}
-        {experience.length <= 2 && renderProjects()}
-      </div>
-    );
-  };
-
-  const renderPage2Sections = () => {
-    if (splitAt === "projects") {
-      return (
-        <div className="space-y-4">
-          {renderProjects()}
-          {renderEducation()}
-          {renderCustomSections()}
-        </div>
-      );
-    }
-
-    if (splitAt === "education") {
-      return (
-        <div className="space-y-4">
-          {renderEducation()}
-          {renderCustomSections()}
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-4">
-        {experience.length > 2 && renderProjects()}
-        {renderEducation()}
-        {renderCustomSections()}
-      </div>
-    );
-  };
+  const actualSplitIndex =
+    splitIndex > 0 ? splitIndex : Math.max(1, Math.floor(mainSections.length / 2));
+  const page1Sections = hasPage2
+    ? mainSections.slice(0, actualSplitIndex)
+    : mainSections;
+  const page2Sections = hasPage2 ? mainSections.slice(actualSplitIndex) : [];
 
   return (
     <div className="flex flex-col items-center gap-8 print:gap-0">
@@ -492,7 +461,13 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
           {renderHeader(false)}
           <div className="flex flex-row gap-5">
             {renderLeftColumn()}
-            <main className="flex-1">{renderPage1Sections()}</main>
+            <main className="flex-1 space-y-4">
+              {page1Sections.map((s) => (
+                <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+                  {renderRightSectionByKey(s.key, s.title, s.customId)}
+                </React.Fragment>
+              ))}
+            </main>
           </div>
         </div>
         {renderFooter(1)}
@@ -522,7 +497,13 @@ export const StockholmTemplate: React.FC<TemplateProps> = ({ resume }) => {
                   )}
                 </div>
               </div>
-              <main className="flex-1">{renderPage2Sections()}</main>
+              <main className="flex-1 space-y-4">
+                {page2Sections.map((s) => (
+                  <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+                    {renderRightSectionByKey(s.key, s.title, s.customId)}
+                  </React.Fragment>
+                ))}
+              </main>
             </div>
           </div>
           {renderFooter(2)}

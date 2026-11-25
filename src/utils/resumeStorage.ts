@@ -1,21 +1,60 @@
-import { ResumeDocument } from "../types/resume";
+import { ResumeDocument, ResumeSectionMeta } from "../types/resume";
 import { defaultResume } from "../data/defaultResume";
 
 const STORAGE_KEY_CURRENT_RESUME = "resume_current_doc";
 const STORAGE_KEY_SAVED_RESUMES = "resume_saved_list";
 
-function isDummyResume(doc: any): boolean {
-  if (!doc) return true;
-  if (doc.id === "resume-sample-1") return true;
-  if (doc.contact?.fullName === "Alex Morgan") return true;
-  if (doc.contact?.email === "alex.morgan@email.com") return true;
-  return false;
+export function ensureSectionOrder(doc: ResumeDocument): ResumeDocument {
+  const defaultSections: ResumeSectionMeta[] = [
+    { key: "summary", title: "Professional Summary", visible: true },
+    { key: "experience", title: "Work Experience", visible: true },
+    { key: "education", title: "Education", visible: true },
+    { key: "skills", title: "Skills & Proficiencies", visible: true },
+    { key: "projects", title: "Featured Projects", visible: true },
+    { key: "certifications", title: "Certifications", visible: false },
+  ];
+
+  const currentOrder: ResumeSectionMeta[] = Array.isArray(doc.sectionOrder)
+    ? [...doc.sectionOrder]
+    : [];
+
+  // Add missing default sections
+  for (const def of defaultSections) {
+    if (!currentOrder.some((s) => s.key === def.key)) {
+      currentOrder.push(def);
+    }
+  }
+
+  // Ensure all custom sections are in sectionOrder
+  if (Array.isArray(doc.customSections)) {
+    for (const cs of doc.customSections) {
+      if (!currentOrder.some((s) => s.key === "custom" && s.customId === cs.id)) {
+        currentOrder.push({
+          key: "custom",
+          customId: cs.id,
+          title: cs.title || "Custom Section",
+          visible: cs.visible !== false,
+        });
+      }
+    }
+  }
+
+  // Remove custom sections from order if they no longer exist
+  const validCustomIds = new Set((doc.customSections || []).map((cs) => cs.id));
+  const filteredOrder = currentOrder.filter(
+    (s) => s.key !== "custom" || (s.customId && validCustomIds.has(s.customId)),
+  );
+
+  return {
+    ...doc,
+    sectionOrder: filteredOrder,
+  };
 }
 
 export function loadCurrentResume(): ResumeDocument {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_CURRENT_RESUME);
-    if (!raw) return defaultResume;
+    if (!raw) return ensureSectionOrder(defaultResume);
     const parsed = JSON.parse(raw);
     if (
       parsed &&
@@ -23,24 +62,20 @@ export function loadCurrentResume(): ResumeDocument {
       parsed.contact &&
       Array.isArray(parsed.experience)
     ) {
-      if (isDummyResume(parsed)) {
-        saveCurrentResume(defaultResume);
-        return defaultResume;
-      }
-      return parsed;
+      return ensureSectionOrder(parsed);
     }
   } catch (err) {
     console.error("Failed to load resume from localStorage:", err);
   }
-  return defaultResume;
+  return ensureSectionOrder(defaultResume);
 }
 
 export function saveCurrentResume(doc: ResumeDocument): void {
   try {
-    const updated = {
+    const updated = ensureSectionOrder({
       ...doc,
       updatedAt: new Date().toISOString(),
-    };
+    });
     localStorage.setItem(STORAGE_KEY_CURRENT_RESUME, JSON.stringify(updated));
     updateInSavedResumeList(updated);
   } catch (err) {
@@ -52,38 +87,32 @@ export function getSavedResumes(): ResumeDocument[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_SAVED_RESUMES);
     if (!raw) {
-      const initial = [defaultResume];
+      const initial = [ensureSectionOrder(defaultResume)];
       localStorage.setItem(STORAGE_KEY_SAVED_RESUMES, JSON.stringify(initial));
       return initial;
     }
     const list: ResumeDocument[] = JSON.parse(raw) || [];
-    let updated = false;
-    const migrated = list.map((doc) => {
-      if (isDummyResume(doc)) {
-        updated = true;
-        return defaultResume;
-      }
-      return doc;
-    });
-    if (updated || migrated.length === 0) {
-      if (migrated.length === 0) migrated.push(defaultResume);
-      localStorage.setItem(STORAGE_KEY_SAVED_RESUMES, JSON.stringify(migrated));
+    if (list.length === 0) {
+      const initial = [ensureSectionOrder(defaultResume)];
+      localStorage.setItem(STORAGE_KEY_SAVED_RESUMES, JSON.stringify(initial));
+      return initial;
     }
-    return migrated;
+    return list.map((doc) => ensureSectionOrder(doc));
   } catch (err) {
     console.error("Failed to get saved resumes:", err);
-    return [defaultResume];
+    return [ensureSectionOrder(defaultResume)];
   }
 }
 
 export function saveNewResume(doc: ResumeDocument): void {
   try {
+    const prepared = ensureSectionOrder(doc);
     const list = getSavedResumes();
-    const existingIdx = list.findIndex((d) => d.id === doc.id);
+    const existingIdx = list.findIndex((d) => d.id === prepared.id);
     if (existingIdx >= 0) {
-      list[existingIdx] = doc;
+      list[existingIdx] = prepared;
     } else {
-      list.unshift(doc);
+      list.unshift(prepared);
     }
     localStorage.setItem(STORAGE_KEY_SAVED_RESUMES, JSON.stringify(list));
   } catch (err) {
@@ -93,14 +122,17 @@ export function saveNewResume(doc: ResumeDocument): void {
 
 function updateInSavedResumeList(doc: ResumeDocument): void {
   try {
-    const list = getSavedResumes();
+    const raw = localStorage.getItem(STORAGE_KEY_SAVED_RESUMES);
+    const list: ResumeDocument[] = raw ? JSON.parse(raw) || [] : [];
     const idx = list.findIndex((d) => d.id === doc.id);
     if (idx >= 0) {
       list[idx] = doc;
-      localStorage.setItem(STORAGE_KEY_SAVED_RESUMES, JSON.stringify(list));
+    } else {
+      list.unshift(doc);
     }
-  } catch {
-    // silent fallback
+    localStorage.setItem(STORAGE_KEY_SAVED_RESUMES, JSON.stringify(list));
+  } catch (err) {
+    console.warn("Failed to update in saved resume list:", err);
   }
 }
 
@@ -114,13 +146,13 @@ export function deleteSavedResume(id: string): void {
 }
 
 export function duplicateSavedResume(doc: ResumeDocument): ResumeDocument {
-  const duplicated: ResumeDocument = {
+  const duplicated: ResumeDocument = ensureSectionOrder({
     ...JSON.parse(JSON.stringify(doc)),
     id: "resume-" + Date.now(),
     title: `${doc.title} (Copy)`,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-  };
+  });
   saveNewResume(duplicated);
   return duplicated;
 }
@@ -130,7 +162,7 @@ export function generateResumePlainText(doc: ResumeDocument): string {
   const lines: string[] = [];
 
   // Header
-  lines.push(doc.contact.fullName.toUpperCase());
+  lines.push((doc.contact.fullName || "UNTITLED").toUpperCase());
   if (doc.contact.jobTitle) lines.push(doc.contact.jobTitle);
   const contacts: string[] = [];
   if (doc.contact.email) contacts.push(doc.contact.email);
@@ -142,113 +174,111 @@ export function generateResumePlainText(doc: ResumeDocument): string {
   lines.push(contacts.join(" | "));
   lines.push("");
 
-  // Summary
-  if (doc.summary) {
-    lines.push("PROFESSIONAL SUMMARY");
-    lines.push("--------------------");
-    lines.push(doc.summary);
-    lines.push("");
-  }
+  const sectionsToRender: ResumeSectionMeta[] =
+    doc.sectionOrder && doc.sectionOrder.length > 0
+      ? doc.sectionOrder.filter((s) => s.visible !== false)
+      : [
+          { key: "summary", title: "PROFESSIONAL SUMMARY", visible: true },
+          { key: "experience", title: "WORK EXPERIENCE", visible: true },
+          { key: "education", title: "EDUCATION", visible: true },
+          { key: "skills", title: "SKILLS", visible: true },
+          { key: "projects", title: "PROJECTS", visible: true },
+          { key: "certifications", title: "CERTIFICATIONS", visible: true },
+        ];
 
-  // Experience
-  if (doc.experience.length > 0) {
-    lines.push("WORK EXPERIENCE");
-    lines.push("---------------");
-    doc.experience.forEach((exp) => {
-      lines.push(
-        `${exp.position} — ${exp.company}${exp.location ? ` (${exp.location})` : ""}`,
-      );
-      lines.push(
-        `${exp.startDate} - ${exp.isCurrent ? "Present" : exp.endDate}`,
-      );
-      exp.bullets.forEach((b) => {
-        if (b.trim()) lines.push(`• ${b.trim()}`);
-      });
+  sectionsToRender.forEach((section) => {
+    const heading = (section.title || section.key).toUpperCase();
+
+    if (section.key === "summary" && doc.summary) {
+      lines.push(heading);
+      lines.push("-".repeat(Math.max(heading.length, 12)));
+      lines.push(doc.summary);
       lines.push("");
-    });
-  }
-
-  // Education
-  if (doc.education.length > 0) {
-    lines.push("EDUCATION");
-    lines.push("---------");
-    doc.education.forEach((edu) => {
-      lines.push(
-        `${edu.degree}${edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ""}`,
-      );
-      lines.push(
-        `${edu.institution}${edu.location ? `, ${edu.location}` : ""} | ${edu.startDate} - ${edu.isCurrent ? "Present" : edu.endDate}`,
-      );
-      if (edu.gradeOrGpa) lines.push(`Result / Honors: ${edu.gradeOrGpa}`);
-      if (edu.bullets && edu.bullets.length > 0) {
-        edu.bullets.forEach((b) => {
+    } else if (section.key === "experience" && doc.experience.length > 0) {
+      lines.push(heading);
+      lines.push("-".repeat(Math.max(heading.length, 12)));
+      doc.experience.forEach((exp) => {
+        lines.push(
+          `${exp.position} — ${exp.company}${exp.location ? ` (${exp.location})` : ""}`,
+        );
+        lines.push(
+          `${exp.startDate} - ${exp.isCurrent ? "Present" : exp.endDate}`,
+        );
+        exp.bullets.forEach((b) => {
           if (b.trim()) lines.push(`• ${b.trim()}`);
         });
-      }
-      lines.push("");
-    });
-  }
-
-  // Skills
-  if (doc.skillCategories.length > 0) {
-    lines.push("SKILLS");
-    lines.push("------");
-    doc.skillCategories.forEach((sc) => {
-      lines.push(`${sc.categoryName}: ${sc.skills.join(", ")}`);
-    });
-    lines.push("");
-  }
-
-  // Projects
-  if (doc.projects.length > 0) {
-    lines.push("PROJECTS");
-    lines.push("--------");
-    doc.projects.forEach((proj) => {
-      lines.push(
-        `${proj.name}${proj.roleOrSubtitle ? ` (${proj.roleOrSubtitle})` : ""}${proj.link ? ` — ${proj.link}` : ""}`,
-      );
-      if (proj.techStack && proj.techStack.length > 0) {
-        lines.push(`Tech Stack: ${proj.techStack.join(", ")}`);
-      }
-      proj.bullets.forEach((b) => {
-        if (b.trim()) lines.push(`• ${b.trim()}`);
+        lines.push("");
       });
-      lines.push("");
-    });
-  }
-
-  // Certifications
-  if (doc.certifications.length > 0) {
-    lines.push("CERTIFICATIONS");
-    lines.push("--------------");
-    doc.certifications.forEach((cert) => {
-      lines.push(
-        `${cert.name} — ${cert.issuer}${cert.issueDate ? ` (${cert.issueDate})` : ""}`,
-      );
-      if (cert.credentialId) lines.push(`Credential ID: ${cert.credentialId}`);
-    });
-    lines.push("");
-  }
-
-  // Custom sections
-  doc.customSections
-    .filter((cs) => cs.visible)
-    .forEach((cs) => {
-      lines.push(cs.title.toUpperCase());
-      lines.push("-".repeat(cs.title.length));
-      cs.items.forEach((item) => {
+    } else if (section.key === "education" && doc.education.length > 0) {
+      lines.push(heading);
+      lines.push("-".repeat(Math.max(heading.length, 12)));
+      doc.education.forEach((edu) => {
         lines.push(
-          `${item.title}${item.subtitle ? ` (${item.subtitle})` : ""}${item.date ? ` — ${item.date}` : ""}`,
+          `${edu.degree}${edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ""}`,
         );
-        if (item.description) lines.push(item.description);
-        if (item.bullets) {
-          item.bullets.forEach((b) => {
+        lines.push(
+          `${edu.institution}${edu.location ? `, ${edu.location}` : ""} | ${edu.startDate} - ${edu.isCurrent ? "Present" : edu.endDate}`,
+        );
+        if (edu.gradeOrGpa) lines.push(`Result / Honors: ${edu.gradeOrGpa}`);
+        if (edu.bullets && edu.bullets.length > 0) {
+          edu.bullets.forEach((b) => {
             if (b.trim()) lines.push(`• ${b.trim()}`);
           });
         }
+        lines.push("");
+      });
+    } else if (section.key === "skills" && doc.skillCategories.length > 0) {
+      lines.push(heading);
+      lines.push("-".repeat(Math.max(heading.length, 12)));
+      doc.skillCategories.forEach((sc) => {
+        lines.push(`${sc.categoryName}: ${sc.skills.join(", ")}`);
       });
       lines.push("");
-    });
+    } else if (section.key === "projects" && doc.projects.length > 0) {
+      lines.push(heading);
+      lines.push("-".repeat(Math.max(heading.length, 12)));
+      doc.projects.forEach((proj) => {
+        lines.push(
+          `${proj.name}${proj.roleOrSubtitle ? ` (${proj.roleOrSubtitle})` : ""}${proj.link ? ` — ${proj.link}` : ""}`,
+        );
+        if (proj.techStack && proj.techStack.length > 0) {
+          lines.push(`Tech Stack: ${proj.techStack.join(", ")}`);
+        }
+        proj.bullets.forEach((b) => {
+          if (b.trim()) lines.push(`• ${b.trim()}`);
+        });
+        lines.push("");
+      });
+    } else if (section.key === "certifications" && doc.certifications.length > 0) {
+      lines.push(heading);
+      lines.push("-".repeat(Math.max(heading.length, 12)));
+      doc.certifications.forEach((cert) => {
+        lines.push(
+          `${cert.name} — ${cert.issuer}${cert.issueDate ? ` (${cert.issueDate})` : ""}`,
+        );
+        if (cert.credentialId) lines.push(`Credential ID: ${cert.credentialId}`);
+      });
+      lines.push("");
+    } else if (section.key === "custom" && section.customId) {
+      const cs = doc.customSections?.find((c) => c.id === section.customId);
+      if (cs && cs.items.length > 0) {
+        lines.push(heading);
+        lines.push("-".repeat(Math.max(heading.length, 12)));
+        cs.items.forEach((item) => {
+          lines.push(
+            `${item.title}${item.subtitle ? ` — ${item.subtitle}` : ""}`,
+          );
+          if (item.description) lines.push(item.description);
+          if (item.bullets && item.bullets.length > 0) {
+            item.bullets.forEach((b) => {
+              if (b.trim()) lines.push(`• ${b.trim()}`);
+            });
+          }
+        });
+        lines.push("");
+      }
+    }
+  });
 
   return lines.join("\n");
 }

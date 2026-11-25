@@ -17,6 +17,7 @@ import {
   ResumeStylingConfig,
   ResumeTemplateId,
   ResumeSectionMeta,
+  ResumeSectionKey,
 } from "../types/resume";
 import { defaultResume, defaultOperationsResume, RESUME_TEMPLATES } from "../data/defaultResume";
 import { CoverLetterDocument } from "../types/coverLetter";
@@ -65,6 +66,7 @@ interface ResumeContextType {
   updateSkillCategory: (id: string, updates: Partial<SkillCategory>) => void;
   deleteSkillCategory: (id: string) => void;
   addSkillToCategory: (categoryId: string, skill: string) => void;
+  addSkillsToCategory: (categoryId: string, skills: string[]) => void;
   removeSkillFromCategory: (categoryId: string, skillIndex: number) => void;
 
   // Projects
@@ -97,7 +99,13 @@ interface ResumeContextType {
 
   // Section Ordering & Visibility
   reorderSectionOrder: (newOrder: ResumeSectionMeta[]) => void;
+  moveSection: (index: number, direction: "up" | "down") => void;
   toggleSectionVisibility: (key: string, customId?: string) => void;
+  updateSectionTitle: (
+    key: ResumeSectionKey,
+    title: string,
+    customId?: string,
+  ) => void;
 
   // Styling & Templates
   updateStyling: (updates: Partial<ResumeStylingConfig>) => void;
@@ -121,7 +129,9 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { user, syncStatus } = useAuth();
   const [document, setDocument] = useState<ResumeDocument>(loadCurrentResume);
-  const [viewMode, setViewMode] = useState<"studio" | "dashboard">("dashboard");
+  const [viewMode, setViewModeState] = useState<"studio" | "dashboard">(
+    "dashboard",
+  );
   const [activeTab, setActiveTab] = useState<
     "content" | "design" | "templates"
   >("content");
@@ -131,9 +141,34 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({
     useState<ResumeDocument[]>(getSavedResumes);
   const isFirstMountRef = React.useRef(true);
 
+  const refreshSavedResumes = useCallback(() => {
+    setSavedResumes(getSavedResumes());
+  }, []);
+
+  const setViewMode = useCallback(
+    (mode: "studio" | "dashboard") => {
+      if (mode === "dashboard") {
+        setSavedResumes(getSavedResumes());
+      }
+      setViewModeState(mode);
+    },
+    [],
+  );
+
   // Auto-save locally and sync to cloud if authenticated
   useEffect(() => {
     saveCurrentResume(document);
+
+    // Keep savedResumes list up-to-date in state so dashboard & switching are always real-time
+    setSavedResumes((prev) => {
+      const idx = prev.findIndex((d) => d.id === document.id);
+      if (idx >= 0) {
+        const copy = [...prev];
+        copy[idx] = document;
+        return copy;
+      }
+      return [document, ...prev];
+    });
 
     // Skip cloud API call on initial page load when no user edit has occurred
     if (isFirstMountRef.current) {
@@ -152,10 +187,6 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({
       setSavedResumes(getSavedResumes());
     }
   }, [syncStatus]);
-
-  const refreshSavedResumes = useCallback(() => {
-    setSavedResumes(getSavedResumes());
-  }, []);
 
   const updateTitle = useCallback((title: string) => {
     setDocument((prev) => ({ ...prev, title }));
@@ -303,19 +334,71 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({
     }));
   }, []);
 
-  const addSkillToCategory = useCallback(
-    (categoryId: string, skill: string) => {
-      if (!skill.trim()) return;
+  const addSkillsToCategory = useCallback(
+    (categoryId: string, skills: string[]) => {
+      const cleanList = skills
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (cleanList.length === 0) return;
+
       setDocument((prev) => ({
         ...prev,
         skillCategories: prev.skillCategories.map((cat) => {
           if (cat.id !== categoryId) return cat;
-          if (cat.skills.includes(skill.trim())) return cat;
-          return { ...cat, skills: [...cat.skills, skill.trim()] };
+          const existingLower = new Set(
+            cat.skills.map((s) => s.trim().toLowerCase()),
+          );
+          const toAdd: string[] = [];
+          for (const s of cleanList) {
+            if (!existingLower.has(s.toLowerCase())) {
+              existingLower.add(s.toLowerCase());
+              toAdd.push(s);
+            }
+          }
+          return {
+            ...cat,
+            skills: [...cat.skills, ...toAdd],
+          };
         }),
       }));
     },
     [],
+  );
+
+  const addSkillToCategory = useCallback(
+    (categoryId: string, skill: string) => {
+      if (!skill.trim()) return;
+      // If the skill contains delimiters (newlines, commas, semicolons), parse into multiple
+      if (/[\r\n,;]/.test(skill)) {
+        const tokens = skill
+          .split(/[\r\n,;]+/)
+          .map((s) =>
+            s
+              .replace(/^[\s•\-\*\u2022\u2023\u25E6\u2043\u2219]+/, "")
+              .replace(/^\(?\d+[\.\)\-]\s*/, "")
+              .replace(/^["'“”]+|["'“”]+$/g, "")
+              .trim(),
+          )
+          .filter(Boolean);
+        addSkillsToCategory(categoryId, tokens);
+        return;
+      }
+
+      setDocument((prev) => ({
+        ...prev,
+        skillCategories: prev.skillCategories.map((cat) => {
+          if (cat.id !== categoryId) return cat;
+          if (
+            cat.skills.some(
+              (s) => s.toLowerCase() === skill.trim().toLowerCase(),
+            )
+          )
+            return cat;
+          return { ...cat, skills: [...cat.skills, skill.trim()] };
+        }),
+      }));
+    },
+    [addSkillsToCategory],
   );
 
   const removeSkillFromCategory = useCallback(
@@ -516,6 +599,17 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({
     setDocument((prev) => ({ ...prev, sectionOrder: newOrder }));
   }, []);
 
+  const moveSection = useCallback((index: number, direction: "up" | "down") => {
+    setDocument((prev) => {
+      const targetIndex = direction === "up" ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= prev.sectionOrder.length) return prev;
+      const newOrder = [...prev.sectionOrder];
+      const [moved] = newOrder.splice(index, 1);
+      newOrder.splice(targetIndex, 0, moved);
+      return { ...prev, sectionOrder: newOrder };
+    });
+  }, []);
+
   const toggleSectionVisibility = useCallback(
     (key: string, customId?: string) => {
       setDocument((prev) => ({
@@ -523,6 +617,27 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({
         sectionOrder: prev.sectionOrder.map((so) => {
           if (so.key === key && (!customId || so.customId === customId)) {
             return { ...so, visible: !so.visible };
+          }
+          return so;
+        }),
+      }));
+    },
+    [],
+  );
+
+  const updateSectionTitle = useCallback(
+    (key: ResumeSectionKey, title: string, customId?: string) => {
+      setDocument((prev) => ({
+        ...prev,
+        customSections:
+          key === "custom" && customId
+            ? prev.customSections.map((cs) =>
+                cs.id === customId ? { ...cs, title } : cs,
+              )
+            : prev.customSections,
+        sectionOrder: prev.sectionOrder.map((so) => {
+          if (so.key === key && (!customId || so.customId === customId)) {
+            return { ...so, title };
           }
           return so;
         }),
@@ -553,8 +668,11 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Document Management
   const loadResume = useCallback((doc: ResumeDocument) => {
-    setDocument(doc);
-    saveCurrentResume(doc);
+    const list = getSavedResumes();
+    const fresh = list.find((d) => d.id === doc.id) || doc;
+    setDocument(fresh);
+    saveCurrentResume(fresh);
+    setSavedResumes(list);
   }, []);
 
   const createNewResume = useCallback(
@@ -688,6 +806,7 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({
         updateSkillCategory,
         deleteSkillCategory,
         addSkillToCategory,
+        addSkillsToCategory,
         removeSkillFromCategory,
         addProject,
         updateProject,
@@ -702,7 +821,9 @@ export const ResumeProvider: React.FC<{ children: React.ReactNode }> = ({
         updateCustomSectionItem,
         deleteCustomSectionItem,
         reorderSectionOrder,
+        moveSection,
         toggleSectionVisibility,
+        updateSectionTitle,
         updateStyling,
         setTemplate,
         savedResumes,

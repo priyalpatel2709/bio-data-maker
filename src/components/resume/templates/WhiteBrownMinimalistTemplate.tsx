@@ -1,5 +1,6 @@
 import React from "react";
 import { ResumeDocument } from "../../../types/resume";
+import { getSectionTitle } from "./templateUtils";
 
 interface TemplateProps {
   resume: ResumeDocument;
@@ -169,7 +170,7 @@ export const WhiteBrownMinimalistTemplate: React.FC<TemplateProps> = ({
           {/* Profile / Summary */}
           {summary && (
             <section className="mb-5">
-              {renderLeftSectionTitle("Profile")}
+              {renderLeftSectionTitle(getSectionTitle(resume, "summary", "Profile"))}
               <p className="text-xs text-stone-700 leading-relaxed font-sans text-justify">
                 {summary}
               </p>
@@ -212,7 +213,7 @@ export const WhiteBrownMinimalistTemplate: React.FC<TemplateProps> = ({
           {/* Skills */}
           {skillCategories.length > 0 && (
             <section className="mb-5">
-              {renderLeftSectionTitle("Skills")}
+              {renderLeftSectionTitle(getSectionTitle(resume, "skills", "Skills"))}
               {styling.skillsDisplay === "chips" ? (
                 <div className="flex flex-wrap gap-1.5 font-sans">
                   {allSkills.map((skill, idx) => (
@@ -243,7 +244,7 @@ export const WhiteBrownMinimalistTemplate: React.FC<TemplateProps> = ({
           {/* Education on Page 1 if no page 2 or space permits */}
           {education.length > 0 && (!hasPage2 || education.length <= 2) && (
             <section className="mb-5">
-              {renderLeftSectionTitle("Education")}
+              {renderLeftSectionTitle(getSectionTitle(resume, "education", "Education"))}
               <div className="space-y-3">
                 {education.map((edu) => (
                   <div key={edu.id} className="text-xs">
@@ -331,7 +332,7 @@ export const WhiteBrownMinimalistTemplate: React.FC<TemplateProps> = ({
           {/* Work Experience */}
           {experienceToRender.length > 0 && (
             <section>
-              {renderRightSectionTitle("Experience")}
+              {renderRightSectionTitle(getSectionTitle(resume, "experience", "Experience"))}
               <div className="space-y-4">
                 {experienceToRender.map((exp) => (
                   <div key={exp.id} className="text-xs">
@@ -361,7 +362,7 @@ export const WhiteBrownMinimalistTemplate: React.FC<TemplateProps> = ({
           {/* Certifications */}
           {certifications.length > 0 && (!isPage2 || experience.length <= 3) && (
             <section>
-              {renderRightSectionTitle("Certification")}
+              {renderRightSectionTitle(getSectionTitle(resume, "certifications", "Certification"))}
               <ul className="space-y-1.5 text-xs text-white/90 font-sans">
                 {certifications.map((cert) => (
                   <li key={cert.id} className="flex items-start gap-2">
@@ -385,7 +386,7 @@ export const WhiteBrownMinimalistTemplate: React.FC<TemplateProps> = ({
           {/* Projects (if any) */}
           {projects.length > 0 && (
             <section>
-              {renderRightSectionTitle("Projects")}
+              {renderRightSectionTitle(getSectionTitle(resume, "projects", "Projects"))}
               <div className="space-y-3">
                 {projects.slice(0, 3).map((proj) => (
                   <div key={proj.id} className="text-xs">

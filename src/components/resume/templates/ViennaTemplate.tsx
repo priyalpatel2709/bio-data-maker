@@ -1,5 +1,9 @@
 import React from "react";
-import { ResumeDocument } from "../../../types/resume";
+import { ResumeDocument, ResumeSectionKey } from "../../../types/resume";
+import {
+  getEffectiveSectionOrder,
+  getSectionTitle,
+} from "./templateUtils";
 
 interface TemplateProps {
   resume: ResumeDocument;
@@ -138,42 +142,42 @@ export const ViennaTemplate: React.FC<TemplateProps> = ({ resume }) => {
   };
 
   const renderSectionTitle = (title: string) => (
-    <div className="text-center my-3">
+    <div className="mb-2.5">
       <h2
-        className="text-xs font-semibold tracking-widest uppercase inline-block pb-1 border-b border-stone-300"
-        style={{ color: primaryColor }}
+        className="text-xs font-semibold uppercase tracking-widest pb-1 border-b"
+        style={{ color: primaryColor, borderColor: `${primaryColor}30` }}
       >
         {title}
       </h2>
     </div>
   );
 
-  const renderSummary = () => {
+  const renderSummary = (customTitle?: string) => {
     if (!summary) return null;
     return (
       <section>
-        {renderSectionTitle("Profile")}
-        <p className="text-xs text-stone-800 leading-relaxed text-justify font-sans">
+        {renderSectionTitle(customTitle || getSectionTitle(resume, "summary", "Profile"))}
+        <p className="text-xs text-stone-700 leading-relaxed text-justify font-sans">
           {summary}
         </p>
       </section>
     );
   };
 
-  const renderExperience = () => {
+  const renderExperience = (customTitle?: string) => {
     if (experience.length === 0) return null;
     return (
       <section>
-        {renderSectionTitle("Experience")}
+        {renderSectionTitle(customTitle || getSectionTitle(resume, "experience", "Experience"))}
         <div className="space-y-3.5">
           {experience.map((exp) => (
-            <div key={exp.id} className="text-xs">
+            <div key={exp.id} className="text-xs font-sans">
               <div className="flex flex-row justify-between items-baseline gap-2">
-                <span className="font-bold text-stone-900 text-[13px]">
+                <span className="font-bold text-stone-900 text-[13px] font-serif">
                   {exp.position}
                 </span>
-                <span className="text-stone-400 font-normal font-sans text-[11px] shrink-0">
-                  {exp.startDate} — {exp.isCurrent ? "Present" : exp.endDate}
+                <span className="text-stone-400 font-medium text-[11px] shrink-0">
+                  {exp.startDate} – {exp.isCurrent ? "Present" : exp.endDate}
                 </span>
               </div>
               <div className="text-stone-600 italic text-xs mt-0.5">
@@ -181,7 +185,7 @@ export const ViennaTemplate: React.FC<TemplateProps> = ({ resume }) => {
                 {exp.location ? `, ${exp.location}` : ""}
               </div>
               {exp.bullets.length > 0 && (
-                <ul className="mt-1.5 space-y-1 list-disc list-outside ml-4 text-xs text-stone-800 font-sans">
+                <ul className="mt-1 space-y-1 list-disc list-outside ml-4 text-xs text-stone-700">
                   {exp.bullets.map((b, idx) => (
                     <li key={idx} className="leading-relaxed">
                       {b}
@@ -196,40 +200,78 @@ export const ViennaTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderEducation = () => {
+  const renderProjects = (customTitle?: string) => {
+    if (projects.length === 0) return null;
+    return (
+      <section>
+        {renderSectionTitle(customTitle || getSectionTitle(resume, "projects", "Projects"))}
+        <div className="space-y-3">
+          {projects.map((proj) => (
+            <div key={proj.id} className="text-xs font-sans">
+              <div className="flex flex-row justify-between items-baseline gap-2">
+                <span className="font-bold text-stone-900 font-serif">
+                  {proj.name}
+                </span>
+                {proj.link && (
+                  <span
+                    className="text-[11px] font-medium"
+                    style={{ color: primaryColor }}
+                  >
+                    {proj.link}
+                  </span>
+                )}
+              </div>
+              {proj.roleOrSubtitle && (
+                <div className="text-stone-500 text-[11px] italic">
+                  {proj.roleOrSubtitle}
+                </div>
+              )}
+              {proj.techStack && proj.techStack.length > 0 && (
+                <div className="text-[11px] text-stone-500 mt-0.5">
+                  Stack: {proj.techStack.join(", ")}
+                </div>
+              )}
+              {proj.bullets.length > 0 && (
+                <ul className="mt-1 space-y-0.5 list-disc list-outside ml-4 text-xs text-stone-700">
+                  {proj.bullets.map((b, idx) => (
+                    <li key={idx}>{b}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  };
+
+  const renderEducation = (customTitle?: string) => {
     if (education.length === 0) return null;
     return (
       <section>
-        {renderSectionTitle("Education")}
+        {renderSectionTitle(customTitle || getSectionTitle(resume, "education", "Education"))}
         <div className="space-y-3">
           {education.map((edu) => (
-            <div key={edu.id} className="text-xs">
+            <div key={edu.id} className="text-xs font-sans">
               <div className="flex flex-row justify-between items-baseline gap-2">
-                <div>
-                  <span className="font-bold text-stone-900">{edu.degree}</span>
-                  {edu.fieldOfStudy && (
-                    <span className="text-stone-700 italic">
-                      , {edu.fieldOfStudy}
-                    </span>
-                  )}
-                  <div className="text-stone-600 text-xs mt-0.5">
-                    {edu.institution}
-                    {edu.location ? `, ${edu.location}` : ""}
-                  </div>
-                </div>
-                <div className="text-right shrink-0 font-sans">
-                  <span className="text-stone-400 text-[11px]">
-                    {edu.startDate} — {edu.isCurrent ? "Present" : edu.endDate}
-                  </span>
-                  {edu.gradeOrGpa && (
-                    <div className="text-stone-500 text-[11px]">
-                      {edu.gradeOrGpa}
-                    </div>
-                  )}
-                </div>
+                <span className="font-bold text-stone-900 font-serif">
+                  {edu.degree}
+                </span>
+                <span className="text-stone-400 font-medium text-[11px] shrink-0">
+                  {edu.startDate} – {edu.isCurrent ? "Present" : edu.endDate}
+                </span>
               </div>
+              <div className="text-stone-600 text-xs mt-0.5">
+                {edu.institution}
+                {edu.location ? `, ${edu.location}` : ""}
+              </div>
+              {edu.gradeOrGpa && (
+                <div className="text-stone-500 text-[11px] mt-0.5 italic">
+                  {edu.gradeOrGpa}
+                </div>
+              )}
               {edu.bullets && edu.bullets.length > 0 && (
-                <ul className="mt-1 space-y-0.5 list-disc list-outside ml-4 text-xs text-stone-800 font-sans">
+                <ul className="mt-1 space-y-0.5 list-disc list-outside ml-4 text-xs text-stone-700">
                   {edu.bullets.map((b, idx) => (
                     <li key={idx}>{b}</li>
                   ))}
@@ -242,19 +284,19 @@ export const ViennaTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderSkills = () => {
+  const renderSkills = (customTitle?: string) => {
     if (skillCategories.length === 0) return null;
     return (
       <section>
-        {renderSectionTitle("Areas of Expertise")}
-        <div className="space-y-1.5 text-xs text-stone-800 font-sans">
+        {renderSectionTitle(customTitle || getSectionTitle(resume, "skills", "Skills & Abilities"))}
+        <div className="space-y-2 text-xs font-sans">
           {skillCategories.map((sc) => (
             <div key={sc.id} className="flex flex-row items-baseline gap-2">
-              <span className="font-bold text-stone-900 w-36 shrink-0 text-xs">
+              <span className="font-bold text-stone-900 w-32 shrink-0">
                 {sc.categoryName}:
               </span>
-              <span className="flex-1 text-stone-700">
-                {sc.skills.join(" • ")}
+              <span className="text-stone-700 flex-1">
+                {sc.skills.join(", ")}
               </span>
             </div>
           ))}
@@ -263,38 +305,54 @@ export const ViennaTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderProjects = () => {
-    if (projects.length === 0) return null;
+  const renderCertifications = (customTitle?: string) => {
+    if (certifications.length === 0) return null;
     return (
       <section>
-        {renderSectionTitle("Projects")}
-        <div className="space-y-3">
-          {projects.map((proj) => (
-            <div key={proj.id} className="text-xs">
-              <div className="flex flex-row justify-between items-baseline gap-2">
-                <span className="font-bold text-stone-900">{proj.name}</span>
-                {(proj.startDate || proj.endDate) && (
-                  <span className="text-stone-400 text-[11px] font-sans shrink-0">
-                    {proj.startDate} {proj.endDate ? `— ${proj.endDate}` : ""}
+        {renderSectionTitle(customTitle || getSectionTitle(resume, "certifications", "Certifications"))}
+        <div className="space-y-1.5 text-xs font-sans">
+          {certifications.map((c) => (
+            <div key={c.id}>
+              <span className="font-semibold text-stone-900">{c.name}</span>
+              <span className="text-stone-500 text-[11px] ml-1.5">
+                — {c.issuer} {c.issueDate ? `(${c.issueDate})` : ""}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  };
+
+  const renderCustomSectionItem = (customId?: string, customTitle?: string) => {
+    const cs = customSections.find((c) => c.id === customId && c.visible);
+    if (!cs || cs.items.length === 0) return null;
+    return (
+      <section key={cs.id}>
+        {renderSectionTitle(customTitle || cs.title)}
+        <div className="space-y-2 text-xs font-sans">
+          {cs.items.map((item) => (
+            <div key={item.id}>
+              <div className="flex justify-between items-baseline font-bold text-stone-900 font-serif">
+                <span>{item.title}</span>
+                {item.date && (
+                  <span className="text-stone-400 font-normal text-[11px] font-sans">
+                    {item.date}
                   </span>
                 )}
               </div>
-              {proj.roleOrSubtitle && (
-                <div className="text-stone-600 text-xs italic">
-                  {proj.roleOrSubtitle}
+              {item.subtitle && (
+                <div className="text-stone-500 italic text-[11px]">
+                  {item.subtitle}
                 </div>
               )}
-              {proj.techStack && proj.techStack.length > 0 && (
-                <div className="text-[11px] text-stone-500 mt-0.5 font-sans">
-                  Focus: {proj.techStack.join(", ")}
-                </div>
+              {item.description && (
+                <p className="text-stone-700 mt-0.5">{item.description}</p>
               )}
-              {proj.bullets.length > 0 && (
-                <ul className="mt-1 space-y-0.5 list-disc list-outside ml-4 text-xs text-stone-800 font-sans">
-                  {proj.bullets.map((b, idx) => (
-                    <li key={idx} className="leading-relaxed">
-                      {b}
-                    </li>
+              {item.bullets && item.bullets.length > 0 && (
+                <ul className="mt-1 list-disc list-outside ml-4 space-y-0.5 text-stone-700">
+                  {item.bullets.map((b, idx) => (
+                    <li key={idx}>{b}</li>
                   ))}
                 </ul>
               )}
@@ -305,73 +363,29 @@ export const ViennaTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderCertifications = () => {
-    if (certifications.length === 0) return null;
-    return (
-      <section>
-        {renderSectionTitle("Certifications")}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-sans">
-          {certifications.map((cert) => (
-            <div
-              key={cert.id}
-              className="border-l-2 pl-2"
-              style={{ borderColor: `${primaryColor}60` }}
-            >
-              <div className="font-bold text-stone-900">{cert.name}</div>
-              <div className="text-stone-500 text-[11px]">
-                {cert.issuer} {cert.issueDate ? `(${cert.issueDate})` : ""}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  };
-
-  const renderCustomSections = () => {
-    if (customSections.length === 0) return null;
-    return (
-      <>
-        {customSections
-          .filter((cs) => cs.visible)
-          .map((cs) => (
-            <section key={cs.id}>
-              {renderSectionTitle(cs.title)}
-              <div className="space-y-2 text-xs font-sans">
-                {cs.items.map((item) => (
-                  <div key={item.id}>
-                    <div className="flex justify-between items-baseline font-bold text-stone-900">
-                      <span>{item.title}</span>
-                      {item.date && (
-                        <span className="text-stone-400 font-normal text-[11px]">
-                          {item.date}
-                        </span>
-                      )}
-                    </div>
-                    {item.subtitle && (
-                      <div className="text-stone-600 italic">
-                        {item.subtitle}
-                      </div>
-                    )}
-                    {item.description && (
-                      <p className="text-stone-700 mt-0.5">
-                        {item.description}
-                      </p>
-                    )}
-                    {item.bullets && item.bullets.length > 0 && (
-                      <ul className="mt-1 list-disc list-outside ml-4 space-y-0.5 text-stone-700">
-                        {item.bullets.map((b, idx) => (
-                          <li key={idx}>{b}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-          ))}
-      </>
-    );
+  const renderSectionByKey = (
+    key: ResumeSectionKey,
+    title: string,
+    customId?: string,
+  ) => {
+    switch (key) {
+      case "summary":
+        return renderSummary(title);
+      case "experience":
+        return renderExperience(title);
+      case "projects":
+        return renderProjects(title);
+      case "education":
+        return renderEducation(title);
+      case "skills":
+        return renderSkills(title);
+      case "certifications":
+        return renderCertifications(title);
+      case "custom":
+        return renderCustomSectionItem(customId, title);
+      default:
+        return null;
+    }
   };
 
   const renderFooter = (pageNumber: number) => {
@@ -386,104 +400,22 @@ export const ViennaTemplate: React.FC<TemplateProps> = ({ resume }) => {
     );
   };
 
-  const renderPage1Sections = () => {
-    if (isSinglePage) {
-      return (
-        <div className="space-y-4">
-          {renderSummary()}
-          {renderExperience()}
-          {renderProjects()}
-          {renderEducation()}
-          {renderSkills()}
-          {renderCertifications()}
-          {renderCustomSections()}
-        </div>
-      );
-    }
+  const effectiveSections = getEffectiveSectionOrder(resume);
+  const splitIndex =
+    splitAt === "projects"
+      ? effectiveSections.findIndex((s) => s.key === "projects")
+      : splitAt === "education"
+        ? effectiveSections.findIndex((s) => s.key === "education")
+        : splitAt === "skills"
+          ? effectiveSections.findIndex((s) => s.key === "skills")
+          : Math.ceil(effectiveSections.length / 2);
 
-    if (splitAt === "projects") {
-      return (
-        <div className="space-y-4">
-          {renderSummary()}
-          {renderExperience()}
-        </div>
-      );
-    }
-
-    if (splitAt === "education") {
-      return (
-        <div className="space-y-4">
-          {renderSummary()}
-          {renderExperience()}
-          {renderProjects()}
-        </div>
-      );
-    }
-
-    if (splitAt === "skills") {
-      return (
-        <div className="space-y-4">
-          {renderSummary()}
-          {renderExperience()}
-          {renderProjects()}
-          {renderEducation()}
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-4">
-        {renderSummary()}
-        {renderExperience()}
-        {experience.length <= 2 && renderProjects()}
-      </div>
-    );
-  };
-
-  const renderPage2Sections = () => {
-    if (splitAt === "projects") {
-      return (
-        <div className="space-y-4">
-          {renderProjects()}
-          {renderEducation()}
-          {renderSkills()}
-          {renderCertifications()}
-          {renderCustomSections()}
-        </div>
-      );
-    }
-
-    if (splitAt === "education") {
-      return (
-        <div className="space-y-4">
-          {renderEducation()}
-          {renderSkills()}
-          {renderCertifications()}
-          {renderCustomSections()}
-        </div>
-      );
-    }
-
-    if (splitAt === "skills") {
-      return (
-        <div className="space-y-4">
-          {renderSkills()}
-          {renderCertifications()}
-          {renderCustomSections()}
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-4">
-        {experience.length > 2 && renderProjects()}
-        {renderEducation()}
-        {renderSkills()}
-        {renderCertifications()}
-        {renderCustomSections()}
-      </div>
-    );
-  };
+  const actualSplitIndex =
+    splitIndex > 0 ? splitIndex : Math.max(1, Math.floor(effectiveSections.length / 2));
+  const page1Sections = hasPage2
+    ? effectiveSections.slice(0, actualSplitIndex)
+    : effectiveSections;
+  const page2Sections = hasPage2 ? effectiveSections.slice(actualSplitIndex) : [];
 
   return (
     <div className="flex flex-col items-center gap-8 print:gap-0">
@@ -496,7 +428,13 @@ export const ViennaTemplate: React.FC<TemplateProps> = ({ resume }) => {
       >
         <div>
           {renderHeader(false)}
-          <main>{renderPage1Sections()}</main>
+          <main className="space-y-4">
+            {page1Sections.map((s) => (
+              <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+                {renderSectionByKey(s.key, s.title, s.customId)}
+              </React.Fragment>
+            ))}
+          </main>
         </div>
         {renderFooter(1)}
       </div>
@@ -511,7 +449,13 @@ export const ViennaTemplate: React.FC<TemplateProps> = ({ resume }) => {
         >
           <div>
             {renderHeader(true)}
-            <main>{renderPage2Sections()}</main>
+            <main className="space-y-4">
+              {page2Sections.map((s) => (
+                <React.Fragment key={`${s.key}-${s.customId || ""}`}>
+                  {renderSectionByKey(s.key, s.title, s.customId)}
+                </React.Fragment>
+              ))}
+            </main>
           </div>
           {renderFooter(2)}
         </div>
